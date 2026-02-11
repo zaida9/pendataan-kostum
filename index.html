@@ -30,8 +30,23 @@ tr:hover{background:#f9fbff;}
 .form-box{background:white;padding:18px;border-radius:16px;margin-bottom:15px;display:none;box-shadow:0 6px 18px rgba(0,0,0,.08);}
 .form-box input{padding:10px;margin:6px;border-radius:10px;border:1px solid #e0e0e0;}
 .form-box input:focus{outline:none;border-color:#64b5f6;box-shadow:0 0 0 2px rgba(100,181,246,.15);}
-.chart-container{background:white;border-radius:16px;padding:10px;margin-bottom:15px;box-shadow:0 4px 12px rgba(0,0,0,.08);width:280px;height:180px;}
-.chart-wrapper{display:flex;flex-wrap:wrap;gap:15px;}
+
+/* ===== CHART CSS ===== */
+.chart-wrapper {
+  display: flex;
+  gap: 15px;
+  flex-wrap: wrap;
+  margin-bottom: 25px;
+}
+.chart-container {
+  flex: 1;
+  min-width: 300px;  /* chart minimal tetap terbaca */
+  height: 300px;     /* tinggi proporsional sama tabel */
+  background: white;
+  border-radius: 16px;
+  padding: 10px;
+  box-shadow: 0 4px 12px rgba(0,0,0,.08);
+}
 </style>
 </head>
 <body>
@@ -73,15 +88,9 @@ tr:hover{background:#f9fbff;}
 
   <h3 style="margin-top:25px">Dashboard Statistik</h3>
   <div class="chart-wrapper">
-    <div class="chart-container">
-      <canvas id="chartKostum"></canvas>
-    </div>
-    <div class="chart-container">
-      <canvas id="chartPinjam"></canvas>
-    </div>
-    <div class="chart-container">
-      <canvas id="chartJenisKostum"></canvas>
-    </div>
+    <div class="chart-container"><canvas id="chartKostum"></canvas></div>
+    <div class="chart-container"><canvas id="chartPinjam"></canvas></div>
+    <div class="chart-container"><canvas id="chartJenisKostum"></canvas></div>
   </div>
 
   <h3 style="margin-top:25px">Form Peminjaman Kostum</h3>
@@ -109,7 +118,6 @@ tr:hover{background:#f9fbff;}
     </thead>
     <tbody id="tablePinjam"></tbody>
   </table>
-
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -157,7 +165,6 @@ let chartPinjamInstance=null;
 let chartJenisInstance=null;
 
 function renderDashboard(){
-  // Chart Status Kostum
   const totalKostum=kostum.reduce((a,b)=>a+Number(b.jumlah),0);
   const dipinjam=dataPinjam.filter(p=>!p.kembali).length;
   const tersedia=totalKostum;
@@ -165,14 +172,12 @@ function renderDashboard(){
   if(chartKostumInstance) chartKostumInstance.destroy();
   chartKostumInstance=new Chart(ctx1,{type:"bar",data:{labels:["Total Kostum","Dipinjam","Tersedia"],datasets:[{label:"Jumlah",data:[totalKostum,dipinjam,tersedia],backgroundColor:["#42a5f5","#ef5350","#66bb6a"]}]},options:{responsive:true,plugins:{legend:{display:false},title:{display:true,text:"Status Kostum"}}}});
 
-  // Chart Peminjaman
   const belum = dataPinjam.filter(p=>!p.kembali).length;
   const sudah = dataPinjam.filter(p=>p.kembali).length;
   const ctx2=document.getElementById("chartPinjam").getContext("2d");
   if(chartPinjamInstance) chartPinjamInstance.destroy();
   chartPinjamInstance=new Chart(ctx2,{type:"doughnut",data:{labels:["Belum Kembali","Sudah Kembali"],datasets:[{data:[belum,sudah],backgroundColor:["#ef5350","#66bb6a"]}]},options:{responsive:true,plugins:{title:{display:true,text:"Status Peminjaman Kostum"}}}});
 
-  // Chart per Jenis Kostum
   const labels=kostum.map(k=>`${k.nama} (${k.kode})`);
   const dataKostum=kostum.map(k=>{
     const dipinjamK=dataPinjam.filter(p=>p.kode===k.kode && !p.kembali).length;
