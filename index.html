@@ -101,9 +101,15 @@
 </div>
 
 <script>
-// LOGIN HTML
+// ===== FIX LOGIN (TANPA MENGUBAH SISTEM) =====
 const USERNAME="admin";
 const PASSWORD="123456";
+
+const user=document.getElementById("user");
+const pass=document.getElementById("pass");
+const err=document.getElementById("err");
+const loginPage=document.getElementById("loginPage");
+const app=document.getElementById("app");
 
 function login(e){
   e.preventDefault();
@@ -117,7 +123,7 @@ function login(e){
 function logout(){localStorage.removeItem("login");location.reload();}
 if(localStorage.getItem("login")==="yes"){loginPage.style.display="none";app.style.display="block";}
 
-// FIREBASE
+// ===== FIREBASE =====
 const firebaseConfig={apiKey:"AIzaSyAZUybNqjxxb-KXMZ4ICL03GcO-StBzU-Y",authDomain:"pendataan-kostum.firebaseapp.com",projectId:"pendataan-kostum",storageBucket:"pendataan-kostum.firebasestorage.app",messagingSenderId:"226459234974",appId:"1:226459234974:web:2b0512247ff01c738a418f"};
 firebase.initializeApp(firebaseConfig);
 const db=firebase.firestore();
@@ -157,7 +163,7 @@ function renderChart(){
   const map={};
   kostum.forEach(k=>map[k.jenis]=(map[k.jenis]||0)+Number(k.stok));
   if(chart) chart.destroy();
-  chart=new Chart(chart,{type:"bar",data:{labels:Object.keys(map),datasets:[{label:"Stok",data:Object.values(map)}]}});
+  chart=new Chart(document.getElementById("chart"),{type:"bar",data:{labels:Object.keys(map),datasets:[{label:"Stok",data:Object.values(map)}]}});
 }
 
 function showForm(){formBox.style.display=formBox.style.display==="none"?"block":"none";}
