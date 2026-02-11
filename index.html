@@ -6,31 +6,39 @@
   <title>Sistem Pendataan Kostum</title>
 
   <style>
-    body { margin:0; font-family: Arial, sans-serif; background:#f4f7fb; }
+    body { margin:0; font-family: 'Poppins', Arial, sans-serif; background: linear-gradient(135deg,#e3f2fd,#fce4ec); }
 
     #loginPage { display:flex; height:100vh; align-items:center; justify-content:center; }
 
-    .login-box { background:white; padding:40px; border-radius:12px; box-shadow:0 4px 20px rgba(0,0,0,.1); width:300px; text-align:center; }
-    .login-box h2 { margin-bottom:20px; color:#64b5f6; }
-    .login-box input { width:100%; padding:10px; margin-bottom:10px; border:1px solid #ddd; border-radius:8px; }
-    .login-box button { width:100%; padding:10px; background:#64b5f6; color:white; border:none; border-radius:8px; cursor:pointer; }
-    .error { color:red; font-size:12px; margin-bottom:10px; }
+    .login-box { background:white; padding:40px; border-radius:18px; box-shadow:0 10px 30px rgba(0,0,0,.12); width:320px; text-align:center; }
+    .login-box h2 { margin-bottom:20px; color:#42a5f5; }
+    .login-box input { width:100%; padding:12px; margin-bottom:12px; border:1px solid #e0e0e0; border-radius:10px; transition:.2s; }
+    .login-box input:focus { outline:none; border-color:#64b5f6; box-shadow:0 0 0 2px rgba(100,181,246,.15); }
+    .login-box button { width:100%; padding:12px; background:linear-gradient(135deg,#64b5f6,#42a5f5); color:white; border:none; border-radius:10px; cursor:pointer; font-weight:600; transition:.2s; }
+    .login-box button:hover { transform:translateY(-1px); box-shadow:0 6px 14px rgba(66,165,245,.3); }
+    .error { color:#ef5350; font-size:12px; margin-bottom:10px; }
 
-    #mainApp { display:none; padding:20px; }
+    #mainApp { display:none; padding:25px; }
 
-    .topbar { background:white; padding:15px 20px; border-radius:10px; display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; }
+    .topbar { background:white; padding:18px 22px; border-radius:16px; display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; box-shadow:0 6px 18px rgba(0,0,0,.08); }
 
-    .btn-logout { background:#ef5350; color:white; border:none; padding:8px 14px; border-radius:8px; cursor:pointer; }
+    .btn-logout { background:#ef5350; color:white; border:none; padding:10px 16px; border-radius:10px; cursor:pointer; font-weight:600; }
+    .btn-logout:hover { opacity:.9; }
 
-    table { width:100%; border-collapse:collapse; background:white; border-radius:10px; overflow:hidden; }
-    th,td { padding:12px; border-bottom:1px solid #eee; text-align:left; }
-    th { background:#e3f2fd; }
+    table { width:100%; border-collapse:collapse; background:white; border-radius:16px; overflow:hidden; box-shadow:0 6px 18px rgba(0,0,0,.08); }
+    th,td { padding:14px; border-bottom:1px solid #f1f1f1; text-align:left; }
+    th { background:#e3f2fd; color:#1565c0; font-weight:600; }
+    tr:hover { background:#f9fbff; }
 
-    .btn { padding:6px 10px; border:none; border-radius:6px; cursor:pointer; margin-right:5px; }
-    .edit{background:#64b5f6;color:white;} .delete{background:#ef5350;color:white;} .add{background:#66bb6a;color:white;margin-bottom:10px;}
+    .btn { padding:8px 14px; border:none; border-radius:10px; cursor:pointer; margin-right:6px; font-weight:600; transition:.2s; }
+    .edit{background:#64b5f6;color:white;} 
+    .delete{background:#ef5350;color:white;} 
+    .add{background:#66bb6a;color:white;margin-bottom:12px;}
+    .btn:hover{transform:translateY(-1px);box-shadow:0 4px 10px rgba(0,0,0,.15);} 
 
-    .form-box{ background:white; padding:15px; border-radius:10px; margin-bottom:15px; display:none; }
-    .form-box input{ padding:8px; margin:5px; }
+    .form-box{ background:white; padding:18px; border-radius:16px; margin-bottom:15px; display:none; box-shadow:0 6px 18px rgba(0,0,0,.08); }
+    .form-box input{ padding:10px; margin:6px; border-radius:10px; border:1px solid #e0e0e0; }
+    .form-box input:focus{ outline:none; border-color:#64b5f6; box-shadow:0 0 0 2px rgba(100,181,246,.15); }
   </style>
 </head>
 <body>
@@ -58,7 +66,7 @@
       <!-- KODE OTOMATIS -->
       <input id="kode" placeholder="Kode otomatis" readonly />
       <!-- UKURAN TIDAK WAJIB -->
-      <input id="ukuran" placeholder="Ukuran" />
+      <input id="ukuran" placeholder="Ukuran (opsional)" />
       <input id="jumlah" type="number" placeholder="Jumlah" />
       <button type="submit" class="btn add">Simpan</button>
     </form>
@@ -74,6 +82,36 @@
         </tr>
       </thead>
       <tbody id="tableBody"></tbody>
+    </table>
+
+    <h3 style="margin-top:25px">Form Peminjaman Kostum</h3>
+
+    <form class="form-box" style="display:block" onsubmit="savePinjam(event)">
+      <input id="peminjam" placeholder="Nama peminjam" required />
+      <select id="kostumPinjam" required></select>
+      <input id="tanggal" type="date" required readonly />
+      <button type="submit" class="btn add">Simpan Peminjaman</button>
+    </form>
+
+    <div style="margin:15px 0; display:flex; gap:10px; align-items:center;">
+      <select id="filterStatus" onchange="renderPinjam()" class="btn">
+        <option value="semua">Semua Peminjaman</option>
+        <option value="belum">Belum Kembali</option>
+        <option value="sudah">Sudah Kembali</option>
+      </select>
+      <button class="btn add" onclick="exportPDF()">Export PDF</button>
+    </div>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Nama Peminjam</th>
+          <th>Kode Kostum</th>
+          <th>Tanggal</th>
+          <th>Status / Aksi</th>
+        </tr>
+      </thead>
+      <tbody id="tablePinjam"></tbody>
     </table>
   </div>
 
@@ -123,6 +161,7 @@
   }
 
   window.addEventListener("DOMContentLoaded",()=>{
+    setTanggalHariIni();
     if(localStorage.getItem("login")==="yes"){
       loginPage.style.display="none";
       mainApp.style.display="block";
@@ -158,6 +197,7 @@
   }
 
   function render(){
+    updateDropdown();
     tableBody.innerHTML="";
 
     if(kostum.length===0){
@@ -214,6 +254,165 @@
     simpanKeStorage();
     render();
   }
+
+  const tablePinjam=document.getElementById("tablePinjam");
+  let dataPinjam=JSON.parse(localStorage.getItem("dataPinjam"))||[];
+
+  function simpanPinjam(){
+    localStorage.setItem("dataPinjam",JSON.stringify(dataPinjam));
+  }
+
+  function updateDropdown(){
+    const select=document.getElementById("kostumPinjam");
+    select.innerHTML="";
+
+    if(kostum.length===0){
+      const opt=document.createElement("option");
+      opt.textContent="Belum ada kostum";
+      opt.value="";
+      select.appendChild(opt);
+      return;
+    }
+
+    kostum.forEach(k=>{
+      const opt=document.createElement("option");
+      opt.value=k.kode;
+      opt.textContent=`${k.nama} (${k.kode})`;
+      select.appendChild(opt);
+    });
+  }
+
+  function setTanggalHariIni(){
+    const tgl=document.getElementById("tanggal");
+    const today=new Date();
+    const yyyy=today.getFullYear();
+    const mm=String(today.getMonth()+1).padStart(2,"0");
+    const dd=String(today.getDate()).padStart(2,"0");
+    tgl.value=`${yyyy}-${mm}-${dd}`;
+  }
+
+  function savePinjam(e){
+    e.preventDefault();
+
+    const kodeDipilih=document.getElementById("kostumPinjam").value.trim();
+
+    const item={
+      peminjam:document.getElementById("peminjam").value.trim(),
+      kode:kodeDipilih,
+      tanggal:document.getElementById("tanggal").value,
+      kembali:false
+    };
+
+    if(!item.peminjam || !item.kode) return alert("Data belum lengkap");
+
+    const k=kostum.find(x=>x.kode===kodeDipilih);
+    if(!k || Number(k.jumlah)<=0){
+      alert("Stok kostum habis!");
+      return;
+    }
+
+    k.jumlah=String(Number(k.jumlah)-1);
+
+    dataPinjam.push(item);
+    simpanPinjam();
+    simpanKeStorage();
+    render();
+    renderPinjam();
+
+    e.target.reset();
+    setTanggalHariIni();
+  }
+
+  function exportPDF(){
+    const rows=dataPinjam.map(p=>`
+      <tr>
+        <td>${p.peminjam}</td>
+        <td>${p.kode}</td>
+        <td>${p.tanggal}</td>
+        <td>${p.kembali?"Sudah kembali":"Belum kembali"}</td>
+      </tr>
+    `).join("");
+
+    const html=`
+      <html>
+        <head>
+          <title>Laporan Peminjaman Kostum</title>
+          <style>
+            body{font-family:Arial;padding:20px}
+            h2{text-align:center}
+            table{width:100%;border-collapse:collapse;margin-top:20px}
+            th,td{border:1px solid #000;padding:8px;text-align:left}
+            th{background:#eee}
+          </style>
+        </head>
+        <body>
+          <h2>Laporan Peminjaman Kostum</h2>
+          <table>
+            <thead>
+              <tr>
+                <th>Nama Peminjam</th>
+                <th>Kode Kostum</th>
+                <th>Tanggal</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>${rows || '<tr><td colspan="4" style="text-align:center">Tidak ada data</td></tr>'}</tbody>
+          </table>
+        </body>
+      </html>
+    `;
+
+    const win=window.open("","","width=900,height=700");
+    win.document.write(html);
+    win.document.close();
+    win.print();
+  }
+
+  function renderPinjam(){
+    tablePinjam.innerHTML="";
+
+    const filter=document.getElementById("filterStatus").value;
+
+    let list=dataPinjam;
+    if(filter==="belum") list=dataPinjam.filter(p=>!p.kembali);
+    if(filter==="sudah") list=dataPinjam.filter(p=>p.kembali);
+
+    if(list.length===0){
+      tablePinjam.innerHTML='<tr><td colspan="4" style="text-align:center">Tidak ada data</td></tr>';
+      return;
+    }
+
+    list.forEach((p,i)=>{
+      const row=document.createElement("tr");
+      row.innerHTML=`
+        <td>${p.peminjam}</td>
+        <td>${p.kode}</td>
+        <td>${p.tanggal}</td>
+        <td>
+          ${p.kembali ? '<span style="color:green;font-weight:600">Sudah kembali</span>' : `<button class="btn edit" onclick="kembalikan(${i})">Kembalikan</button>`}
+        </td>`;
+      tablePinjam.appendChild(row);
+    });
+  }
+
+  function kembalikan(i){
+    const p=dataPinjam[i];
+    if(p.kembali) return;
+
+    const k=kostum.find(x=>x.kode===p.kode);
+    if(k){
+      k.jumlah=String(Number(k.jumlah)+1);
+    }
+
+    p.kembali=true;
+
+    simpanPinjam();
+    simpanKeStorage();
+    render();
+    renderPinjam();
+  }
+
+  renderPinjam();
 </script>
 
 </body>
