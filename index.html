@@ -1,394 +1,220 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Sistem Pendataan Kostum</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sistem Pendataan Kostum</title>
 
-<style>
-/* ===== GLOBAL ===== */
-*{margin:0;padding:0;box-sizing:border-box;}
-body{font-family:'Inter',sans-serif;background:#f8f9fa;color:#2c3e50;line-height:1.6;}
-.hidden{display:none!important;}
-.text-center{text-align:center;}
-/* ===== LOGIN ===== */
-.login-card{background:white;padding:40px 30px;border-radius:12px;box-shadow:0 8px 30px rgba(0,0,0,0.1);width:100%;max-width:400px;text-align:center;margin:100px auto;}
-.login-card h2{margin-bottom:25px;}
-.login-card input{width:100%;padding:12px 16px;margin-bottom:20px;border:1px solid #e0e0e0;border-radius:8px;font-size:0.95em;}
-.btn-login{width:100%;background:#64b5f6;color:white;padding:12px;border:none;border-radius:8px;cursor:pointer;transition:0.3s;}
-.btn-login:hover{background:#42a5f5;}
-.error-msg{color:red;font-size:0.9em;margin-bottom:10px;}
-/* ===== TOPBAR ===== */
-.topbar{background:#fff;box-shadow:0 2px 8px rgba(0,0,0,0.05);padding:0 30px;position:fixed;top:0;left:0;right:0;height:70px;display:flex;align-items:center;justify-content:space-between;z-index:1000;}
-.logo{font-size:1.5em;font-weight:700;color:#64b5f6;display:flex;align-items:center;gap:10px;}
-.nav-links{display:flex;gap:5px;list-style:none;}
-.nav-link{padding:10px 20px;color:#7f8c8d;text-decoration:none;border-radius:8px;transition:all 0.3s;font-weight:500;cursor:pointer;}
-.nav-link:hover,.nav-link.active{background:#e3f2fd;color:#64b5f6;}
-.menu-toggle{display:none;background:none;border:none;font-size:1.8em;color:#64b5f6;cursor:pointer;}
-/* ===== CONTAINER ===== */
-.container{max-width:1400px;margin:90px auto 30px;padding:0 30px;}
-.page-header{margin-bottom:35px;}
-.page-title{font-size:2.2em;margin-bottom:8px;font-weight:600;}
-.page-subtitle{color:#95a5a6;font-size:1.05em;}
-/* ===== STATS ===== */
-.stats-container{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:25px;margin-bottom:40px;}
-.stat-card{background:white;padding:30px;border-radius:12px;box-shadow:0 1px 3px rgba(0,0,0,0.05);border:1px solid #ecf0f1;}
-.stat-card:hover{transform:translateY(-4px);box-shadow:0 4px 12px rgba(0,0,0,0.08);}
-.stat-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:15px;}
-.stat-icon{width:50px;height:50px;background:#e3f2fd;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1.6em;}
-.stat-number{font-size:2.5em;font-weight:700;color:#64b5f6;margin-bottom:5px;}
-.stat-label{color:#7f8c8d;font-size:1em;}
-/* ===== TABLE ===== */
-.table-container{overflow-x:auto;}
-table{width:100%;border-collapse:separate;border-spacing:0;}
-thead{background:#fafafa;}
-th{padding:18px 20px;text-align:left;font-weight:600;color:#2c3e50;border-bottom:2px solid #ecf0f1;white-space:nowrap;}
-td{padding:18px 20px;border-bottom:1px solid #ecf0f1;color:#5a6c7d;}
-tbody tr{transition:all 0.2s ease;}
-tbody tr:hover{background:#f8f9fa;}
-.costume-image{width:55px;height:55px;border-radius:8px;background:#e3f2fd;display:flex;align-items:center;justify-content:center;font-size:1.8em;}
-.action-buttons{display:flex;gap:8px;}
-.badge{padding:6px 14px;border-radius:20px;font-size:0.85em;font-weight:600;display:inline-block;}
-.badge-available{background:#c8e6c9;color:#2e7d32;}
-.badge-low{background:#fff9c4;color:#f57f17;}
-.badge-unavailable{background:#ffcdd2;color:#c62828;}
-/* ===== BUTTONS ===== */
-.btn{padding:12px 28px;border:none;border-radius:8px;font-size:0.95em;cursor:pointer;display:inline-flex;align-items:center;gap:8px;font-weight:500;text-decoration:none;}
-.btn-primary{background:#64b5f6;color:white;}
-.btn-primary:hover{background:#42a5f5;}
-.btn-success{background:#66bb6a;color:white;}
-.btn-success:hover{background:#4caf50;}
-.btn-danger{background:#ef5350;color:white;}
-.btn-danger:hover{background:#e53935;}
-.btn-sm{padding:8px 18px;font-size:0.85em;}
-/* ===== FORM/MODAL ===== */
-.modal{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.4);z-index:2000;justify-content:center;align-items:center;animation:fadeIn 0.2s ease;}
-.modal.active{display:flex;}
-@keyframes fadeIn{from{opacity:0;}to{opacity:1;}}
-.modal-dialog{background:white;border-radius:12px;width:90%;max-width:550px;max-height:90vh;overflow-y:auto;animation:slideUp 0.3s ease;box-shadow:0 10px 40px rgba(0,0,0,0.15);}
-@keyframes slideUp{from{opacity:0;transform:translateY(30px);}to{opacity:1;transform:translateY(0);}}
-.modal-header{padding:25px 30px;border-bottom:1px solid #ecf0f1;display:flex;justify-content:space-between;align-items:center;}
-.modal-title{font-size:1.4em;color:#2c3e50;font-weight:600;}
-.modal-close{background:none;border:none;font-size:1.8em;color:#95a5a6;cursor:pointer;padding:0;width:30px;height:30px;display:flex;align-items:center;justify-content:center;border-radius:6px;transition:all 0.2s ease;}
-.modal-close:hover{background:#f5f5f5;color:#2c3e50;}
-.modal-body{padding:30px;}
-.form-group{margin-bottom:22px;}
-.form-label{display:block;margin-bottom:8px;color:#2c3e50;font-weight:500;font-size:0.95em;}
-.form-control{width:100%;padding:12px 16px;border:1px solid #e0e0e0;border-radius:8px;font-size:0.95em;font-family:inherit;transition:all 0.3s ease;}
-.form-control:focus{outline:none;border-color:#64b5f6;box-shadow:0 0 0 3px rgba(100,181,246,0.1);}
-.form-actions{display:flex;gap:12px;margin-top:30px;}
-</style>
+  <style>
+    body { margin:0; font-family: Arial, sans-serif; background:#f4f7fb; }
+
+    #loginPage { display:flex; height:100vh; align-items:center; justify-content:center; }
+
+    .login-box { background:white; padding:40px; border-radius:12px; box-shadow:0 4px 20px rgba(0,0,0,.1); width:300px; text-align:center; }
+    .login-box h2 { margin-bottom:20px; color:#64b5f6; }
+    .login-box input { width:100%; padding:10px; margin-bottom:10px; border:1px solid #ddd; border-radius:8px; }
+    .login-box button { width:100%; padding:10px; background:#64b5f6; color:white; border:none; border-radius:8px; cursor:pointer; }
+    .error { color:red; font-size:12px; margin-bottom:10px; }
+
+    #mainApp { display:none; padding:20px; }
+
+    .topbar { background:white; padding:15px 20px; border-radius:10px; display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; }
+
+    .btn-logout { background:#ef5350; color:white; border:none; padding:8px 14px; border-radius:8px; cursor:pointer; }
+
+    table { width:100%; border-collapse:collapse; background:white; border-radius:10px; overflow:hidden; }
+    th,td { padding:12px; border-bottom:1px solid #eee; text-align:left; }
+    th { background:#e3f2fd; }
+
+    .btn { padding:6px 10px; border:none; border-radius:6px; cursor:pointer; margin-right:5px; }
+    .edit{background:#64b5f6;color:white;} .delete{background:#ef5350;color:white;} .add{background:#66bb6a;color:white;margin-bottom:10px;}
+
+    .form-box{ background:white; padding:15px; border-radius:10px; margin-bottom:15px; display:none; }
+    .form-box input{ padding:8px; margin:5px; }
+  </style>
 </head>
 <body>
 
-<!-- LOGIN PAGE -->
-<div id="loginPage">
-    <div class="login-card">
-        <h2>Login Sistem Kostum</h2>
-        <div class="error-msg" id="errorMsg"></div>
-        <input type="email" id="email" placeholder="Email" required>
-        <input type="password" id="password" placeholder="Password" required>
-        <button class="btn-login" onclick="login()">Login</button>
+  <div id="loginPage">
+    <form class="login-box" onsubmit="login(event)">
+      <h2>Login Admin 👗</h2>
+      <input id="loginUser" type="text" placeholder="Username" required />
+      <input id="loginPass" type="password" placeholder="Password" required />
+      <div id="loginError" class="error"></div>
+      <button type="submit">Login</button>
+    </form>
+  </div>
+
+  <div id="mainApp">
+    <div class="topbar">
+      <h2>Dashboard Kostum</h2>
+      <button class="btn-logout" onclick="logout()">Logout</button>
     </div>
-</div>
 
-<!-- MAIN CONTAINER -->
-<div id="mainContainer" class="hidden">
-    <header class="topbar">
-        <div class="logo">👗 Sistem Kostum</div>
-    </header>
+    <button class="btn add" onclick="showForm()">+ Tambah Kostum</button>
 
-    <div class="container">
-        <!-- Dashboard -->
-        <div id="dashboard">
-            <div class="page-header">
-                <h1 class="page-title">Dashboard</h1>
-                <p class="page-subtitle">Ringkasan data kostum</p>
-            </div>
-            <div class="stats-container">
-                <div class="stat-card">
-                    <div class="stat-header">
-                        <div>
-                            <div class="stat-number" id="totalKostum">0</div>
-                            <div class="stat-label">Total Kostum</div>
-                        </div>
-                        <div class="stat-icon">📦</div>
-                    </div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-header">
-                        <div>
-                            <div class="stat-number" id="kostuumTersedia">0</div>
-                            <div class="stat-label">Tersedia</div>
-                        </div>
-                        <div class="stat-icon">✅</div>
-                    </div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-header">
-                        <div>
-                            <div class="stat-number" id="kostumDipinjam">0</div>
-                            <div class="stat-label">Dipinjam</div>
-                        </div>
-                        <div class="stat-icon">📤</div>
-                    </div>
-                </div>
-            </div>
-            <div class="content-card">
-                <h3 style="margin-bottom:25px;">Kostum Terbaru</h3>
-                <div class="table-container">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Gambar</th>
-                                <th>Nama Kostum</th>
-                                <th>Kode</th>
-                                <th>Ukuran</th>
-                                <th>Tersedia</th>
-                                <th>Status</th>
-                            </tr>
-                        </thead>
-                        <tbody id="dashboardTable"></tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
+    <form class="form-box" id="formBox" onsubmit="saveKostum(event)">
+      <input id="nama" placeholder="Nama kostum" required />
+      <!-- KODE OTOMATIS -->
+      <input id="kode" placeholder="Kode otomatis" readonly />
+      <!-- UKURAN TIDAK WAJIB -->
+      <input id="ukuran" placeholder="Ukuran" />
+      <input id="jumlah" type="number" placeholder="Jumlah" />
+      <button type="submit" class="btn add">Simpan</button>
+    </form>
 
-        <!-- Data Kostum -->
-        <div id="dataKostum" class="hidden">
-            <div class="page-header">
-                <h1 class="page-title">Data Kostum</h1>
-                <p class="page-subtitle">Kelola semua data kostum</p>
-            </div>
-            <div class="actions-bar">
-                <input type="text" id="searchInput" placeholder="Cari nama atau kode kostum..." onkeyup="searchKostum()">
-                <select id="filterUkuran" onchange="searchKostum()">
-                    <option value="">Semua Ukuran</option>
-                    <option value="S">S</option>
-                    <option value="M">M</option>
-                    <option value="L">L</option>
-                    <option value="XL">XL</option>
-                    <option value="XXL">XXL</option>
-                </select>
-                <button class="btn btn-primary" onclick="openAddModal()">➕ Tambah Kostum</button>
-            </div>
-            <div class="content-card">
-                <div class="table-container">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Gambar</th>
-                                <th>Nama Kostum</th>
-                                <th>Kode</th>
-                                <th>Ukuran</th>
-                                <th>Tersedia</th>
-                                <th>Aksi</th>
-                            </tr>
-                        </thead>
-                        <tbody id="kostumTable"></tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
+    <table>
+      <thead>
+        <tr>
+          <th>Nama</th>
+          <th>Kode</th>
+          <th>Ukuran</th>
+          <th>Jumlah</th>
+          <th>Aksi</th>
+        </tr>
+      </thead>
+      <tbody id="tableBody"></tbody>
+    </table>
+  </div>
 
-<!-- MODAL FORM -->
-<div class="modal" id="formModal">
-    <div class="modal-dialog">
-        <div class="modal-header">
-            <h3 class="modal-title">Tambah Kostum</h3>
-            <button class="modal-close" onclick="closeModal()">×</button>
-        </div>
-        <div class="modal-body">
-            <form id="kostumForm" onsubmit="saveKostum(event)">
-                <input type="hidden" id="editId">
-                <div class="form-group">
-                    <label class="form-label">Nama Kostum *</label>
-                    <input type="text" class="form-control" id="namaKostum" placeholder="Contoh: Baju Adat Jawa" required>
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Kode Kostum *</label>
-                    <input type="text" class="form-control" id="kodeKostum" placeholder="Contoh: KST-001" required>
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Ukuran *</label>
-                    <select class="form-control" id="ukuranKostum" required>
-                        <option value="">Pilih Ukuran</option>
-                        <option value="S">S</option>
-                        <option value="M">M</option>
-                        <option value="L">L</option>
-                        <option value="XL">XL</option>
-                        <option value="XXL">XXL</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Jumlah Tersedia *</label>
-                    <input type="number" class="form-control" id="jumlahKostum" placeholder="Contoh: 10" min="0" required>
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Icon/Emoji Kostum</label>
-                    <input type="text" class="form-control" id="gambarKostum" placeholder="Contoh: 👗">
-                </div>
-                <div class="form-actions">
-                    <button type="submit" class="btn btn-success" style="flex:1;">Simpan</button>
-                    <button type="button" class="btn btn-danger" onclick="closeModal()">Batal</button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
+  <script>
+  const USERNAME="admin";
+  const PASSWORD="123456";
 
-<!-- Firebase SDK -->
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+  const loginPage=document.getElementById("loginPage");
+  const mainApp=document.getElementById("mainApp");
+  const loginUser=document.getElementById("loginUser");
+  const loginPass=document.getElementById("loginPass");
+  const loginError=document.getElementById("loginError");
+  const formBox=document.getElementById("formBox");
+  const nama=document.getElementById("nama");
+  const kode=document.getElementById("kode");
+  const ukuran=document.getElementById("ukuran");
+  const jumlah=document.getElementById("jumlah");
+  const tableBody=document.getElementById("tableBody");
 
-<script>
-// ===== FIREBASE CONFIG =====
-const firebaseConfig = {
-  apiKey: "YOUR_API_KEY",
-  authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
-  projectId: "YOUR_PROJECT_ID",
-  storageBucket: "YOUR_PROJECT_ID.appspot.com",
-  messagingSenderId: "YOUR_SENDER_ID",
-  appId: "YOUR_APP_ID"
-};
-firebase.initializeApp(firebaseConfig);
-const auth = firebase.auth();
-const db = firebase.firestore();
+  let kostum=JSON.parse(localStorage.getItem("dataKostum"))||[];
+  let editIndex=-1;
 
-// ===== AUTH =====
-const loginPage = document.getElementById('loginPage');
-const mainContainer = document.getElementById('mainContainer');
-const errorMsg = document.getElementById('errorMsg');
-
-function login(){
-  const email = document.getElementById('email').value;
-  const password = document.getElementById('password').value;
-  auth.signInWithEmailAndPassword(email,password)
-  .then(()=> showMain())
-  .catch(e=> errorMsg.textContent = e.message);
-}
-
-function showMain(){
-  loginPage.classList.add('hidden');
-  mainContainer.classList.remove('hidden');
-  loadKostum();
-}
-
-// ===== AUTH STATE =====
-auth.onAuthStateChanged(user=>{
-  if(user) showMain();
-  else loginPage.classList.remove('hidden');
-});
-
-// ===== MODAL =====
-const formModal = document.getElementById('formModal');
-function openAddModal(){
-  document.getElementById('kostumForm').reset();
-  document.getElementById('editId').value='';
-  formModal.classList.add('active');
-}
-function closeModal(){ formModal.classList.remove('active'); }
-
-// ===== FIRESTORE CRUD =====
-async function saveKostum(e){
-  e.preventDefault();
-  const id = document.getElementById('editId').value;
-  const data = {
-    nama: document.getElementById('namaKostum').value,
-    kode: document.getElementById('kodeKostum').value,
-    ukuran: document.getElementById('ukuranKostum').value,
-    jumlah: parseInt(document.getElementById('jumlahKostum').value),
-    gambar: document.getElementById('gambarKostum').value || '👗'
-  };
-  if(id){
-    await db.collection('kostum').doc(id).set(data);
-  } else {
-    await db.collection('kostum').add(data);
+  function simpanKeStorage(){
+    localStorage.setItem("dataKostum",JSON.stringify(kostum));
   }
-  closeModal();
-  loadKostum();
-}
 
-async function loadKostum(){
-  const snapshot = await db.collection('kostum').get();
-  const kostumTable = document.getElementById('kostumTable');
-  const dashboardTable = document.getElementById('dashboardTable');
-  const kostumData = [];
-  snapshot.forEach(doc=>kostumData.push({id:doc.id,...doc.data()}));
-
-  // Dashboard stats
-  const total = kostumData.reduce((sum,i)=>sum+i.jumlah,0);
-  const tersedia = kostumData.filter(i=>i.jumlah>0).reduce((sum,i)=>sum+i.jumlah,0);
-  const dipinjam = Math.floor(total*0.2);
-  document.getElementById('totalKostum').textContent=total;
-  document.getElementById('kostuumTersedia').textContent=tersedia;
-  document.getElementById('kostumDipinjam').textContent=dipinjam;
-
-  // Dashboard recent
-  const recent = kostumData.slice(0,5);
-  dashboardTable.innerHTML = recent.map(i=>`
-    <tr>
-      <td><div class="costume-image">${i.gambar}</div></td>
-      <td>${i.nama}</td>
-      <td>${i.kode}</td>
-      <td>${i.ukuran}</td>
-      <td><strong>${i.jumlah}</strong></td>
-      <td><span class="badge ${i.jumlah===0?'badge-unavailable':i.jumlah<=3?'badge-low':'badge-available'}">${i.jumlah===0?'Habis':i.jumlah<=3?'Stok Rendah':'Tersedia'}</span></td>
-    </tr>
-  `).join('');
-
-  // Kostum table
-  kostumTable.innerHTML = kostumData.map(i=>`
-    <tr>
-      <td><div class="costume-image">${i.gambar}</div></td>
-      <td>${i.nama}</td>
-      <td>${i.kode}</td>
-      <td>${i.ukuran}</td>
-      <td><strong>${i.jumlah}</strong></td>
-      <td>
-        <div class="action-buttons">
-          <button class="btn btn-sm btn-primary" onclick='editKostum(${JSON.stringify(i)})'>✏️ Edit</button>
-          <button class="btn btn-sm btn-danger" onclick='deleteKostum("${i.id}")'>🗑️ Hapus</button>
-        </div>
-      </td>
-    </tr>
-  `).join('');
-}
-
-// Edit
-function editKostum(data){
-  document.getElementById('editId').value = data.id;
-  document.getElementById('namaKostum').value = data.nama;
-  document.getElementById('kodeKostum').value = data.kode;
-  document.getElementById('ukuranKostum').value = data.ukuran;
-  document.getElementById('jumlahKostum').value = data.jumlah;
-  document.getElementById('gambarKostum').value = data.gambar;
-  formModal.classList.add('active');
-}
-
-// Delete
-async function deleteKostum(id){
-  if(confirm('Yakin ingin menghapus kostum ini?')){
-    await db.collection('kostum').doc(id).delete();
-    loadKostum();
+  function generateKode(){
+    const nomor=kostum.length+1;
+    return "KST"+String(nomor).padStart(3,"0");
   }
-}
 
-// Search/filter
-function searchKostum(){
-  const filter = document.getElementById('filterUkuran').value;
-  const search = document.getElementById('searchInput').value.toLowerCase();
-  const rows = document.querySelectorAll('#kostumTable tr');
-  rows.forEach(r=>{
-    const nama = r.cells[1].textContent.toLowerCase();
-    const kode = r.cells[2].textContent.toLowerCase();
-    const ukuran = r.cells[3].textContent;
-    r.style.display = (nama.includes(search)||kode.includes(search)) && (!filter||ukuran===filter)?'':'none';
+  function login(e){
+    e.preventDefault();
+    if(loginUser.value===USERNAME && loginPass.value===PASSWORD){
+      localStorage.setItem("login","yes");
+      loginPage.style.display="none";
+      mainApp.style.display="block";
+      render();
+    }else{
+      loginError.innerText="Username atau password salah";
+    }
+  }
+
+  function logout(){
+    localStorage.removeItem("login");
+    location.reload();
+  }
+
+  window.addEventListener("DOMContentLoaded",()=>{
+    if(localStorage.getItem("login")==="yes"){
+      loginPage.style.display="none";
+      mainApp.style.display="block";
+    }
+    render();
   });
-}
+
+  function showForm(){
+    formBox.style.display="block";
+    editIndex=-1;
+    formBox.reset();
+    kode.value=generateKode();
+  }
+
+  function saveKostum(e){
+    e.preventDefault();
+
+    const data={
+      nama:nama.value.trim(),
+      kode:kode.value.trim(),
+      ukuran:ukuran.value.trim()||"-",
+      jumlah:jumlah.value.trim()||"0"
+    };
+
+    if(!data.nama){ alert("Nama wajib diisi"); return; }
+
+    if(editIndex===-1) kostum.push(data);
+    else kostum[editIndex]=data;
+
+    simpanKeStorage();
+    formBox.style.display="none";
+    render();
+  }
+
+  function render(){
+    tableBody.innerHTML="";
+
+    if(kostum.length===0){
+      tableBody.innerHTML='<tr><td colspan="5" style="text-align:center">Belum ada data kostum</td></tr>';
+      return;
+    }
+
+    kostum.forEach((k,i)=>{
+      const row=document.createElement("tr");
+
+      row.innerHTML=`
+        <td>${k.nama}</td>
+        <td>${k.kode}</td>
+        <td>${k.ukuran}</td>
+        <td>${k.jumlah}</td>
+        <td>
+          <button type="button" class="btn edit" data-i="${i}">Edit</button>
+          <button type="button" class="btn delete" data-i="${i}">Hapus</button>
+        </td>`;
+
+      tableBody.appendChild(row);
+    });
+  }
+
+  // EVENT LISTENER GLOBAL UNTUK TOMBOL EDIT & HAPUS
+  tableBody.addEventListener("click",(e)=>{
+    const index=e.target.getAttribute("data-i");
+    if(index===null) return;
+
+    if(e.target.classList.contains("edit")){
+      editKostum(Number(index));
+    }
+
+    if(e.target.classList.contains("delete")){
+      hapusKostum(Number(index));
+    }
+  });
+
+  function editKostum(i){
+    const k=kostum[i];
+    nama.value=k.nama;
+    kode.value=k.kode;
+    ukuran.value=k.ukuran==="-"?"":k.ukuran;
+    jumlah.value=k.jumlah;
+    formBox.style.display="block";
+    editIndex=i;
+  }
+
+  function hapusKostum(i){
+    const yakin=confirm("Hapus kostum ini?");
+    if(!yakin) return;
+
+    kostum.splice(i,1);
+    simpanKeStorage();
+    render();
+  }
 </script>
+
 </body>
 </html>
