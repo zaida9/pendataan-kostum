@@ -3,178 +3,205 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Dashboard Kostum</title>
+  <title>Aplikasi Pendataan Kostum Sekolah</title>
 
-  <!-- Chart.js -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-  <!-- Firebase -->
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #f4f6f9;
-      margin: 0;
-      padding: 20px;
-    }
+    body{font-family:Arial;background:#eef2f7;margin:0}
 
-    h1 {
-      text-align: center;
-    }
+    #loginPage{display:flex;height:100vh;align-items:center;justify-content:center}
+    .login-box{background:white;padding:40px;border-radius:16px;box-shadow:0 10px 25px rgba(0,0,0,.1);width:300px;text-align:center}
+    .login-box input{width:100%;padding:10px;margin:8px 0}
 
-    .container {
-      max-width: 1000px;
-      margin: auto;
-    }
+    #app{display:none;padding:20px;max-width:1100px;margin:auto}
 
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      background: white;
-      margin-top: 20px;
-    }
+    h1{margin-top:0}
 
-    th, td {
-      padding: 10px;
-      border: 1px solid #ddd;
-      text-align: center;
-    }
+    .card{background:white;border-radius:12px;padding:20px;margin-top:20px;box-shadow:0 4px 12px rgba(0,0,0,.08)}
 
-    th {
-      background: #007bff;
-      color: white;
-    }
+    table{width:100%;border-collapse:collapse;margin-top:10px}
+    th,td{padding:10px;border:1px solid #ddd;text-align:center}
+    th{background:#1976d2;color:white}
 
-    button {
-      padding: 8px 12px;
-      border: none;
-      background: #007bff;
-      color: white;
-      cursor: pointer;
-      border-radius: 6px;
-    }
+    button{padding:8px 12px;border:none;background:#1976d2;color:white;border-radius:6px;cursor:pointer}
+    .danger{background:#d32f2f}
+    .success{background:#2e7d32}
 
-    .chart-box {
-      background: white;
-      margin-top: 20px;
-      padding: 20px;
-      border-radius: 12px;
-    }
+    input,select{padding:8px;margin:4px}
   </style>
 </head>
 <body>
-  <div class="container">
-    <h1>Dashboard Kostum</h1>
 
-    <button onclick="tambahContoh()">Tambah Data Contoh</button>
+<!-- LOGIN -->
+<div id="loginPage">
+  <form class="login-box" onsubmit="login(event)">
+    <h3>Login Admin</h3>
+    <input id="user" placeholder="Username" required>
+    <input id="pass" type="password" placeholder="Password" required>
+    <p id="err" style="color:red"></p>
+    <button>Login</button>
+  </form>
+</div>
+
+<!-- APP -->
+<div id="app">
+  <h1>📚 Aplikasi Kostum Sekolah</h1>
+
+  <button onclick="showForm()">+ Tambah Kostum</button>
+  <button onclick="logout()" class="danger">Logout</button>
+
+  <!-- FORM TAMBAH -->
+  <div id="formBox" class="card" style="display:none">
+    <input id="nama" placeholder="Nama kostum">
+    <input id="jenis" placeholder="Jenis">
+    <input id="stok" type="number" placeholder="Stok">
+    <button onclick="tambah()">Simpan</button>
+  </div>
+
+  <!-- TABEL KOSTUM -->
+  <div class="card">
+    <h3>Data Kostum</h3>
+    <table>
+      <thead>
+        <tr><th>Nama</th><th>Jenis</th><th>Stok</th><th>Aksi</th></tr>
+      </thead>
+      <tbody id="tabel"></tbody>
+    </table>
+  </div>
+
+  <!-- PEMINJAMAN -->
+  <div class="card">
+    <h3>Peminjaman Kostum</h3>
+
+    <input id="peminjam" placeholder="Nama peminjam">
+    <select id="kostumSelect"></select>
+    <button onclick="pinjam()" class="success">Pinjam</button>
 
     <table>
       <thead>
-        <tr>
-          <th>Nama Kostum</th>
-          <th>Jenis</th>
-          <th>Stok</th>
-        </tr>
+        <tr><th>Peminjam</th><th>Kostum</th><th>Status</th><th>Aksi</th></tr>
       </thead>
-      <tbody id="tabelKostum"></tbody>
+      <tbody id="tabelPinjam"></tbody>
     </table>
-
-    <div class="chart-box">
-      <canvas id="chartJenis"></canvas>
-    </div>
   </div>
 
-  <script>
-    // ================= FIREBASE CONFIG =================
-    const firebaseConfig = {
-      apiKey: "AIzaSyAZUybNqjxxb-KXMZ4ICL03GcO-StBzU-Y",
-      authDomain: "pendataan-kostum.firebaseapp.com",
-      projectId: "pendataan-kostum",
-      storageBucket: "pendataan-kostum.firebasestorage.app",
-      messagingSenderId: "226459234974",
-      appId: "1:226459234974:web:2b0512247ff01c738a418f",
-      measurementId: "G-4QQT28BDV0"
-    };
+  <!-- DASHBOARD -->
+  <div class="card">
+    <h3>Dashboard Stok</h3>
+    <canvas id="chart"></canvas>
+  </div>
 
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.firestore();
+  <!-- PDF -->
+  <div class="card">
+    <button onclick="cetakPDF()">📄 Cetak Laporan PDF</button>
+  </div>
+</div>
 
-    // ================= DATA LOCAL (TETAP ADA) =================
-    let kostum = JSON.parse(localStorage.getItem("kostum")) || [];
+<script>
+// LOGIN HTML
+const USERNAME="admin";
+const PASSWORD="123456";
 
-    const tabel = document.getElementById("tabelKostum");
-    let chart;
+function login(e){
+  e.preventDefault();
+  if(user.value===USERNAME && pass.value===PASSWORD){
+    localStorage.setItem("login","yes");
+    loginPage.style.display="none";
+    app.style.display="block";
+  } else err.innerText="Login salah";
+}
 
-    function render() {
-      tabel.innerHTML = "";
+function logout(){localStorage.removeItem("login");location.reload();}
+if(localStorage.getItem("login")==="yes"){loginPage.style.display="none";app.style.display="block";}
 
-      kostum.forEach((k) => {
-        tabel.innerHTML += `
-          <tr>
-            <td>${k.nama}</td>
-            <td>${k.jenis}</td>
-            <td>${k.stok}</td>
-          </tr>
-        `;
-      });
+// FIREBASE
+const firebaseConfig={apiKey:"AIzaSyAZUybNqjxxb-KXMZ4ICL03GcO-StBzU-Y",authDomain:"pendataan-kostum.firebaseapp.com",projectId:"pendataan-kostum",storageBucket:"pendataan-kostum.firebasestorage.app",messagingSenderId:"226459234974",appId:"1:226459234974:web:2b0512247ff01c738a418f"};
+firebase.initializeApp(firebaseConfig);
+const db=firebase.firestore();
 
-      localStorage.setItem("kostum", JSON.stringify(kostum));
+let kostum=[];
+let pinjam=[];
+let chart;
 
-      renderChart();
-    }
+function render(){
+  tabel.innerHTML="";
+  kostumSelect.innerHTML="";
 
-    function renderChart() {
-      const jenisMap = {};
+  kostum.forEach(k=>{
+    tabel.innerHTML+=`<tr><td>${k.nama}</td><td>${k.jenis}</td><td>${k.stok}</td><td>
+      <button onclick="hapus('${k.id}')" class="danger">Hapus</button></td></tr>`;
 
-      kostum.forEach((k) => {
-        jenisMap[k.jenis] = (jenisMap[k.jenis] || 0) + k.stok;
-      });
+    kostumSelect.innerHTML+=`<option value="${k.id}">${k.nama}</option>`;
+  });
 
-      const labels = Object.keys(jenisMap);
-      const data = Object.values(jenisMap);
+  renderChart();
+}
 
-      if (chart) chart.destroy();
+function renderPinjam(){
+  tabelPinjam.innerHTML="";
 
-      chart = new Chart(document.getElementById("chartJenis"), {
-        type: "bar",
-        data: {
-          labels,
-          datasets: [{ label: "Stok per Jenis", data }],
-        },
-      });
-    }
+  pinjam.forEach(p=>{
+    tabelPinjam.innerHTML+=`<tr>
+      <td>${p.nama}</td>
+      <td>${p.kostum}</td>
+      <td>${p.kembali?"Kembali":"Dipinjam"}</td>
+      <td>${!p.kembali?`<button onclick="kembalikan('${p.id}')">Kembalikan</button>`:"-"}</td>
+    </tr>`;
+  });
+}
 
-    // ================= TAMBAH DATA =================
-    function tambahContoh() {
-      const dataBaru = {
-        nama: "Kostum Baru " + Math.floor(Math.random() * 100),
-        jenis: ["Adat", "Profesi", "Hewan"][Math.floor(Math.random() * 3)],
-        stok: Math.floor(Math.random() * 10) + 1,
-      };
+function renderChart(){
+  const map={};
+  kostum.forEach(k=>map[k.jenis]=(map[k.jenis]||0)+Number(k.stok));
+  if(chart) chart.destroy();
+  chart=new Chart(chart,{type:"bar",data:{labels:Object.keys(map),datasets:[{label:"Stok",data:Object.values(map)}]}});
+}
 
-      // simpan lokal
-      kostum.push(dataBaru);
-      render();
+function showForm(){formBox.style.display=formBox.style.display==="none"?"block":"none";}
 
-      // simpan ke firebase
-      db.collection("kostum").add(dataBaru);
-    }
+async function tambah(){
+  await db.collection("kostum").add({nama:nama.value,jenis:jenis.value,stok:Number(stok.value)});
+}
 
-    // ================= REALTIME FIREBASE =================
-    db.collection("kostum").onSnapshot((snapshot) => {
-      kostum = [];
+async function hapus(id){await db.collection("kostum").doc(id).delete();}
 
-      snapshot.forEach((doc) => {
-        kostum.push(doc.data());
-      });
+async function pinjam(){
+  const id=kostumSelect.value;
+  const k=kostum.find(x=>x.id===id);
+  if(!k || k.stok<=0) return alert("Stok habis");
 
-      render();
-    });
+  await db.collection("kostum").doc(id).update({stok:k.stok-1});
+  await db.collection("pinjam").add({nama:peminjam.value,kostum:k.nama,kembali:false});
+}
 
-    // ================= INIT =================
-    render();
-  </script>
+async function kembalikan(id){
+  const p=pinjam.find(x=>x.id===id);
+  const k=kostum.find(x=>x.nama===p.kostum);
+
+  await db.collection("kostum").doc(k.id).update({stok:k.stok+1});
+  await db.collection("pinjam").doc(id).update({kembali:true});
+}
+
+function cetakPDF(){
+  const win=window.open();
+  let html="<h2>Laporan Peminjaman Kostum</h2><table border='1' cellpadding='8'><tr><th>Nama</th><th>Kostum</th><th>Status</th></tr>";
+
+  pinjam.forEach(p=>{
+    html+=`<tr><td>${p.nama}</td><td>${p.kostum}</td><td>${p.kembali?"Kembali":"Dipinjam"}</td></tr>`;
+  });
+
+  html+="</table>";
+  win.document.write(html);
+  win.print();
+}
+
+// REALTIME
+db.collection("kostum").onSnapshot(s=>{kostum=[];s.forEach(d=>kostum.push({id:d.id,...d.data()}));render();});
+
+db.collection("pinjam").onSnapshot(s=>{pinjam=[];s.forEach(d=>pinjam.push({id:d.id,...d.data()}));renderPinjam();});
+</script>
 </body>
 </html>
