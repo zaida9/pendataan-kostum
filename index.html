@@ -139,8 +139,16 @@
   }
 
   function generateKode(){
-    const nomor=kostum.length+1;
-    return "KST"+String(nomor).padStart(3,"0");
+    // cari nomor terbesar yang pernah ada supaya tidak mengulang kode setelah dihapus
+    if(kostum.length===0) return "KST001";
+
+    let max = 0;
+    kostum.forEach(k=>{
+      const num = parseInt(k.kode.replace("KST", "")) || 0;
+      if(num > max) max = num;
+    });
+
+    return "KST" + String(max + 1).padStart(3, "0");
   }
 
   function login(e){
