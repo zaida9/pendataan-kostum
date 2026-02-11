@@ -7,9 +7,7 @@
 
   <style>
     body { margin:0; font-family: 'Poppins', Arial, sans-serif; background: linear-gradient(135deg,#e3f2fd,#fce4ec); }
-
     #loginPage { display:flex; height:100vh; align-items:center; justify-content:center; }
-
     .login-box { background:white; padding:40px; border-radius:18px; box-shadow:0 10px 30px rgba(0,0,0,.12); width:320px; text-align:center; }
     .login-box h2 { margin-bottom:20px; color:#42a5f5; }
     .login-box input { width:100%; padding:12px; margin-bottom:12px; border:1px solid #e0e0e0; border-radius:10px; transition:.2s; }
@@ -19,12 +17,9 @@
     .error { color:#ef5350; font-size:12px; margin-bottom:10px; }
 
     #mainApp { display:none; padding:25px; }
-
     .topbar { background:white; padding:18px 22px; border-radius:16px; display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; box-shadow:0 6px 18px rgba(0,0,0,.08); }
-
     .btn-logout { background:#ef5350; color:white; border:none; padding:10px 16px; border-radius:10px; cursor:pointer; font-weight:600; }
     .btn-logout:hover { opacity:.9; }
-
     table { width:100%; border-collapse:collapse; background:white; border-radius:16px; overflow:hidden; box-shadow:0 6px 18px rgba(0,0,0,.08); }
     th,td { padding:14px; border-bottom:1px solid #f1f1f1; text-align:left; }
     th { background:#e3f2fd; color:#1565c0; font-weight:600; }
@@ -35,281 +30,264 @@
     .delete{background:#ef5350;color:white;} 
     .add{background:#66bb6a;color:white;margin-bottom:12px;}
     .btn:hover{transform:translateY(-1px);box-shadow:0 4px 10px rgba(0,0,0,.15);} 
-
     .form-box{ background:white; padding:18px; border-radius:16px; margin-bottom:15px; display:none; box-shadow:0 6px 18px rgba(0,0,0,.08); }
-    .form-box input, .form-box select{ padding:10px; margin:6px; border-radius:10px; border:1px solid #e0e0e0; }
+    .form-box input, .form-box select{ padding:10px; margin:6px; border-radius:10px; border:1px solid #e0e0e0; width:calc(100% - 24px); }
     .form-box input:focus, .form-box select:focus{ outline:none; border-color:#64b5f6; box-shadow:0 0 0 2px rgba(100,181,246,.15); }
-
-    .qr-img{ width:50px; height:50px; }
   </style>
 </head>
 <body>
 
-<div id="loginPage">
-  <form class="login-box" onsubmit="login(event)">
-    <h2>Login Admin 👗</h2>
-    <input id="loginUser" type="text" placeholder="Username" required />
-    <input id="loginPass" type="password" placeholder="Password" required />
-    <div id="loginError" class="error"></div>
-    <button type="submit">Login</button>
-  </form>
-</div>
-
-<div id="mainApp">
-  <div class="topbar">
-    <h2>Dashboard Kostum</h2>
-    <button class="btn-logout" onclick="logout()">Logout</button>
+  <div id="loginPage">
+    <form class="login-box" onsubmit="login(event)">
+      <h2>Login Admin 👗</h2>
+      <input id="loginUser" type="text" placeholder="Username" required />
+      <input id="loginPass" type="password" placeholder="Password" required />
+      <div id="loginError" class="error"></div>
+      <button type="submit">Login</button>
+    </form>
   </div>
 
-  <button class="btn add" onclick="showForm()">+ Tambah Kostum</button>
-  <button class="btn add" onclick="printAllQR()">Print Semua QR</button>
+  <div id="mainApp">
+    <div class="topbar">
+      <h2>Dashboard Kostum</h2>
+      <button class="btn-logout" onclick="logout()">Logout</button>
+    </div>
 
-  <form class="form-box" id="formBox" onsubmit="saveKostum(event)">
-    <input id="nama" placeholder="Nama kostum" required />
-    <input id="kode" placeholder="Kode otomatis" readonly />
-    <input id="ukuran" placeholder="Ukuran (opsional)" />
-    <input id="jumlah" type="number" placeholder="Jumlah" />
-    <button type="submit" class="btn add">Simpan</button>
-  </form>
+    <button class="btn add" onclick="showForm()">+ Tambah Kostum</button>
+    <button class="btn add" onclick="printAllQR()">Print Semua QR</button>
 
-  <table>
-    <thead>
-      <tr>
-        <th>QR</th>
-        <th>Nama</th>
-        <th>Kode</th>
-        <th>Ukuran</th>
-        <th>Jumlah</th>
-        <th>Aksi</th>
-      </tr>
-    </thead>
-    <tbody id="tableBody"></tbody>
-  </table>
+    <form class="form-box" id="formBox" onsubmit="saveKostum(event)">
+      <input id="nama" placeholder="Nama kostum" required />
+      <input id="kode" placeholder="Kode otomatis" readonly />
+      <input id="ukuran" placeholder="Ukuran (opsional)" />
+      <input id="jumlah" type="number" placeholder="Jumlah" />
+      <button type="submit" class="btn add">Simpan</button>
+    </form>
 
-  <h3 style="margin-top:25px">Form Peminjaman Kostum</h3>
+    <table>
+      <thead>
+        <tr>
+          <th>QR</th>
+          <th>Nama</th>
+          <th>Kode</th>
+          <th>Ukuran</th>
+          <th>Jumlah</th>
+          <th>Aksi</th>
+        </tr>
+      </thead>
+      <tbody id="tableBody"></tbody>
+    </table>
 
-  <form class="form-box" style="display:block" onsubmit="savePinjam(event)">
-    <input id="peminjam" placeholder="Nama peminjam" required />
-    <select id="kostumPinjam" required></select>
-    <input id="tanggal" type="date" required readonly />
-    <button type="submit" class="btn add">Simpan Peminjaman</button>
-  </form>
+    <h3 style="margin-top:25px">Form Peminjaman Kostum</h3>
 
-  <div style="margin:15px 0; display:flex; gap:10px; align-items:center;">
-    <select id="filterStatus" onchange="renderPinjam()" class="btn">
-      <option value="semua">Semua Peminjaman</option>
-      <option value="belum">Belum Kembali</option>
-      <option value="sudah">Sudah Kembali</option>
-    </select>
-    <button class="btn add" onclick="exportPDF()">Export PDF</button>
+    <form class="form-box" id="pinjamForm" style="display:block" onsubmit="savePinjam(event)">
+      <input id="peminjam" placeholder="Nama peminjam" required />
+      <select id="kostumPinjam" required></select>
+      <input id="tanggal" type="date" required readonly />
+      <button type="submit" class="btn add">Simpan Peminjaman</button>
+    </form>
+
+    <div style="margin:15px 0; display:flex; gap:10px; align-items:center;">
+      <select id="filterStatus" onchange="renderPinjam()" class="btn">
+        <option value="semua">Semua Peminjaman</option>
+        <option value="belum">Belum Kembali</option>
+        <option value="sudah">Sudah Kembali</option>
+      </select>
+      <button class="btn add" onclick="exportPDF()">Export PDF</button>
+    </div>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Nama Peminjam</th>
+          <th>Kode Kostum</th>
+          <th>Tanggal</th>
+          <th>Status / Aksi</th>
+        </tr>
+      </thead>
+      <tbody id="tablePinjam"></tbody>
+    </table>
   </div>
 
-  <table>
-    <thead>
-      <tr>
-        <th>Nama Peminjam</th>
-        <th>Kode Kostum</th>
-        <th>Tanggal</th>
-        <th>Status / Aksi</th>
-      </tr>
-    </thead>
-    <tbody id="tablePinjam"></tbody>
-  </table>
-</div>
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
 
-<script>
-const USERNAME="admin";
-const PASSWORD="123456";
+  <script>
+    // === Firebase config ===
+    const firebaseConfig = {
+      apiKey: "AIzaSyC54G9imUT689-jA4xrPXvFE2cVVb4bjK4",
+      authDomain: "sistemkostum.firebaseapp.com",
+      projectId: "sistemkostum",
+      storageBucket: "sistemkostum.appspot.com",
+      messagingSenderId: "338983256503",
+      appId: "1:338983256503:web:ead19763882751d763e832"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
 
-const loginPage=document.getElementById("loginPage");
-const mainApp=document.getElementById("mainApp");
-const loginUser=document.getElementById("loginUser");
-const loginPass=document.getElementById("loginPass");
-const loginError=document.getElementById("loginError");
-const formBox=document.getElementById("formBox");
-const nama=document.getElementById("nama");
-const kode=document.getElementById("kode");
-const ukuran=document.getElementById("ukuran");
-const jumlah=document.getElementById("jumlah");
-const tableBody=document.getElementById("tableBody");
+    const USERNAME="admin";
+    const PASSWORD="123456";
 
-let kostum=JSON.parse(localStorage.getItem("dataKostum"))||[];
-let editIndex=-1;
+    const loginPage=document.getElementById("loginPage");
+    const mainApp=document.getElementById("mainApp");
+    const loginUser=document.getElementById("loginUser");
+    const loginPass=document.getElementById("loginPass");
+    const loginError=document.getElementById("loginError");
+    const formBox=document.getElementById("formBox");
+    const nama=document.getElementById("nama");
+    const kode=document.getElementById("kode");
+    const ukuran=document.getElementById("ukuran");
+    const jumlah=document.getElementById("jumlah");
+    const tableBody=document.getElementById("tableBody");
+    const kostumSelect=document.getElementById("kostumPinjam");
+    const pinjamForm=document.getElementById("pinjamForm");
+    const tablePinjam=document.getElementById("tablePinjam");
+    const tanggal=document.getElementById("tanggal");
 
-function simpanKeStorage(){ localStorage.setItem("dataKostum",JSON.stringify(kostum)); }
+    let kostum=[], editIndex=-1;
+    let dataPinjam=[];
 
-function generateKode(){
-  if(kostum.length===0) return "KST001";
-  let max = 0;
-  kostum.forEach(k=>{ const num = parseInt(k.kode.replace("KST",""))||0; if(num>max) max=num; });
-  return "KST"+String(max+1).padStart(3,"0");
-}
+    // --- Helper Functions ---
+    function simpanKeStorage(){ db.ref("kostum").set(kostum); }
+    function simpanPinjam(){ db.ref("peminjaman").set(dataPinjam); }
 
-function login(e){
-  e.preventDefault();
-  if(loginUser.value===USERNAME && loginPass.value===PASSWORD){
-    localStorage.setItem("login","yes");
-    loginPage.style.display="none";
-    mainApp.style.display="block";
-    render();
-  }else{ loginError.innerText="Username atau password salah"; }
-}
+    function generateKode(){
+      if(kostum.length===0) return "KST001";
+      let max = 0;
+      kostum.forEach(k=>{
+        const num = parseInt(k.kode.replace("KST",""))||0;
+        if(num>max) max=num;
+      });
+      return "KST"+String(max+1).padStart(3,"0");
+    }
 
-function logout(){ localStorage.removeItem("login"); location.reload(); }
+    function login(e){
+      e.preventDefault();
+      if(loginUser.value===USERNAME && loginPass.value===PASSWORD){
+        localStorage.setItem("login","yes");
+        loginPage.style.display="none";
+        mainApp.style.display="block";
+        loadData();
+      } else loginError.innerText="Username atau password salah";
+    }
 
-window.addEventListener("DOMContentLoaded",()=>{
-  setTanggalHariIni();
-  if(localStorage.getItem("login")==="yes"){ loginPage.style.display="none"; mainApp.style.display="block"; }
-  render();
-  // otomatis pilih kode dari QR jika ada di URL
-  const urlParams = new URLSearchParams(window.location.search);
-  const kodeDariQR = urlParams.get("kode");
-  if(kodeDariQR) document.getElementById("kostumPinjam").value = kodeDariQR;
-});
+    function logout(){ localStorage.removeItem("login"); location.reload(); }
 
-function showForm(){ formBox.style.display="block"; editIndex=-1; formBox.reset(); kode.value=generateKode(); }
+    window.addEventListener("DOMContentLoaded",()=>{
+      setTanggalHariIni();
+      if(localStorage.getItem("login")==="yes"){ loginPage.style.display="none"; mainApp.style.display="block"; loadData(); }
+      // cek jika ada kode dari QR
+      const urlParams=new URLSearchParams(window.location.search);
+      const qrKode=urlParams.get("kode");
+      if(qrKode){
+        showFormPinjam(qrKode);
+      }
+    });
 
-function saveKostum(e){
-  e.preventDefault();
-  const data={ nama:nama.value.trim(), kode:kode.value.trim(), ukuran:ukuran.value.trim()||"-", jumlah:jumlah.value.trim()||"0" };
-  if(!data.nama){ alert("Nama wajib diisi"); return; }
-  if(editIndex===-1) kostum.push(data); else kostum[editIndex]=data;
-  simpanKeStorage();
-  formBox.style.display="none";
-  render();
-}
+    function showForm(){
+      formBox.style.display="block"; editIndex=-1; formBox.reset(); kode.value=generateKode();
+    }
 
-function render(){
-  updateDropdown();
-  tableBody.innerHTML="";
-  if(kostum.length===0){ tableBody.innerHTML='<tr><td colspan="6" style="text-align:center">Belum ada data kostum</td></tr>'; return; }
-  kostum.forEach((k,i)=>{
-    const row=document.createElement("tr");
-    row.innerHTML=`
-      <td><img src="https://api.qrserver.com/v1/create-qr-code/?size=50x50&data=${encodeURIComponent(window.location.href+'?kode='+k.kode)}" class="qr-img"/></td>
-      <td>${k.nama}</td>
-      <td>${k.kode}</td>
-      <td>${k.ukuran}</td>
-      <td>${k.jumlah}</td>
-      <td>
-        <button type="button" class="btn edit" data-i="${i}">Edit</button>
-        <button type="button" class="btn delete" data-i="${i}">Hapus</button>
-      </td>`;
-    tableBody.appendChild(row);
-  });
-}
+    function saveKostum(e){
+      e.preventDefault();
+      const data={ 
+        nama:nama.value.trim(),
+        kode:kode.value.trim(),
+        ukuran:ukuran.value.trim()||"-",
+        jumlah:jumlah.value.trim()||"0"
+      };
+      if(!data.nama) return alert("Nama wajib diisi");
+      if(editIndex===-1) kostum.push(data); else kostum[editIndex]=data;
+      simpanKeStorage(); render(); formBox.style.display="none";
+    }
 
-tableBody.addEventListener("click",(e)=>{
-  const index=e.target.getAttribute("data-i");
-  if(index===null) return;
-  if(e.target.classList.contains("edit")) editKostum(Number(index));
-  if(e.target.classList.contains("delete")) hapusKostum(Number(index));
-});
+    function render(){
+      // update dropdown
+      kostumSelect.innerHTML="";
+      if(kostum.length===0){ kostumSelect.innerHTML='<option value="">Belum ada kostum</option>'; }
+      else{
+        kostum.forEach(k=>{
+          const opt=document.createElement("option"); opt.value=k.kode; opt.textContent=`${k.nama} (${k.kode})`; kostumSelect.appendChild(opt);
+        });
+      }
+      // table kostum
+      tableBody.innerHTML="";
+      if(kostum.length===0){ tableBody.innerHTML='<tr><td colspan="6" style="text-align:center">Belum ada data kostum</td></tr>'; return; }
+      kostum.forEach((k,i)=>{
+        const row=document.createElement("tr");
+        row.innerHTML=`
+          <td><img src="https://api.qrserver.com/v1/create-qr-code/?size=50x50&data=${k.kode}"/></td>
+          <td>${k.nama}</td><td>${k.kode}</td><td>${k.ukuran}</td><td>${k.jumlah}</td>
+          <td>
+            <button class="btn edit" data-i="${i}">Edit</button>
+            <button class="btn delete" data-i="${i}">Hapus</button>
+          </td>`;
+        tableBody.appendChild(row);
+      });
+    }
 
-function editKostum(i){ const k=kostum[i]; nama.value=k.nama; kode.value=k.kode; ukuran.value=k.ukuran==="-"?"":k.ukuran; jumlah.value=k.jumlah; formBox.style.display="block"; editIndex=i; }
+    tableBody.addEventListener("click",(e)=>{
+      const index=e.target.getAttribute("data-i"); if(index===null) return;
+      if(e.target.classList.contains("edit")) editKostum(Number(index));
+      if(e.target.classList.contains("delete")) hapusKostum(Number(index));
+    });
 
-function hapusKostum(i){ if(!confirm("Hapus kostum ini?")) return; kostum.splice(i,1); simpanKeStorage(); render(); }
+    function editKostum(i){ const k=kostum[i]; nama.value=k.nama; kode.value=k.kode; ukuran.value=k.ukuran==="-"?"":k.ukuran; jumlah.value=k.jumlah; formBox.style.display="block"; editIndex=i; }
+    function hapusKostum(i){ if(!confirm("Hapus kostum ini?")) return; kostum.splice(i,1); simpanKeStorage(); render(); }
 
-const tablePinjam=document.getElementById("tablePinjam");
-let dataPinjam=JSON.parse(localStorage.getItem("dataPinjam"))||[];
+    function setTanggalHariIni(){ const today=new Date(); tanggal.value=`${today.getFullYear()}-${String(today.getMonth()+1).padStart(2,"0")}-${String(today.getDate()).padStart(2,"0")}`; }
 
-function simpanPinjam(){ localStorage.setItem("dataPinjam",JSON.stringify(dataPinjam)); }
+    function savePinjam(e){
+      e.preventDefault();
+      const kodeDipilih=kostumSelect.value;
+      if(!kodeDipilih) return alert("Pilih kostum");
+      const item={ peminjam:document.getElementById("peminjam").value.trim(), kode:kodeDipilih, tanggal:tanggal.value, kembali:false };
+      const k=kostum.find(x=>x.kode===kodeDipilih);
+      if(!k || Number(k.jumlah)<=0) return alert("Stok kostum habis!");
+      k.jumlah=String(Number(k.jumlah)-1);
+      dataPinjam.push(item); simpanPinjam(); simpanKeStorage(); render(); renderPinjam(); pinjamForm.reset(); setTanggalHariIni();
+    }
 
-function updateDropdown(){
-  const select=document.getElementById("kostumPinjam");
-  select.innerHTML="";
-  if(kostum.length===0){ const opt=document.createElement("option"); opt.textContent="Belum ada kostum"; opt.value=""; select.appendChild(opt); return; }
-  kostum.forEach(k=>{ const opt=document.createElement("option"); opt.value=k.kode; opt.textContent=`${k.nama} (${k.kode})`; select.appendChild(opt); });
-}
+    function renderPinjam(){
+      tablePinjam.innerHTML=""; let filter=document.getElementById("filterStatus").value;
+      let list=dataPinjam;
+      if(filter==="belum") list=dataPinjam.filter(p=>!p.kembali);
+      if(filter==="sudah") list=dataPinjam.filter(p=>p.kembali);
+      if(list.length===0){ tablePinjam.innerHTML='<tr><td colspan="4" style="text-align:center">Tidak ada data</td></tr>'; return; }
+      list.forEach((p,i)=>{
+        const row=document.createElement("tr");
+        row.innerHTML=`<td>${p.peminjam}</td><td>${p.kode}</td><td>${p.tanggal}</td><td>${p.kembali ? '<span style="color:green;font-weight:600">Sudah kembali</span>' : `<button class="btn edit" onclick="kembalikan(${i})">Kembalikan</button>`}</td>`;
+        tablePinjam.appendChild(row);
+      });
+    }
 
-function setTanggalHariIni(){
-  const tgl=document.getElementById("tanggal");
-  const today=new Date();
-  const yyyy=today.getFullYear();
-  const mm=String(today.getMonth()+1).padStart(2,"0");
-  const dd=String(today.getDate()).padStart(2,"0");
-  tgl.value=`${yyyy}-${mm}-${dd}`;
-}
+    function kembalikan(i){
+      const p=dataPinjam[i]; if(p.kembali) return; const k=kostum.find(x=>x.kode===p.kode); if(k) k.jumlah=String(Number(k.jumlah)+1);
+      p.kembali=true; simpanPinjam(); simpanKeStorage(); render(); renderPinjam();
+    }
 
-function savePinjam(e){
-  e.preventDefault();
-  const kodeDipilih=document.getElementById("kostumPinjam").value.trim();
-  const item={ peminjam:document.getElementById("peminjam").value.trim(), kode:kodeDipilih, tanggal:document.getElementById("tanggal").value, kembali:false };
-  if(!item.peminjam || !item.kode) return alert("Data belum lengkap");
-  const k=kostum.find(x=>x.kode===kodeDipilih);
-  if(!k || Number(k.jumlah)<=0){ alert("Stok kostum habis!"); return; }
-  k.jumlah=String(Number(k.jumlah)-1);
-  dataPinjam.push(item);
-  simpanPinjam();
-  simpanKeStorage();
-  render();
-  renderPinjam();
-  e.target.reset();
-  setTanggalHariIni();
-}
+    function loadData(){
+      db.ref("kostum").get().then(snapshot=>{ if(snapshot.exists()) kostum=snapshot.val(); render(); });
+      db.ref("peminjaman").get().then(snapshot=>{ if(snapshot.exists()) dataPinjam=snapshot.val(); renderPinjam(); });
+    }
 
-function exportPDF(){
-  const rows=dataPinjam.map(p=>`
-    <tr>
-      <td>${p.peminjam}</td>
-      <td>${p.kode}</td>
-      <td>${p.tanggal}</td>
-      <td>${p.kembali?"Sudah kembali":"Belum kembali"}</td>
-    </tr>`).join("");
-  const html=`<html><head><title>Laporan Peminjaman Kostum</title>
-    <style>body{font-family:Arial;padding:20px} h2{text-align:center} table{width:100%;border-collapse:collapse;margin-top:20px} th,td{border:1px solid #000;padding:8px;text-align:left} th{background:#eee}</style></head>
-    <body><h2>Laporan Peminjaman Kostum</h2><table><thead><tr><th>Nama Peminjam</th><th>Kode Kostum</th><th>Tanggal</th><th>Status</th></tr></thead><tbody>${rows || '<tr><td colspan="4" style="text-align:center">Tidak ada data</td></tr>'}</tbody></table></body></html>`;
-  const win=window.open("","","width=900,height=700");
-  win.document.write(html);
-  win.document.close();
-  win.print();
-}
+    function showFormPinjam(kodeQR){ pinjamForm.style.display="block"; kostumSelect.value=kodeQR; window.scrollTo(0,document.body.scrollHeight); }
+    function printAllQR(){
+      const html=kostum.map(k=>`<div style="display:inline-block;text-align:center;margin:10px">
+        <img src="https://api.qrserver.com/v1/create-qr-code/?size=100x100&data=${k.kode}" /><br/>${k.nama} (${k.kode})
+      </div>`).join("");
+      const win=window.open("","","width=900,height=700"); win.document.write(`<html><body>${html}</body></html>`); win.document.close(); win.print();
+    }
 
-function renderPinjam(){
-  tablePinjam.innerHTML="";
-  const filter=document.getElementById("filterStatus").value;
-  let list=dataPinjam;
-  if(filter==="belum") list=dataPinjam.filter(p=>!p.kembali);
-  if(filter==="sudah") list=dataPinjam.filter(p=>p.kembali);
-  if(list.length===0){ tablePinjam.innerHTML='<tr><td colspan="4" style="text-align:center">Tidak ada data</td></tr>'; return; }
-  list.forEach((p,i)=>{
-    const row=document.createElement("tr");
-    row.innerHTML=`
-      <td>${p.peminjam}</td>
-      <td>${p.kode}</td>
-      <td>${p.tanggal}</td>
-      <td>${p.kembali ? '<span style="color:green;font-weight:600">Sudah kembali</span>' : `<button class="btn edit" onclick="kembalikan(${i})">Kembalikan</button>`}</td>`;
-    tablePinjam.appendChild(row);
-  });
-}
+    function exportPDF(){
+      const rows=dataPinjam.map(p=>`<tr><td>${p.peminjam}</td><td>${p.kode}</td><td>${p.tanggal}</td><td>${p.kembali?"Sudah kembali":"Belum kembali"}</td></tr>`).join("");
+      const win=window.open("","","width=900,height=700");
+      win.document.write(`<html><head><title>Laporan Peminjaman Kostum</title><style>body{font-family:Arial;padding:20px}h2{text-align:center}table{width:100%;border-collapse:collapse;margin-top:20px}th,td{border:1px solid #000;padding:8px;text-align:left}th{background:#eee}</style></head><body><h2>Laporan Peminjaman Kostum</h2><table><thead><tr><th>Nama Peminjam</th><th>Kode Kostum</th><th>Tanggal</th><th>Status</th></tr></thead><tbody>${rows || '<tr><td colspan="4" style="text-align:center">Tidak ada data</td></tr>'}</tbody></table></body></html>`);
+      win.document.close(); win.print();
+    }
 
-function kembalikan(i){
-  const p=dataPinjam[i];
-  if(p.kembali) return;
-  const k=kostum.find(x=>x.kode===p.kode);
-  if(k) k.jumlah=String(Number(k.jumlah)+1);
-  p.kembali=true;
-  simpanPinjam();
-  simpanKeStorage();
-  render();
-  renderPinjam();
-}
-
-// print semua QR langsung link halaman + kode
-function printAllQR(){
-  let html = kostum.map(k=>`
-    <div style="display:inline-block;text-align:center;margin:10px">
-      <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(window.location.href+'?kode='+k.kode)}" /><br/>
-      ${k.nama} (${k.kode})
-    </div>`).join("");
-  const win = window.open("","","width=900,height=700");
-  win.document.write(`<html><head><title>QR Kostum</title></head><body>${html}</body></html>`);
-  win.document.close();
-  win.print();
-}
-
-renderPinjam();
-</script>
+  </script>
 
 </body>
 </html>
