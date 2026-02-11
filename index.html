@@ -39,6 +39,9 @@
     .form-box{ background:white; padding:18px; border-radius:16px; margin-bottom:15px; display:none; box-shadow:0 6px 18px rgba(0,0,0,.08); }
     .form-box input{ padding:10px; margin:6px; border-radius:10px; border:1px solid #e0e0e0; }
     .form-box input:focus{ outline:none; border-color:#64b5f6; box-shadow:0 0 0 2px rgba(100,181,246,.15); }
+
+    /* tambahan untuk QR */
+    .qr-img{ width:100px; height:100px; }
   </style>
 </head>
 <body>
@@ -134,12 +137,17 @@
   let kostum=JSON.parse(localStorage.getItem("dataKostum"))||[];
   let editIndex=-1;
 
-  function simpanKeStorage(){ localStorage.setItem("dataKostum",JSON.stringify(kostum)); }
+  function simpanKeStorage(){
+    localStorage.setItem("dataKostum",JSON.stringify(kostum));
+  }
 
   function generateKode(){
     if(kostum.length===0) return "KST001";
     let max = 0;
-    kostum.forEach(k=>{ const num = parseInt(k.kode.replace("KST",""))||0; if(num>max) max=num; });
+    kostum.forEach(k=>{
+      const num = parseInt(k.kode.replace("KST",""))||0;
+      if(num>max) max=num;
+    });
     return "KST"+String(max+1).padStart(3,"0");
   }
 
@@ -150,10 +158,15 @@
       loginPage.style.display="none";
       mainApp.style.display="block";
       render();
-    }else{ loginError.innerText="Username atau password salah"; }
+    }else{
+      loginError.innerText="Username atau password salah";
+    }
   }
 
-  function logout(){ localStorage.removeItem("login"); location.reload(); }
+  function logout(){
+    localStorage.removeItem("login");
+    location.reload();
+  }
 
   window.addEventListener("DOMContentLoaded",()=>{
     setTanggalHariIni();
@@ -164,13 +177,24 @@
     render();
   });
 
-  function showForm(){ formBox.style.display="block"; editIndex=-1; formBox.reset(); kode.value=generateKode(); }
+  function showForm(){
+    formBox.style.display="block";
+    editIndex=-1;
+    formBox.reset();
+    kode.value=generateKode();
+  }
 
   function saveKostum(e){
     e.preventDefault();
-    const data={ nama:nama.value.trim(), kode:kode.value.trim(), ukuran:ukuran.value.trim()||"-", jumlah:jumlah.value.trim()||"0" };
+    const data={ 
+      nama:nama.value.trim(),
+      kode:kode.value.trim(),
+      ukuran:ukuran.value.trim()||"-",
+      jumlah:jumlah.value.trim()||"0"
+    };
     if(!data.nama){ alert("Nama wajib diisi"); return; }
-    if(editIndex===-1) kostum.push(data); else kostum[editIndex]=data;
+    if(editIndex===-1) kostum.push(data);
+    else kostum[editIndex]=data;
     simpanKeStorage();
     formBox.style.display="none";
     render();
@@ -179,11 +203,14 @@
   function render(){
     updateDropdown();
     tableBody.innerHTML="";
-    if(kostum.length===0){ tableBody.innerHTML='<tr><td colspan="6" style="text-align:center">Belum ada data kostum</td></tr>'; return; }
+    if(kostum.length===0){
+      tableBody.innerHTML='<tr><td colspan="6" style="text-align:center">Belum ada data kostum</td></tr>';
+      return;
+    }
     kostum.forEach((k,i)=>{
       const row=document.createElement("tr");
       row.innerHTML=`
-        <td><img src="https://api.qrserver.com/v1/create-qr-code/?size=50x50&data=${k.kode}" /></td>
+        <td><img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(k.kode)}" class="qr-img"/></td>
         <td>${k.nama}</td>
         <td>${k.kode}</td>
         <td>${k.ukuran}</td>
@@ -205,42 +232,112 @@
 
   function editKostum(i){
     const k=kostum[i];
-    nama.value=k.nama; kode.value=k.kode; ukuran.value=k.ukuran==="-"?"":k.ukuran; jumlah.value=k.jumlah;
-    formBox.style.display="block"; editIndex=i;
+    nama.value=k.nama;
+    kode.value=k.kode;
+    ukuran.value=k.ukuran==="-"?"":k.ukuran;
+    jumlah.value=k.jumlah;
+    formBox.style.display="block";
+    editIndex=i;
   }
 
-  function hapusKostum(i){ if(!confirm("Hapus kostum ini?")) return; kostum.splice(i,1); simpanKeStorage(); render(); }
+  function hapusKostum(i){
+    const yakin=confirm("Hapus kostum ini?");
+    if(!yakin) return;
+    kostum.splice(i,1);
+    simpanKeStorage();
+    render();
+  }
 
   const tablePinjam=document.getElementById("tablePinjam");
   let dataPinjam=JSON.parse(localStorage.getItem("dataPinjam"))||[];
-  function simpanPinjam(){ localStorage.setItem("dataPinjam",JSON.stringify(dataPinjam)); }
+
+  function simpanPinjam(){
+    localStorage.setItem("dataPinjam",JSON.stringify(dataPinjam));
+  }
 
   function updateDropdown(){
     const select=document.getElementById("kostumPinjam");
     select.innerHTML="";
-    if(kostum.length===0){ const opt=document.createElement("option"); opt.textContent="Belum ada kostum"; opt.value=""; select.appendChild(opt); return; }
-    kostum.forEach(k=>{ const opt=document.createElement("option"); opt.value=k.kode; opt.textContent=`${k.nama} (${k.kode})`; select.appendChild(opt); });
+    if(kostum.length===0){
+      const opt=document.createElement("option");
+      opt.textContent="Belum ada kostum";
+      opt.value="";
+      select.appendChild(opt);
+      return;
+    }
+    kostum.forEach(k=>{
+      const opt=document.createElement("option");
+      opt.value=k.kode;
+      opt.textContent=`${k.nama} (${k.kode})`;
+      select.appendChild(opt);
+    });
   }
 
-  function setTanggalHariIni(){ const tgl=document.getElementById("tanggal"); const today=new Date(); const yyyy=today.getFullYear(); const mm=String(today.getMonth()+1).padStart(2,"0"); const dd=String(today.getDate()).padStart(2,"0"); tgl.value=`${yyyy}-${mm}-${dd}`; }
+  function setTanggalHariIni(){
+    const tgl=document.getElementById("tanggal");
+    const today=new Date();
+    const yyyy=today.getFullYear();
+    const mm=String(today.getMonth()+1).padStart(2,"0");
+    const dd=String(today.getDate()).padStart(2,"0");
+    tgl.value=`${yyyy}-${mm}-${dd}`;
+  }
 
   function savePinjam(e){
     e.preventDefault();
     const kodeDipilih=document.getElementById("kostumPinjam").value.trim();
-    const item={ peminjam:document.getElementById("peminjam").value.trim(), kode:kodeDipilih, tanggal:document.getElementById("tanggal").value, kembali:false };
+    const item={
+      peminjam:document.getElementById("peminjam").value.trim(),
+      kode:kodeDipilih,
+      tanggal:document.getElementById("tanggal").value,
+      kembali:false
+    };
     if(!item.peminjam || !item.kode) return alert("Data belum lengkap");
     const k=kostum.find(x=>x.kode===kodeDipilih);
     if(!k || Number(k.jumlah)<=0){ alert("Stok kostum habis!"); return; }
     k.jumlah=String(Number(k.jumlah)-1);
     dataPinjam.push(item);
-    simpanPinjam(); simpanKeStorage(); render(); renderPinjam();
-    e.target.reset(); setTanggalHariIni();
+    simpanPinjam();
+    simpanKeStorage();
+    render();
+    renderPinjam();
+    e.target.reset();
+    setTanggalHariIni();
   }
 
   function exportPDF(){
-    const rows=dataPinjam.map(p=>`<tr><td>${p.peminjam}</td><td>${p.kode}</td><td>${p.tanggal}</td><td>${p.kembali?"Sudah kembali":"Belum kembali"}</td></tr>`).join("");
-    const html=`<html><head><title>Laporan Peminjaman Kostum</title><style>body{font-family:Arial;padding:20px}h2{text-align:center}table{width:100%;border-collapse:collapse;margin-top:20px}th,td{border:1px solid #000;padding:8px;text-align:left}th{background:#eee}</style></head><body><h2>Laporan Peminjaman Kostum</h2><table><thead><tr><th>Nama Peminjam</th><th>Kode Kostum</th><th>Tanggal</th><th>Status</th></tr></thead><tbody>${rows || '<tr><td colspan="4" style="text-align:center">Tidak ada data</td></tr>'}</tbody></table></body></html>`;
-    const win=window.open("","","width=900,height=700"); win.document.write(html); win.document.close(); win.print();
+    const rows=dataPinjam.map(p=>`
+      <tr>
+        <td>${p.peminjam}</td>
+        <td>${p.kode}</td>
+        <td>${p.tanggal}</td>
+        <td>${p.kembali?"Sudah kembali":"Belum kembali"}</td>
+      </tr>`).join("");
+    const html=`<html><head><title>Laporan Peminjaman Kostum</title>
+      <style>
+        body{font-family:Arial;padding:20px}
+        h2{text-align:center}
+        table{width:100%;border-collapse:collapse;margin-top:20px}
+        th,td{border:1px solid #000;padding:8px;text-align:left}
+        th{background:#eee}
+      </style></head>
+      <body>
+        <h2>Laporan Peminjaman Kostum</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>Nama Peminjam</th>
+              <th>Kode Kostum</th>
+              <th>Tanggal</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>${rows || '<tr><td colspan="4" style="text-align:center">Tidak ada data</td></tr>'}</tbody>
+        </table>
+      </body></html>`;
+    const win=window.open("","","width=900,height=700");
+    win.document.write(html);
+    win.document.close();
+    win.print();
   }
 
   function renderPinjam(){
@@ -249,45 +346,46 @@
     let list=dataPinjam;
     if(filter==="belum") list=dataPinjam.filter(p=>!p.kembali);
     if(filter==="sudah") list=dataPinjam.filter(p=>p.kembali);
-    if(list.length===0){ tablePinjam.innerHTML='<tr><td colspan="4" style="text-align:center">Tidak ada data</td></tr>'; return; }
+    if(list.length===0){
+      tablePinjam.innerHTML='<tr><td colspan="4" style="text-align:center">Tidak ada data</td></tr>';
+      return;
+    }
     list.forEach((p,i)=>{
       const row=document.createElement("tr");
-      row.innerHTML=`<td>${p.peminjam}</td><td>${p.kode}</td><td>${p.tanggal}</td><td>${p.kembali ? '<span style="color:green;font-weight:600">Sudah kembali</span>' : `<button class="btn edit" onclick="kembalikan(${i})">Kembalikan</button>`}</td>`;
+      row.innerHTML=`
+        <td>${p.peminjam}</td>
+        <td>${p.kode}</td>
+        <td>${p.tanggal}</td>
+        <td>
+          ${p.kembali ? '<span style="color:green;font-weight:600">Sudah kembali</span>' : `<button class="btn edit" onclick="kembalikan(${i})">Kembalikan</button>`}
+        </td>`;
       tablePinjam.appendChild(row);
     });
   }
 
   function kembalikan(i){
-    const p=dataPinjam[i]; if(p.kembali) return;
-    const k=kostum.find(x=>x.kode===p.kode); if(k) k.jumlah=String(Number(k.jumlah)+1);
+    const p=dataPinjam[i];
+    if(p.kembali) return;
+    const k=kostum.find(x=>x.kode===p.kode);
+    if(k){ k.jumlah=String(Number(k.jumlah)+1); }
     p.kembali=true;
-    simpanPinjam(); simpanKeStorage(); render(); renderPinjam();
+    simpanPinjam();
+    simpanKeStorage();
+    render();
+    renderPinjam();
   }
 
-  // FIX printAllQR supaya QR muncul
   function printAllQR(){
-    const win = window.open("","","width=900,height=700");
     let html = kostum.map(k=>`
       <div style="display:inline-block;text-align:center;margin:10px">
-        <img src="https://api.qrserver.com/v1/create-qr-code/?size=100x100&data=${k.kode}" class="qr-print"/><br/>
+        <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(k.kode)}" /><br/>
         ${k.nama} (${k.kode})
       </div>
     `).join("");
+    const win = window.open("","","width=900,height=700");
     win.document.write(`<html><head><title>QR Kostum</title></head><body>${html}</body></html>`);
     win.document.close();
-
-    // tunggu semua QR termuat sebelum print
-    win.onload = () => {
-      const imgs = win.document.querySelectorAll("img");
-      let loadedCount = 0;
-      if(imgs.length===0){ win.print(); return; }
-      imgs.forEach(img=>{
-        img.onload = () => {
-          loadedCount++;
-          if(loadedCount === imgs.length){ win.print(); }
-        }
-      });
-    }
+    win.print();
   }
 
   renderPinjam();
