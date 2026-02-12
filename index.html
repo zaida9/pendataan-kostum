@@ -270,16 +270,12 @@
   }
 
   function render(){
-    updateDropdown();
-    tableBody.innerHTML="";
+  updateDropdown();
+  tableBody.innerHTML="";
 
-    if(kostum.length===0){
-      tableBody.innerHTML='<tr><td colspan="5" style="text-align:center">Belum ada data kostum</td></tr>';
-      return;
-
-    updateDashboard();
-    }
-
+  if(kostum.length===0){
+    tableBody.innerHTML='<tr><td colspan="5" style="text-align:center">Belum ada data kostum</td></tr>';
+  } else {
     kostum.forEach((k,i)=>{
       const row=document.createElement("tr");
 
@@ -297,6 +293,8 @@
     });
   }
 
+  updateDashboard(); // ← pindahin ke luar biar selalu jalan
+}
   // EVENT LISTENER GLOBAL UNTUK TOMBOL EDIT & HAPUS
   tableBody.addEventListener("click",(e)=>{
     const index=e.target.getAttribute("data-i");
@@ -444,21 +442,17 @@
   }
 
   function renderPinjam(){
-    tablePinjam.innerHTML="";
+  tablePinjam.innerHTML="";
 
-    const filter=document.getElementById("filterStatus").value;
+  const filter=document.getElementById("filterStatus").value;
 
-    let list=dataPinjam;
-    if(filter==="belum") list=dataPinjam.filter(p=>!p.kembali);
-    if(filter==="sudah") list=dataPinjam.filter(p=>p.kembali);
+  let list=dataPinjam;
+  if(filter==="belum") list=dataPinjam.filter(p=>!p.kembali);
+  if(filter==="sudah") list=dataPinjam.filter(p=>p.kembali);
 
-    if(list.length===0){
-      tablePinjam.innerHTML='<tr><td colspan="4" style="text-align:center">Tidak ada data</td></tr>';
-      return;
-
-    updateDashboard();
-    }
-
+  if(list.length===0){
+    tablePinjam.innerHTML='<tr><td colspan="4" style="text-align:center">Tidak ada data</td></tr>';
+  } else {
     list.forEach((p,i)=>{
       const row=document.createElement("tr");
       row.innerHTML=`
@@ -471,6 +465,9 @@
       tablePinjam.appendChild(row);
     });
   }
+
+  updateDashboard(); // ← ini juga harus di luar
+}
 
   function kembalikan(i){
     const p=dataPinjam[i];
