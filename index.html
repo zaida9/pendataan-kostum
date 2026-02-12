@@ -51,27 +51,6 @@
     #mainApp { padding: 25px 40px; }
 
     .topbar h2 { font-weight: 700; letter-spacing: .5px; }
-
-    .cardDash{
-      background:white;
-      border-radius:16px;
-      padding:18px;
-      box-shadow:0 6px 18px rgba(0,0,0,.08);
-      text-align:center;
-      transition:.2s;
-    }
-    .cardDash:hover{ transform:translateY(-2px); box-shadow:0 8px 20px rgba(0,0,0,.12);}
-    .cardDash h4{ margin:0; font-size:14px; color:#666; }
-    .cardDash p{ margin:6px 0 0; font-size:26px; font-weight:700; color:#1565c0; }
-
-    /* Layout dashboard cards + grafik + ringkasan */
-    #dashboardCards{ display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:15px; margin-bottom:20px; }
-    #grafikContainer{ display:grid; grid-template-columns:2fr 1fr; gap:15px; margin-bottom:20px; }
-
-    #grafikPinjam{ width:100%; height:180px; border-radius:16px; box-shadow:0 6px 18px rgba(0,0,0,.08); background:white; padding:10px; }
-    #ringkasanDash{ background:white; border-radius:16px; padding:18px; box-shadow:0 6px 18px rgba(0,0,0,.08); display:flex; flex-direction:column; justify-content:center; }
-    #ringkasanDash h4{ margin:0; color:#666; font-size:14px; }
-    #ringkasanDash p{ margin:6px 0; font-weight:600; }
   </style>
 </head>
 <body>
@@ -93,21 +72,6 @@
       <button class="btn-logout" onclick="logout()">Logout</button>
     </div>
 
-    <div id="dashboardCards">
-      <div class="cardDash">
-        <h4>Total Kostum</h4>
-        <p id="totalKostum">0</p>
-      </div>
-      <div class="cardDash">
-        <h4>Sedang Dipinjam</h4>
-        <p id="totalPinjam">0</p>
-      </div>
-      <div class="cardDash">
-        <h4>Sudah Kembali</h4>
-        <p id="totalKembali">0</p>
-      </div>
-    </div>
-    
     <button class="btn add" onclick="showForm()">+ Tambah Kostum</button>
     <form class="form-box" id="formBox" onsubmit="saveKostum(event)">
       <input id="nama" placeholder="Nama kostum" required />
@@ -161,7 +125,6 @@
 
   </div>
 
-  <!-- SCRIPT ASLI KAMU -->
   <script>
   const USERNAME="admin";
   const PASSWORD="123456";
@@ -202,6 +165,7 @@
       loginPage.style.display="none";
       mainApp.style.display="block";
       render();
+      renderPinjam();
     }else{
       loginError.innerText="Username atau password salah";
     }
@@ -219,6 +183,7 @@
       mainApp.style.display="block";
     }
     render();
+    renderPinjam();
   });
 
   function showForm(){
@@ -259,7 +224,6 @@
         tableBody.appendChild(row);
       });
     }
-    updateDashboard();
   }
 
   tableBody.addEventListener("click",(e)=>{
@@ -405,7 +369,6 @@
         tablePinjam.appendChild(row);
       });
     }
-    updateDashboard();
   }
 
   function kembalikan(i){
@@ -419,79 +382,6 @@
     render();
     renderPinjam();
   }
-
-  renderPinjam();
-
-  // DASHBOARD + GRAFIK ANIMASI
-  function updateDashboard(){
-    document.getElementById("totalKostum").innerText = kostum.length;
-    const belum = dataPinjam.filter(p=>!p.kembali).length;
-    const sudah = dataPinjam.filter(p=>p.kembali).length;
-    document.getElementById("totalPinjam").innerText = belum;
-    document.getElementById("totalKembali").innerText = sudah;
-    document.getElementById("ringkasTotal").innerText = kostum.length;
-    document.getElementById("ringkasBelum").innerText = belum;
-    document.getElementById("ringkasSudah").innerText = sudah;
-    gambarGrafik(belum, sudah);
-  }
-
-  function gambarGrafik(belum, sudah){
-    const canvas = document.getElementById("grafikPinjam");
-    const ctx = canvas.getContext("2d");
-    canvas.width = canvas.offsetWidth;
-    canvas.height = 180;
-    ctx.clearRect(0,0,canvas.width,canvas.height);
-    const total = belum + sudah || 1;
-    const maxHeight = 120;
-    const tinggiBelum = (belum/total) * maxHeight;
-    const tinggiSudah = (sudah/total) * maxHeight;
-    const x1 = canvas.width/2 - 80;
-    const x2 = canvas.width/2 + 20;
-    const baseY = 150;
-
-    // Animasi sederhana
-    let t=0;
-    function anim(){
-      t += 0.05;
-      ctx.clearRect(0,0,canvas.width,canvas.height);
-      const hBelum = Math.min(tinggiBelum, tinggiBelum * t);
-      const hSudah = Math.min(tinggiSudah, tinggiSudah * t);
-
-      ctx.fillStyle = "#ef5350";
-      ctx.fillRect(x1, baseY - hBelum, 60, hBelum);
-
-      ctx.fillStyle = "#66bb6a";
-      ctx.fillRect(x2, baseY - hSudah, 60, hSudah);
-
-      ctx.fillStyle = "#000";
-      ctx.textAlign = "center";
-      ctx.fillText("Dipinjam", x1 + 30, baseY + 20);
-      ctx.fillText("Kembali", x2 + 30, baseY + 20);
-
-      if(t<1) requestAnimationFrame(anim);
-    }
-    anim();
-  }
   </script>
-
-  <!-- FIREBASE -->
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getFirestore } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-
-const firebaseConfig = {
-  apiKey: "AIzaSyC54G9imUT689-jA4xrPXvFE2cVVb4bjK4",
-  authDomain: "sistemkostum.firebaseapp.com",
-  projectId: "sistemkostum",
-  storageBucket: "sistemkostum.firebasestorage.app",
-  messagingSenderId: "338983256503",
-  appId: "1:338983256503:web:ead19763882751d763e832",
-  measurementId: "G-EH668SHFDS"
-};
-
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
-console.log("🔥 Firebase tersambung");
-</script>
 </body>
 </html>
