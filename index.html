@@ -4,6 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Sistem Pendataan Kostum - Realtime</title>
+<!-- CHART.JS - BUAT DIAGRAM KEREN -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <style>
 body { margin:0; font-family:'Poppins',Arial,sans-serif; background: linear-gradient(135deg,#e3f2fd,#fce4ec);}
 #loginPage{display:flex; height:100vh; align-items:center; justify-content:center;}
@@ -40,7 +42,7 @@ tr:hover{background:#f9fbff;}
 <body>
 
 <div id="loginPage">
-  <form class="login-box" onsubmit="login(event)">
+  <form class="login-box" id="loginForm">
     <h2>Login Admin 👗</h2>
     <input id="loginUser" type="text" placeholder="Username" required />
     <input id="loginPass" type="password" placeholder="Password" required />
@@ -52,7 +54,7 @@ tr:hover{background:#f9fbff;}
 <div id="mainApp">
   <div class="topbar">
     <h2>Dashboard Kostum</h2>
-    <button class="btn-logout" onclick="logout()">Logout</button>
+    <button class="btn-logout" id="logoutBtn">Logout</button>
   </div>
 
   <div id="dashboardCards" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:15px;margin-bottom:20px;">
@@ -61,11 +63,14 @@ tr:hover{background:#f9fbff;}
     <div class="cardDash"><h4>Sudah Kembali</h4><p id="totalKembali">0</p></div>
   </div>
 
-  <canvas id="grafikPinjam" style="width:100%;max-height:180px;background:white;border-radius:16px;padding:10px;margin-bottom:20px;box-shadow:0 6px 18px rgba(0,0,0,.08);"></canvas>
+  <!-- 🎨 DIAGRAM CHART.JS - CANTIK BANGET -->
+  <div style="background:white; border-radius:16px; padding:20px; box-shadow:0 6px 18px rgba(0,0,0,.08); margin-bottom:20px;">
+    <canvas id="grafikPinjam" style="width:100%; max-height:200px;"></canvas>
+  </div>
 
-  <button class="btn add" onclick="showForm()">+ Tambah Kostum</button>
+  <button class="btn add" id="showFormBtn">+ Tambah Kostum</button>
 
-  <form class="form-box" id="formBox" onsubmit="saveKostum(event)">
+  <form class="form-box" id="formBox">
     <input id="nama" placeholder="Nama kostum" required />
     <input id="kode" placeholder="Kode otomatis" readonly />
     <input id="ukuran" placeholder="Ukuran (opsional)" />
@@ -87,7 +92,7 @@ tr:hover{background:#f9fbff;}
   </table>
 
   <h3 style="margin-top:25px">Form Peminjaman Kostum</h3>
-  <form class="form-box" style="display:block" onsubmit="savePinjam(event)">
+  <form class="form-box" style="display:block" id="formPinjam">
     <input id="peminjam" placeholder="Nama peminjam" required />
     <select id="kostumPinjam" required></select>
     <input id="tanggal" type="date" required readonly />
@@ -95,12 +100,12 @@ tr:hover{background:#f9fbff;}
   </form>
 
   <div style="margin:15px 0; display:flex; gap:10px; align-items:center;">
-    <select id="filterStatus" onchange="renderPinjam()" class="btn">
+    <select id="filterStatus" class="btn">
       <option value="semua">Semua Peminjaman</option>
       <option value="belum">Belum Kembali</option>
       <option value="sudah">Sudah Kembali</option>
     </select>
-    <button class="btn add" onclick="exportPDF()">Export PDF</button>
+    <button class="btn add" id="exportBtn">Export PDF</button>
   </div>
 
   <table>
@@ -116,82 +121,11 @@ tr:hover{background:#f9fbff;}
   </table>
 </div>
 
-<script>
-const USERNAME="admin";
-const PASSWORD="123456";
-const loginPage=document.getElementById("loginPage");
-const mainApp=document.getElementById("mainApp");
-const loginUser=document.getElementById("loginUser");
-const loginPass=document.getElementById("loginPass");
-const loginError=document.getElementById("loginError");
-const formBox=document.getElementById("formBox");
-const nama=document.getElementById("nama");
-const kode=document.getElementById("kode");
-const ukuran=document.getElementById("ukuran");
-const jumlah=document.getElementById("jumlah");
-const tableBody=document.getElementById("tableBody");
-const tablePinjam=document.getElementById("tablePinjam");
-
-let kostum = [];
-let dataPinjam = [];
-let editIndex = -1;
-
-window.addEventListener("DOMContentLoaded", ()=>{
-  setTanggalHariIni();
-  if(localStorage.getItem("login")==="yes"){
-    loginPage.style.display="none";
-    mainApp.style.display="block";
-  }
-});
-
-// LOGIN
-function login(e){
-  e.preventDefault();
-  if(loginUser.value===USERNAME && loginPass.value===PASSWORD){
-    localStorage.setItem("login","yes");
-    loginPage.style.display="none";
-    mainApp.style.display="block";
-  }else{
-    loginError.innerText="Username atau password salah";
-  }
-}
-function logout(){ localStorage.removeItem("login"); location.reload(); }
-
-// SET TANGGAL HARI INI
-function setTanggalHariIni(){
-  const tgl=document.getElementById("tanggal");
-  const today=new Date();
-  const yyyy=today.getFullYear();
-  const mm=String(today.getMonth()+1).padStart(2,"0");
-  const dd=String(today.getDate()).padStart(2,"0");
-  tgl.value=`${yyyy}-${mm}-${dd}`;
-}
-
-// GENERATE KODE OTOMATIS
-async function generateKode() {
-  if(kostum.length === 0) return "KST-001";
-  const kodeTerakhir = kostum
-    .map(k => k.kode)
-    .filter(k => k.startsWith("KST-"))
-    .sort()
-    .pop();
-  const nomor = parseInt(kodeTerakhir.split("-")[1]) || 0;
-  return "KST-" + String(nomor + 1).padStart(3, "0");
-}
-
-async function showForm() {
-  formBox.style.display = "block";
-  editIndex = -1;
-  formBox.reset();
-  kode.value = await generateKode();
-}
-</script>
-
-<!-- FIREBASE -->
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import { getFirestore, collection, doc, setDoc, onSnapshot, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
+// 🔧 FIREBASE CONFIG - UDAH BENER
 const firebaseConfig = {
   apiKey: "AIzaSyAZUybNqjxxb-KXMZ4ICL03GcO-StBzU-Y",
   authDomain: "pendataan-kostum.firebaseapp.com",
@@ -208,94 +142,165 @@ const db = getFirestore(app);
 const kostumCol = collection(db, "kostum");
 const pinjamCol = collection(db, "peminjaman");
 
-// LIVE SYNC
-onSnapshot(kostumCol, snapshot => {
-  kostum = snapshot.docs.map(d => ({ id:d.id, ...d.data() }));
-  renderKostum();
-  updateDropdown();
-});
+// =========== GLOBAL VARIABLES ===========
+let kostum = [];
+let dataPinjam = [];
+let editIndex = -1;
+let myChart = null; // buat diagram
 
-onSnapshot(pinjamCol, snapshot => {
-  dataPinjam = snapshot.docs.map(d => ({ id:d.id, ...d.data() }));
-  renderPinjam();
-});
+// =========== LOGIN ===========
+const USERNAME = "admin";
+const PASSWORD = "123456";
 
-// SAVE KOSTUM
-async function saveKostum(e){
+window.login = function(e) {
+  e.preventDefault();
+  const user = document.getElementById("loginUser").value;
+  const pass = document.getElementById("loginPass").value;
+  if(user === USERNAME && pass === PASSWORD) {
+    localStorage.setItem("login", "yes");
+    document.getElementById("loginPage").style.display = "none";
+    document.getElementById("mainApp").style.display = "block";
+  } else {
+    document.getElementById("loginError").innerText = "Username atau password salah";
+  }
+};
+
+window.logout = function() {
+  localStorage.removeItem("login");
+  location.reload();
+};
+
+// CEK LOGIN STATE
+if(localStorage.getItem("login") === "yes") {
+  document.getElementById("loginPage").style.display = "none";
+  document.getElementById("mainApp").style.display = "block";
+}
+
+// =========== SET TANGGAL ===========
+function setTanggalHariIni() {
+  const tgl = document.getElementById("tanggal");
+  const today = new Date();
+  const yyyy = today.getFullYear();
+  const mm = String(today.getMonth()+1).padStart(2,"0");
+  const dd = String(today.getDate()).padStart(2,"0");
+  tgl.value = `${yyyy}-${mm}-${dd}`;
+}
+setTanggalHariIni();
+
+// =========== GENERATE KODE ===========
+async function generateKode() {
+  if(kostum.length === 0) return "KST-001";
+  const kodeTerakhir = kostum
+    .map(k => k.kode)
+    .filter(k => k && k.startsWith("KST-"))
+    .sort()
+    .pop();
+  const nomor = kodeTerakhir ? parseInt(kodeTerakhir.split("-")[1]) : 0;
+  return "KST-" + String(nomor + 1).padStart(3, "0");
+}
+
+window.showForm = async function() {
+  document.getElementById("formBox").style.display = "block";
+  editIndex = -1;
+  document.getElementById("formBox").reset();
+  document.getElementById("kode").value = await generateKode();
+};
+
+// =========== SAVE KOSTUM ===========
+async function saveKostum(e) {
   e.preventDefault();
   const data = {
-    nama: nama.value.trim(),
-    kode: kode.value.trim(),
-    ukuran: ukuran.value.trim()||"-",
-    jumlah: jumlah.value.trim()||"0"
+    nama: document.getElementById("nama").value.trim(),
+    kode: document.getElementById("kode").value.trim(),
+    ukuran: document.getElementById("ukuran").value.trim() || "-",
+    jumlah: document.getElementById("jumlah").value.trim() || "0"
   };
   if(!data.nama) return alert("Nama wajib diisi");
+  if(!data.kode) return alert("Kode error, refresh dulu");
 
-  try{
+  try {
     await setDoc(doc(kostumCol, data.kode), data);
-    formBox.style.display="none";
-  }catch(err){
-    console.error(err); alert("Gagal menyimpan data");
+    document.getElementById("formBox").style.display = "none";
+    document.getElementById("formBox").reset();
+  } catch(err) {
+    console.error(err);
+    alert("Gagal menyimpan data");
   }
 }
 
-// DELETE KOSTUM
-async function hapusKostum(i){
-  const k=kostum[i];
-  if(!k) return; if(!confirm("Hapus kostum ini?")) return;
-  try{ await deleteDoc(doc(kostumCol, k.kode)); }catch(err){ console.error(err); alert("Gagal hapus kostum"); }
-}
+// =========== HAPUS KOSTUM ===========
+window.hapusKostum = async function(i) {
+  const k = kostum[i];
+  if(!k) return;
+  if(!confirm("Hapus kostum ini?")) return;
+  try {
+    await deleteDoc(doc(kostumCol, k.kode));
+  } catch(err) {
+    console.error(err);
+    alert("Gagal hapus kostum");
+  }
+};
 
-// UPDATE DROPDOWN PINJAM
-function updateDropdown(){
-  const select=document.getElementById("kostumPinjam");
-  select.innerHTML="";
-  if(kostum.length===0){ select.innerHTML='<option value="">Belum ada kostum</option>'; return; }
-  kostum.forEach(k=>{
-    const opt=document.createElement("option");
-    opt.value=k.kode; opt.textContent=`${k.nama} (${k.kode})`; select.appendChild(opt);
+// =========== EDIT KOSTUM ===========
+window.editKostum = function(i) {
+  const k = kostum[i];
+  document.getElementById("nama").value = k.nama;
+  document.getElementById("kode").value = k.kode;
+  document.getElementById("ukuran").value = k.ukuran === "-" ? "" : k.ukuran;
+  document.getElementById("jumlah").value = k.jumlah;
+  document.getElementById("formBox").style.display = "block";
+  editIndex = i;
+};
+
+// =========== UPDATE DROPDOWN ===========
+function updateDropdown() {
+  const select = document.getElementById("kostumPinjam");
+  select.innerHTML = "";
+  if(kostum.length === 0) {
+    select.innerHTML = '<option value="">Belum ada kostum</option>';
+    return;
+  }
+  kostum.forEach(k => {
+    const opt = document.createElement("option");
+    opt.value = k.kode;
+    opt.textContent = `${k.nama} (${k.kode}) - Stok: ${k.jumlah}`;
+    select.appendChild(opt);
   });
 }
 
-// RENDER KOSTUM TABLE
-function renderKostum(){
-  tableBody.innerHTML="";
-  if(kostum.length===0){ tableBody.innerHTML='<tr><td colspan="5">Belum ada data kostum</td></tr>'; }
-  else{
-    kostum.forEach((k,i)=>{
-      const row=document.createElement("tr");
-      row.innerHTML=`
-        <td>${k.nama}</td>
-        <td>${k.kode}</td>
-        <td>${k.ukuran}</td>
-        <td>${k.jumlah}</td>
+// =========== RENDER KOSTUM ===========
+function renderKostum() {
+  const tbody = document.getElementById("tableBody");
+  tbody.innerHTML = "";
+  if(kostum.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="5">Belum ada data kostum</td></tr>';
+  } else {
+    kostum.forEach((k, i) => {
+      const row = document.createElement("tr");
+      row.innerHTML = `
+        <td>${k.nama || "-"}</td>
+        <td>${k.kode || "-"}</td>
+        <td>${k.ukuran || "-"}</td>
+        <td>${k.jumlah || "0"}</td>
         <td>
           <button class="btn edit" onclick="editKostum(${i})">Edit</button>
           <button class="btn delete" onclick="hapusKostum(${i})">Hapus</button>
         </td>`;
-      tableBody.appendChild(row);
+      tbody.appendChild(row);
     });
   }
   updateDashboard();
+  updateDropdown();
 }
 
-// EDIT KOSTUM
-function editKostum(i){
-  const k=kostum[i];
-  nama.value=k.nama;
-  kode.value=k.kode;
-  ukuran.value=k.ukuran==="-"?"":k.ukuran;
-  jumlah.value=k.jumlah;
-  formBox.style.display="block";
-  editIndex=i;
-}
-
-// PINJAM KOSTUM
-async function savePinjam(e){
+// =========== SAVE PINJAM ===========
+async function savePinjam(e) {
   e.preventDefault();
-  const kodeDipilih = document.getElementById("kostumPinjam").value.trim();
-  const k = kostum.find(x=>x.kode===kodeDipilih);
-  if(!k || Number(k.jumlah)<=0) return alert("Stok habis!");
+  const kodeDipilih = document.getElementById("kostumPinjam").value;
+  const k = kostum.find(x => x.kode === kodeDipilih);
+  
+  if(!k) return alert("Pilih kostum dulu");
+  if(Number(k.jumlah) <= 0) return alert("Stok habis!");
 
   const item = {
     peminjam: document.getElementById("peminjam").value.trim(),
@@ -303,68 +308,166 @@ async function savePinjam(e){
     tanggal: document.getElementById("tanggal").value,
     kembali: false
   };
-  try{
-    await updateDoc(doc(kostumCol, k.kode), { jumlah:String(Number(k.jumlah)-1) });
+
+  try {
+    await updateDoc(doc(kostumCol, k.kode), { 
+      jumlah: String(Number(k.jumlah) - 1) 
+    });
     await setDoc(doc(pinjamCol, `${kodeDipilih}-${Date.now()}`), item);
-    e.target.reset(); setTanggalHariIni();
-  }catch(err){ console.error(err); alert("Gagal menyimpan peminjaman"); }
+    document.getElementById("formPinjam").reset();
+    setTanggalHariIni();
+  } catch(err) {
+    console.error(err);
+    alert("Gagal menyimpan peminjaman");
+  }
 }
 
-// KEMBALIKAN KOSTUM
-async function kembalikan(i){
-  const p = dataPinjam[i]; if(p.kembali) return;
-  const k = kostum.find(x=>x.kode===p.kode); if(!k) return;
-  try{
-    await updateDoc(doc(pinjamCol,p.id),{kembali:true});
-    await updateDoc(doc(kostumCol,k.kode),{jumlah:String(Number(k.jumlah)+1)});
-  }catch(err){console.error(err); alert("Gagal update pengembalian");}
-}
+// =========== KEMBALIKAN ===========
+window.kembalikan = async function(i) {
+  const p = dataPinjam[i];
+  if(p.kembali) return;
+  const k = kostum.find(x => x.kode === p.kode);
+  if(!k) return;
 
-// RENDER PEMINJAMAN
-function renderPinjam(){
-  tablePinjam.innerHTML="";
-  const filter=document.getElementById("filterStatus").value;
-  let list=dataPinjam;
-  if(filter==="belum") list=dataPinjam.filter(p=>!p.kembali);
-  if(filter==="sudah") list=dataPinjam.filter(p=>p.kembali);
-  if(list.length===0){ tablePinjam.innerHTML='<tr><td colspan="4">Tidak ada data</td></tr>'; }
-  else{
-    list.forEach((p,i)=>{
-      const row=document.createElement("tr");
-      row.innerHTML=`<td>${p.peminjam}</td><td>${p.kode}</td><td>${p.tanggal}</td>
-      <td>${p.kembali?'<span style="color:green;font-weight:600">Sudah kembali</span>':
-      `<button class="btn edit" onclick="kembalikan(${i})">Kembalikan</button>`}</td>`;
-      tablePinjam.appendChild(row);
+  try {
+    await updateDoc(doc(pinjamCol, p.id), { kembali: true });
+    await updateDoc(doc(kostumCol, k.kode), { 
+      jumlah: String(Number(k.jumlah) + 1) 
+    });
+  } catch(err) {
+    console.error(err);
+    alert("Gagal update pengembalian");
+  }
+};
+
+// =========== RENDER PINJAM ===========
+window.renderPinjam = function() {
+  const tbody = document.getElementById("tablePinjam");
+  tbody.innerHTML = "";
+  const filter = document.getElementById("filterStatus").value;
+  let list = dataPinjam;
+  
+  if(filter === "belum") list = dataPinjam.filter(p => !p.kembali);
+  if(filter === "sudah") list = dataPinjam.filter(p => p.kembali);
+  
+  if(list.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="4">Tidak ada data</td></tr>';
+  } else {
+    list.forEach((p, i) => {
+      const indexAsli = dataPinjam.findIndex(d => d.id === p.id);
+      const row = document.createElement("tr");
+      row.innerHTML = `
+        <td>${p.peminjam || "-"}</td>
+        <td>${p.kode || "-"}</td>
+        <td>${p.tanggal || "-"}</td>
+        <td>${p.kembali ? 
+          '<span style="color:green;font-weight:600">Sudah kembali</span>' : 
+          `<button class="btn edit" onclick="kembalikan(${indexAsli})">Kembalikan</button>`
+        }</td>`;
+      tbody.appendChild(row);
     });
   }
   updateDashboard();
+};
+
+// =========== DASHBOARD + DIAGRAM CHART JS ===========
+function updateDashboard() {
+  document.getElementById("totalKostum").innerText = kostum.length;
+  const belum = dataPinjam.filter(p => !p.kembali).length;
+  const sudah = dataPinjam.filter(p => p.kembali).length;
+  document.getElementById("totalPinjam").innerText = belum;
+  document.getElementById("totalKembali").innerText = sudah;
+  gambarGrafik(belum, sudah);
 }
 
-// DASHBOARD & GRAFIK
-function updateDashboard(){
-  document.getElementById("totalKostum").innerText=kostum.length;
-  const belum = dataPinjam.filter(p=>!p.kembali).length;
-  const sudah = dataPinjam.filter(p=>p.kembali).length;
-  document.getElementById("totalPinjam").innerText=belum;
-  document.getElementById("totalKembali").innerText=sudah;
-  gambarGrafik(belum,sudah);
-}
-function gambarGrafik(belum,sudah){
-  const canvas = document.getElementById("grafikPinjam");
-  const ctx = canvas.getContext("2d");
-  canvas.width = canvas.offsetWidth; canvas.height = 180;
-  ctx.clearRect(0,0,canvas.width,canvas.height);
-  const total = belum+sudah||1;
-  const tinggiBelum=(belum/total)*80;
-  const tinggiSudah=(sudah/total)*80;
-  ctx.fillStyle="#ef5350"; ctx.fillRect(60,90-tinggiBelum,60,tinggiBelum);
-  ctx.fillStyle="#66bb6a"; ctx.fillRect(160,90-tinggiSudah,60,tinggiSudah);
-  ctx.fillStyle="#000"; ctx.font="14px Poppins"; ctx.fillText("Belum",70,105); ctx.fillText("Sudah",170,105);
+// 🎨 FUNGSI DIAGRAM CHART.JS - KEREN ABIS
+function gambarGrafik(belum, sudah) {
+  const ctx = document.getElementById("grafikPinjam").getContext("2d");
+  
+  if (myChart) {
+    myChart.destroy();
+  }
+
+  myChart = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: ['Belum Kembali', 'Sudah Kembali'],
+      datasets: [{
+        label: 'Jumlah Peminjaman',
+        data: [belum, sudah],
+        backgroundColor: [
+          'rgba(239, 83, 80, 0.85)',
+          'rgba(102, 187, 106, 0.85)'
+        ],
+        borderColor: [
+          '#c62828',
+          '#2e7d32'
+        ],
+        borderWidth: 2,
+        borderRadius: 10,
+        barPercentage: 0.5,
+        categoryPercentage: 0.8
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: true,
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          backgroundColor: '#1e1e2f',
+          titleColor: '#fff',
+          bodyColor: '#ddd',
+          padding: 10,
+          cornerRadius: 8
+        }
+      },
+      scales: {
+        y: {
+          beginAtZero: true,
+          grid: { color: '#e9ecef', drawBorder: false },
+          ticks: { 
+            stepSize: 1,
+            font: { size: 12, family: 'Poppins' }
+          }
+        },
+        x: {
+          grid: { display: false },
+          ticks: { font: { size: 13, family: 'Poppins', weight: '600' } }
+        }
+      },
+      layout: {
+        padding: { top: 10, bottom: 10 }
+      }
+    }
+  });
 }
 
-// EXPORT PDF (opsional)
-function exportPDF(){ alert("Fitur export PDF belum diaktifkan"); }
+// =========== EXPORT PDF (PLACEHOLDER) ===========
+window.exportPDF = function() {
+  alert("Fitur export PDF belum diaktifkan");
+};
+
+// =========== LISTENER FIRESTORE ===========
+onSnapshot(kostumCol, snapshot => {
+  kostum = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
+  renderKostum();
+});
+
+onSnapshot(pinjamCol, snapshot => {
+  dataPinjam = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
+  renderPinjam();
+});
+
+// =========== EVENT LISTENER MANUAL ===========
+document.getElementById("loginForm").addEventListener("submit", window.login);
+document.getElementById("logoutBtn").addEventListener("click", window.logout);
+document.getElementById("showFormBtn").addEventListener("click", window.showForm);
+document.getElementById("formBox").addEventListener("submit", saveKostum);
+document.getElementById("formPinjam").addEventListener("submit", savePinjam);
+document.getElementById("filterStatus").addEventListener("change", window.renderPinjam);
+document.getElementById("exportBtn").addEventListener("click", window.exportPDF);
+
 </script>
-
 </body>
 </html>
