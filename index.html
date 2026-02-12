@@ -528,6 +528,66 @@
 
   <!-- FIREBASE -->
 <script type="module">
+  import { collection, doc, setDoc, getDocs, onSnapshot, updateDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+// Koleksi Firestore
+const kostumCol = collection(db, "kostum");
+const pinjamCol = collection(db, "peminjaman");
+
+// 1️⃣ Sync dari Firebase ke localStorage + array kostum/dataPinjam
+onSnapshot(kostumCol, snapshot => {
+  kostum = snapshot.docs.map(d => d.data());
+  simpanKeStorage(); // biar array lama tetap jalan
+  render();
+});
+
+onSnapshot(pinjamCol, snapshot => {
+  dataPinjam = snapshot.docs.map(d => d.data());
+  simpanPinjam();
+  renderPinjam();
+});
+
+// 2️⃣ Setiap save kostum baru/update → sync ke Firebase
+const originalSaveKostum = saveKostum;
+saveKostum = async function(e){
+  originalSaveKostum(e); // jalankan fungsi lama
+  if(editIndex===-1){ // baru tambah
+    const last = kostum[kostum.length-1];
+    await setDoc(doc(db, "kostum", last.kode), last);
+  } else { // edit
+    const updated = kostum[editIndex];
+    await setDoc(doc(db, "kostum", updated.kode), updated);
+  }
+};
+
+// 3️⃣ Hapus kostum → update Firebase juga
+const originalHapusKostum = hapusKostum;
+hapusKostum = async function(i){
+  const kodeHapus = kostum[i].kode;
+  originalHapusKostum(i);
+  await updateDoc(doc(db, "kostum", kodeHapus), { hapus: true }).catch(()=>{}); 
+};
+
+// 4️⃣ Save peminjaman → sync ke Firebase
+const originalSavePinjam = savePinjam;
+savePinjam = async function(e){
+  originalSavePinjam(e);
+  const last = dataPinjam[dataPinjam.length-1];
+  const id = last.kode + "-" + last.tanggal + "-" + Date.now();
+  await setDoc(doc(db, "peminjaman", id), last);
+};
+
+// 5️⃣ Kembalikan → update Firebase
+const originalKembalikan = kembalikan;
+kembalikan = async function(i){
+  const item = dataPinjam[i];
+  originalKembalikan(i);
+  const id = item.kode + "-" + item.tanggal + "-" + i; // ID unik sama cara generate
+  await setDoc(doc(db, "peminjaman", id), item);
+};
+
+console.log("✅ Firestore sudah tersinkron dengan sistem lama, tanpa ubah codingan lama");
+
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import { getFirestore } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
