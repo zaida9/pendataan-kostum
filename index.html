@@ -501,30 +501,41 @@
       }
       
       function gambarGrafik(belum, sudah){
-        const canvas = document.getElementById("grafikPinjam");
-        const ctx = canvas.getContext("2d");
-      
-        canvas.width = canvas.offsetWidth;
-        canvas.height = 180; // tinggi tetap, nggak kegedean
+      const canvas = document.getElementById("grafikPinjam");
+      const ctx = canvas.getContext("2d");
+    
+      canvas.width = canvas.offsetWidth;
+      canvas.height = 200;
+    
+      ctx.clearRect(0,0,canvas.width,canvas.height);
+    
+      const total = belum + sudah || 1;
+    
+      // tinggi grafik diperbesar biar keliatan
+      const maxHeight = 120;
+    
+      const tinggiBelum = (belum/total) * maxHeight;
+      const tinggiSudah = (sudah/total) * maxHeight;
+    
+      const x1 = canvas.width/2 - 80;
+      const x2 = canvas.width/2 + 20;
+      const baseY = 160;
+    
+      // batang merah (dipinjam)
+      ctx.fillStyle = "#ef5350";
+      ctx.fillRect(x1, baseY - tinggiBelum, 60, tinggiBelum);
+    
+      // batang hijau (kembali)
+      ctx.fillStyle = "#66bb6a";
+      ctx.fillRect(x2, baseY - tinggiSudah, 60, tinggiSudah);
+    
+      // teks label
+      ctx.fillStyle = "#000";
+      ctx.textAlign = "center";
+      ctx.fillText("Dipinjam", x1 + 30, baseY + 15);
+      ctx.fillText("Kembali", x2 + 30, baseY + 15);
+    }
 
-      
-        ctx.clearRect(0,0,canvas.width,canvas.height);
-      
-        const total = belum + sudah || 1;
-      
-        const tinggiBelum = (belum/total) * 80;
-        const tinggiSudah = (sudah/total) * 80;
-      
-        ctx.fillStyle = "#ef5350";
-        ctx.fillRect(60,90-tinggiBelum,60,tinggiBelum);
-      
-        ctx.fillStyle = "#66bb6a";
-        ctx.fillRect(160,90-tinggiSudah,60,tinggiSudah);
-      
-        ctx.fillStyle = "#000";
-        ctx.fillText("Dipinjam",60,105);
-        ctx.fillText("Kembali",160,105);
-      }
 </script>
 
   <!-- FIREBASE -->
