@@ -26,7 +26,7 @@
     .btn-logout:hover { opacity:.9; }
 
     table { width:100%; border-collapse:collapse; background:white; border-radius:16px; overflow:hidden; box-shadow:0 6px 18px rgba(0,0,0,.08); }
-    th,td { padding:14px; border-bottom:1px solid #f1f1f1; text-align:left; }
+    th,td { padding:14px; border-bottom:1px solid #f1f1f1; text-align:center; vertical-align:middle; }
     th { background:#e3f2fd; color:#1565c0; font-weight:600; }
     tr:hover { background:#f9fbff; }
 
@@ -37,56 +37,41 @@
     .btn:hover{transform:translateY(-1px);box-shadow:0 4px 10px rgba(0,0,0,.15);} 
 
     .form-box{ background:white; padding:18px; border-radius:16px; margin-bottom:15px; display:none; box-shadow:0 6px 18px rgba(0,0,0,.08); }
-    .form-box input{ padding:10px; margin:6px; border-radius:10px; border:1px solid #e0e0e0; }
-    .form-box input:focus{ outline:none; border-color:#64b5f6; box-shadow:0 0 0 2px rgba(100,181,246,.15); }
+    .form-box input, .form-box select{ padding:10px; margin:6px; border-radius:10px; border:1px solid #e0e0e0; }
+    .form-box input:focus, .form-box select:focus{ outline:none; border-color:#64b5f6; box-shadow:0 0 0 2px rgba(100,181,246,.15); }
 
-          /* bikin tabel benar-benar penuh & kolom rata */
-      table {
-        width: 100%;
-        table-layout: fixed;
-      }
-      
-      /* semua isi kolom rata tengah biar seimbang */
-      th, td {
-        text-align: center;
-        vertical-align: middle;
-      }
-      
-      /* rapihin lebar tiap kolom */
-      thead th:nth-child(1) { width: 25%; }
-      thead th:nth-child(2) { width: 20%; }
-      thead th:nth-child(3) { width: 15%; }
-      thead th:nth-child(4) { width: 15%; }
-      thead th:nth-child(5) { width: 25%; }
-      
-      /* kasih jarak kiri-kanan biar full tapi tetap rapi */
-      #mainApp {
-        padding: 25px 40px;
-      }
-      
-      /* biar bagian atas kelihatan lebih “dashboard” */
-      .topbar h2 {
-        font-weight: 700;
-        letter-spacing: .5px;
-      }
-          .cardDash{
-        background:white;
-        border-radius:16px;
-        padding:18px;
-        box-shadow:0 6px 18px rgba(0,0,0,.08);
-        text-align:center;
-      }
-      .cardDash h4{
-        margin:0;
-        font-size:14px;
-        color:#666;
-      }
-      .cardDash p{
-        margin:6px 0 0;
-        font-size:26px;
-        font-weight:700;
-        color:#1565c0;
-      }
+    /* Tabel full width dan kolom rata tengah */
+    table { width: 100%; table-layout: fixed; }
+    thead th:nth-child(1) { width: 25%; }
+    thead th:nth-child(2) { width: 20%; }
+    thead th:nth-child(3) { width: 15%; }
+    thead th:nth-child(4) { width: 15%; }
+    thead th:nth-child(5) { width: 25%; }
+
+    #mainApp { padding: 25px 40px; }
+
+    .topbar h2 { font-weight: 700; letter-spacing: .5px; }
+
+    .cardDash{
+      background:white;
+      border-radius:16px;
+      padding:18px;
+      box-shadow:0 6px 18px rgba(0,0,0,.08);
+      text-align:center;
+      transition:.2s;
+    }
+    .cardDash:hover{ transform:translateY(-2px); box-shadow:0 8px 20px rgba(0,0,0,.12);}
+    .cardDash h4{ margin:0; font-size:14px; color:#666; }
+    .cardDash p{ margin:6px 0 0; font-size:26px; font-weight:700; color:#1565c0; }
+
+    /* Layout dashboard cards + grafik + ringkasan */
+    #dashboardCards{ display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:15px; margin-bottom:20px; }
+    #grafikContainer{ display:grid; grid-template-columns:2fr 1fr; gap:15px; margin-bottom:20px; }
+
+    #grafikPinjam{ width:100%; height:180px; border-radius:16px; box-shadow:0 6px 18px rgba(0,0,0,.08); background:white; padding:10px; }
+    #ringkasanDash{ background:white; border-radius:16px; padding:18px; box-shadow:0 6px 18px rgba(0,0,0,.08); display:flex; flex-direction:column; justify-content:center; }
+    #ringkasanDash h4{ margin:0; color:#666; font-size:14px; }
+    #ringkasanDash p{ margin:6px 0; font-weight:600; }
   </style>
 </head>
 <body>
@@ -102,12 +87,13 @@
   </div>
 
   <div id="mainApp">
+
     <div class="topbar">
       <h2>Dashboard Kostum</h2>
       <button class="btn-logout" onclick="logout()">Logout</button>
     </div>
 
-    <div id="dashboardCards" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:15px;margin-bottom:20px;">
+    <div id="dashboardCards">
       <div class="cardDash">
         <h4>Total Kostum</h4>
         <p id="totalKostum">0</p>
@@ -121,32 +107,21 @@
         <p id="totalKembali">0</p>
       </div>
     </div>
-    
-    <div style="display:grid;grid-template-columns:2fr 1fr;gap:15px;margin-bottom:20px;">
-  
-       <canvas id="grafikPinjam"
-        style="width:60%;height:140px;display:block;margin:0 auto 20px auto;
-        background:white;border-radius:16px;padding:10px;
-        box-shadow:0 6px 18px rgba(0,0,0,.08);">
-      </canvas>
 
-    
-      <div style="background:white;border-radius:16px;padding:18px;box-shadow:0 6px 18px rgba(0,0,0,.08);display:flex;flex-direction:column;justify-content:center;">
-        <h4 style="margin:0;color:#666;font-size:14px;">Ringkasan</h4>
-        <p style="margin:6px 0;font-weight:600;">Total Kostum: <span id="ringkasTotal">0</span></p>
-        <p style="margin:6px 0;font-weight:600;">Dipinjam: <span id="ringkasBelum">0</span></p>
-        <p style="margin:6px 0;font-weight:600;">Kembali: <span id="ringkasSudah">0</span></p>
+    <div id="grafikContainer">
+      <canvas id="grafikPinjam"></canvas>
+      <div id="ringkasanDash">
+        <h4>Ringkasan</h4>
+        <p>Total Kostum: <span id="ringkasTotal">0</span></p>
+        <p>Dipinjam: <span id="ringkasBelum">0</span></p>
+        <p>Kembali: <span id="ringkasSudah">0</span></p>
       </div>
-    
     </div>
 
     <button class="btn add" onclick="showForm()">+ Tambah Kostum</button>
-
     <form class="form-box" id="formBox" onsubmit="saveKostum(event)">
       <input id="nama" placeholder="Nama kostum" required />
-      <!-- KODE OTOMATIS -->
       <input id="kode" placeholder="Kode otomatis" readonly />
-      <!-- UKURAN TIDAK WAJIB -->
       <input id="ukuran" placeholder="Ukuran (opsional)" />
       <input id="jumlah" type="number" placeholder="Jumlah" />
       <button type="submit" class="btn add">Simpan</button>
@@ -166,7 +141,6 @@
     </table>
 
     <h3 style="margin-top:25px">Form Peminjaman Kostum</h3>
-
     <form class="form-box" style="display:block" onsubmit="savePinjam(event)">
       <input id="peminjam" placeholder="Nama peminjam" required />
       <select id="kostumPinjam" required></select>
@@ -194,8 +168,10 @@
       </thead>
       <tbody id="tablePinjam"></tbody>
     </table>
+
   </div>
 
+  <!-- SCRIPT ASLI KAMU -->
   <script>
   const USERNAME="admin";
   const PASSWORD="123456";
@@ -220,15 +196,12 @@
   }
 
   function generateKode(){
-    // cari nomor terbesar yang pernah ada supaya tidak mengulang kode setelah dihapus
     if(kostum.length===0) return "KST001";
-
     let max = 0;
     kostum.forEach(k=>{
       const num = parseInt(k.kode.replace("KST", "")) || 0;
       if(num > max) max = num;
     });
-
     return "KST" + String(max + 1).padStart(3, "0");
   }
 
@@ -267,63 +240,43 @@
 
   function saveKostum(e){
     e.preventDefault();
-
-    const data={
-      nama:nama.value.trim(),
-      kode:kode.value.trim(),
-      ukuran:ukuran.value.trim()||"-",
-      jumlah:jumlah.value.trim()||"0"
-    };
-
+    const data={ nama:nama.value.trim(), kode:kode.value.trim(), ukuran:ukuran.value.trim()||"-", jumlah:jumlah.value.trim()||"0" };
     if(!data.nama){ alert("Nama wajib diisi"); return; }
-
     if(editIndex===-1) kostum.push(data);
     else kostum[editIndex]=data;
-
     simpanKeStorage();
     formBox.style.display="none";
     render();
   }
 
   function render(){
-  updateDropdown();
-  tableBody.innerHTML="";
-
-  if(kostum.length===0){
-    tableBody.innerHTML='<tr><td colspan="5" style="text-align:center">Belum ada data kostum</td></tr>';
-  } else {
-    kostum.forEach((k,i)=>{
-      const row=document.createElement("tr");
-
-      row.innerHTML=`
-        <td>${k.nama}</td>
-        <td>${k.kode}</td>
-        <td>${k.ukuran}</td>
-        <td>${k.jumlah}</td>
-        <td>
-          <button type="button" class="btn edit" data-i="${i}">Edit</button>
-          <button type="button" class="btn delete" data-i="${i}">Hapus</button>
-        </td>`;
-
-      tableBody.appendChild(row);
-    });
+    updateDropdown();
+    tableBody.innerHTML="";
+    if(kostum.length===0){
+      tableBody.innerHTML='<tr><td colspan="5" style="text-align:center">Belum ada data kostum</td></tr>';
+    } else {
+      kostum.forEach((k,i)=>{
+        const row=document.createElement("tr");
+        row.innerHTML=`
+          <td>${k.nama}</td>
+          <td>${k.kode}</td>
+          <td>${k.ukuran}</td>
+          <td>${k.jumlah}</td>
+          <td>
+            <button type="button" class="btn edit" data-i="${i}">Edit</button>
+            <button type="button" class="btn delete" data-i="${i}">Hapus</button>
+          </td>`;
+        tableBody.appendChild(row);
+      });
+    }
+    updateDashboard();
   }
 
-  updateDashboard(); // ← pindahin ke luar biar selalu jalan
-}
-
-  // EVENT LISTENER GLOBAL UNTUK TOMBOL EDIT & HAPUS
   tableBody.addEventListener("click",(e)=>{
     const index=e.target.getAttribute("data-i");
     if(index===null) return;
-
-    if(e.target.classList.contains("edit")){
-      editKostum(Number(index));
-    }
-
-    if(e.target.classList.contains("delete")){
-      hapusKostum(Number(index));
-    }
+    if(e.target.classList.contains("edit")) editKostum(Number(index));
+    if(e.target.classList.contains("delete")) hapusKostum(Number(index));
   });
 
   function editKostum(i){
@@ -339,7 +292,6 @@
   function hapusKostum(i){
     const yakin=confirm("Hapus kostum ini?");
     if(!yakin) return;
-
     kostum.splice(i,1);
     simpanKeStorage();
     render();
@@ -355,7 +307,6 @@
   function updateDropdown(){
     const select=document.getElementById("kostumPinjam");
     select.innerHTML="";
-
     if(kostum.length===0){
       const opt=document.createElement("option");
       opt.textContent="Belum ada kostum";
@@ -363,7 +314,6 @@
       select.appendChild(opt);
       return;
     }
-
     kostum.forEach(k=>{
       const opt=document.createElement("option");
       opt.value=k.kode;
@@ -383,32 +333,22 @@
 
   function savePinjam(e){
     e.preventDefault();
-
     const kodeDipilih=document.getElementById("kostumPinjam").value.trim();
-
     const item={
       peminjam:document.getElementById("peminjam").value.trim(),
       kode:kodeDipilih,
       tanggal:document.getElementById("tanggal").value,
       kembali:false
     };
-
     if(!item.peminjam || !item.kode) return alert("Data belum lengkap");
-
     const k=kostum.find(x=>x.kode===kodeDipilih);
-    if(!k || Number(k.jumlah)<=0){
-      alert("Stok kostum habis!");
-      return;
-    }
-
+    if(!k || Number(k.jumlah)<=0){ alert("Stok kostum habis!"); return; }
     k.jumlah=String(Number(k.jumlah)-1);
-
     dataPinjam.push(item);
     simpanPinjam();
     simpanKeStorage();
     render();
     renderPinjam();
-
     e.target.reset();
     setTanggalHariIni();
   }
@@ -420,9 +360,7 @@
         <td>${p.kode}</td>
         <td>${p.tanggal}</td>
         <td>${p.kembali?"Sudah kembali":"Belum kembali"}</td>
-      </tr>
-    `).join("");
-
+      </tr>`).join("");
     const html=`
       <html>
         <head>
@@ -449,9 +387,7 @@
             <tbody>${rows || '<tr><td colspan="4" style="text-align:center">Tidak ada data</td></tr>'}</tbody>
           </table>
         </body>
-      </html>
-    `;
-
+      </html>`;
     const win=window.open("","","width=900,height=700");
     win.document.write(html);
     win.document.close();
@@ -459,44 +395,35 @@
   }
 
   function renderPinjam(){
-  tablePinjam.innerHTML="";
-
-  const filter=document.getElementById("filterStatus").value;
-
-  let list=dataPinjam;
-  if(filter==="belum") list=dataPinjam.filter(p=>!p.kembali);
-  if(filter==="sudah") list=dataPinjam.filter(p=>p.kembali);
-
-  if(list.length===0){
-    tablePinjam.innerHTML='<tr><td colspan="4" style="text-align:center">Tidak ada data</td></tr>';
-  } else {
-    list.forEach((p,i)=>{
-      const row=document.createElement("tr");
-      row.innerHTML=`
-        <td>${p.peminjam}</td>
-        <td>${p.kode}</td>
-        <td>${p.tanggal}</td>
-        <td>
-          ${p.kembali ? '<span style="color:green;font-weight:600">Sudah kembali</span>' : `<button class="btn edit" onclick="kembalikan(${i})">Kembalikan</button>`}
-        </td>`;
-      tablePinjam.appendChild(row);
-    });
+    tablePinjam.innerHTML="";
+    const filter=document.getElementById("filterStatus").value;
+    let list=dataPinjam;
+    if(filter==="belum") list=dataPinjam.filter(p=>!p.kembali);
+    if(filter==="sudah") list=dataPinjam.filter(p=>p.kembali);
+    if(list.length===0){
+      tablePinjam.innerHTML='<tr><td colspan="4" style="text-align:center">Tidak ada data</td></tr>';
+    } else {
+      list.forEach((p,i)=>{
+        const row=document.createElement("tr");
+        row.innerHTML=`
+          <td>${p.peminjam}</td>
+          <td>${p.kode}</td>
+          <td>${p.tanggal}</td>
+          <td>
+            ${p.kembali ? '<span style="color:green;font-weight:600">Sudah kembali</span>' : `<button class="btn edit" onclick="kembalikan(${i})">Kembalikan</button>`}
+          </td>`;
+        tablePinjam.appendChild(row);
+      });
+    }
+    updateDashboard();
   }
-
-  updateDashboard(); // ← ini juga harus di luar
-}
 
   function kembalikan(i){
     const p=dataPinjam[i];
     if(p.kembali) return;
-
     const k=kostum.find(x=>x.kode===p.kode);
-    if(k){
-      k.jumlah=String(Number(k.jumlah)+1);
-    }
-
+    if(k) k.jumlah=String(Number(k.jumlah)+1);
     p.kembali=true;
-
     simpanPinjam();
     simpanKeStorage();
     render();
@@ -504,59 +431,58 @@
   }
 
   renderPinjam();
-          function updateDashboard(){
-        document.getElementById("totalKostum").innerText = kostum.length;
-      
-        const belum = dataPinjam.filter(p=>!p.kembali).length;
-        const sudah = dataPinjam.filter(p=>p.kembali).length;
-      
-        document.getElementById("totalPinjam").innerText = belum;
-        document.getElementById("totalKembali").innerText = sudah;
-      
-        gambarGrafik(belum, sudah);
 
-        document.getElementById("ringkasTotal").innerText = kostum.length;
-        document.getElementById("ringkasBelum").innerText = belum;
-        document.getElementById("ringkasSudah").innerText = sudah;
-      }
-      
-      function gambarGrafik(belum, sudah){
-      const canvas = document.getElementById("grafikPinjam");
-      const ctx = canvas.getContext("2d");
-    
-      canvas.width = canvas.offsetWidth;
-      canvas.height = 200;
-    
+  // DASHBOARD + GRAFIK ANIMASI
+  function updateDashboard(){
+    document.getElementById("totalKostum").innerText = kostum.length;
+    const belum = dataPinjam.filter(p=>!p.kembali).length;
+    const sudah = dataPinjam.filter(p=>p.kembali).length;
+    document.getElementById("totalPinjam").innerText = belum;
+    document.getElementById("totalKembali").innerText = sudah;
+    document.getElementById("ringkasTotal").innerText = kostum.length;
+    document.getElementById("ringkasBelum").innerText = belum;
+    document.getElementById("ringkasSudah").innerText = sudah;
+    gambarGrafik(belum, sudah);
+  }
+
+  function gambarGrafik(belum, sudah){
+    const canvas = document.getElementById("grafikPinjam");
+    const ctx = canvas.getContext("2d");
+    canvas.width = canvas.offsetWidth;
+    canvas.height = 180;
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    const total = belum + sudah || 1;
+    const maxHeight = 120;
+    const tinggiBelum = (belum/total) * maxHeight;
+    const tinggiSudah = (sudah/total) * maxHeight;
+    const x1 = canvas.width/2 - 80;
+    const x2 = canvas.width/2 + 20;
+    const baseY = 150;
+
+    // Animasi sederhana
+    let t=0;
+    function anim(){
+      t += 0.05;
       ctx.clearRect(0,0,canvas.width,canvas.height);
-    
-      const total = belum + sudah || 1;
-    
-      // tinggi grafik diperbesar biar keliatan
-      const maxHeight = 120;
-    
-      const tinggiBelum = (belum/total) * maxHeight;
-      const tinggiSudah = (sudah/total) * maxHeight;
-    
-      const x1 = canvas.width/2 - 80;
-      const x2 = canvas.width/2 + 20;
-      const baseY = 160;
-    
-      // batang merah (dipinjam)
+      const hBelum = Math.min(tinggiBelum, tinggiBelum * t);
+      const hSudah = Math.min(tinggiSudah, tinggiSudah * t);
+
       ctx.fillStyle = "#ef5350";
-      ctx.fillRect(x1, baseY - tinggiBelum, 60, tinggiBelum);
-    
-      // batang hijau (kembali)
+      ctx.fillRect(x1, baseY - hBelum, 60, hBelum);
+
       ctx.fillStyle = "#66bb6a";
-      ctx.fillRect(x2, baseY - tinggiSudah, 60, tinggiSudah);
-    
-      // teks label
+      ctx.fillRect(x2, baseY - hSudah, 60, hSudah);
+
       ctx.fillStyle = "#000";
       ctx.textAlign = "center";
-      ctx.fillText("Dipinjam", x1 + 30, baseY + 15);
-      ctx.fillText("Kembali", x2 + 30, baseY + 15);
-    }
+      ctx.fillText("Dipinjam", x1 + 30, baseY + 20);
+      ctx.fillText("Kembali", x2 + 30, baseY + 20);
 
-</script>
+      if(t<1) requestAnimationFrame(anim);
+    }
+    anim();
+  }
+  </script>
 
   <!-- FIREBASE -->
 <script type="module">
@@ -575,7 +501,6 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
-
 console.log("🔥 Firebase tersambung");
 </script>
 </body>
