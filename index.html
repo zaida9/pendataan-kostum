@@ -122,7 +122,7 @@
       </div>
     </div>
     
-    <canvas id="grafikPinjam" height="120" style="width:100%;background:white;border-radius:16px;padding:10px;margin-bottom:20px;box-shadow:0 6px 18px rgba(0,0,0,.08);"></canvas>
+    <canvas id="grafikPinjam" style="width:100%;max-height:180px;background:white;border-radius:16px;padding:10px;margin-bottom:20px;box-shadow:0 6px 18px rgba(0,0,0,.08);"></canvas>
 
     <button class="btn add" onclick="showForm()">+ Tambah Kostum</button>
 
@@ -505,8 +505,10 @@
       function gambarGrafik(belum, sudah){
         const canvas = document.getElementById("grafikPinjam");
         const ctx = canvas.getContext("2d");
-
+      
         canvas.width = canvas.offsetWidth;
+        canvas.height = 180; // tinggi tetap, nggak kegedean
+
       
         ctx.clearRect(0,0,canvas.width,canvas.height);
       
