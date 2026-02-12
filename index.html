@@ -36,7 +36,7 @@ tr:hover{background:#f9fbff;}
 .add{background:#66bb6a;color:white;margin-bottom:12px;}
 .btn:hover{transform:translateY(-1px);box-shadow:0 4px 10px rgba(0,0,0,.15);} 
 .form-box{ background:white; padding:18px; border-radius:16px; margin-bottom:15px; display:none; box-shadow:0 6px 18px rgba(0,0,0,.08);}
-.form-box input, .form-box select{ padding:10px; margin:6px; border-radius:10px; border:1px solid #e0e0e0; }
+.form-box input, .form-box select, .form-box textarea{ padding:10px; margin:6px; border-radius:10px; border:1px solid #e0e0e0; width:95%;}
 .form-box input:focus, .form-box select:focus{ outline:none; border-color:#64b5f6; box-shadow:0 0 0 2px rgba(100,181,246,.15); }
 #mainApp{padding: 25px 40px;}
 .topbar h2{font-weight:700; letter-spacing:.5px;}
@@ -45,9 +45,21 @@ tr:hover{background:#f9fbff;}
 .cardDash p{margin:6px 0 0; font-size:26px; font-weight:700; color:#1565c0;}
 .keranjang-table{ margin-top:10px; background:#f8f9fa; border-radius:12px; padding:10px; }
 .btn-remove{ background:#ff9800; color:white; padding:4px 10px; border-radius:8px; border:none; cursor:pointer; }
+.thumbnail{ width:50px; height:50px; object-fit:cover; border-radius:8px; cursor:pointer; border:2px solid #e3f2fd; }
+.thumbnail:hover{ border-color:#42a5f5; transform:scale(1.05); transition:0.2s; }
+.modal{ display:none; position:fixed; z-index:1000; left:0; top:0; width:100%; height:100%; background-color:rgba(0,0,0,0.8); }
+.modal-content{ margin:auto; display:block; max-width:80%; max-height:80%; margin-top:5%; border-radius:12px; }
+.close{ position:absolute; top:20px; right:35px; color:white; font-size:40px; font-weight:bold; cursor:pointer; }
+#previewGambar{ max-width:200px; max-height:150px; margin-top:10px; border-radius:8px; display:none; border:2px dashed #64b5f6; padding:5px; }
 </style>
 </head>
 <body>
+
+<!-- MODAL LIHAT GAMBAR -->
+<div id="modalGambar" class="modal">
+  <span class="close" onclick="document.getElementById('modalGambar').style.display='none'">&times;</span>
+  <img class="modal-content" id="gambarBesar">
+</div>
 
 <div id="loginPage">
   <form class="login-box" id="loginForm">
@@ -78,20 +90,32 @@ tr:hover{background:#f9fbff;}
     <canvas id="grafikPinjam" style="width:100%; max-height:200px;"></canvas>
   </div>
 
-  <!-- TAMBAH KOSTUM -->
+  <!-- TAMBAH KOSTUM + GAMBAR -->
   <button class="btn add" id="showFormBtn">+ Tambah Kostum</button>
   <form class="form-box" id="formBox">
     <input id="nama" placeholder="Nama kostum" required />
     <input id="kode" placeholder="Kode otomatis" readonly />
     <input id="ukuran" placeholder="Ukuran (opsional)" />
     <input id="jumlah" type="number" placeholder="Jumlah stok" required />
+    
+    <!-- 🆕 UPLOAD GAMBAR - OPSIONAL -->
+    <div style="margin:10px 0;">
+      <label style="font-weight:600; color:#1565c0;">📷 Gambar Kostum (opsional)</label>
+      <input type="file" id="uploadGambar" accept="image/*" style="padding:10px; border:2px dashed #64b5f6; border-radius:10px; width:95%;" />
+      <div style="display:flex; justify-content:center;">
+        <img id="previewGambar" src="#" alt="Preview" />
+      </div>
+      <input type="hidden" id="gambarBase64" />
+    </div>
+    
     <button type="submit" class="btn add">Simpan</button>
   </form>
 
-  <!-- TABEL KOSTUM -->
+  <!-- TABEL KOSTUM + THUMBNAIL -->
   <table>
     <thead>
       <tr>
+        <th>Gambar</th>
         <th>Nama</th>
         <th>Kode</th>
         <th>Ukuran</th>
@@ -102,26 +126,22 @@ tr:hover{background:#f9fbff;}
     <tbody id="tableBody"></tbody>
   </table>
 
-  <!-- ===== FORM PEMINJAMAN BARU - BISA PINJAM BANYAK KOSTUM ===== -->
-  <h3 style="margin-top:25px">Form Peminjaman Kostum</h3>
+  <!-- FORM PEMINJAMAN BANYAK KOSTUM -->
+  <h3 style="margin-top:25px">Form Peminjaman Kostum (1 Orang Banyak Kostum)</h3>
   
   <div class="form-box" style="display:block">
-    <!-- Nama Peminjam -->
     <input id="peminjam" placeholder="Nama peminjam" required style="width:95%;" />
-    
-    <!-- Tanggal -->
     <input id="tanggal" type="date" required readonly style="width:95%;" />
     
-    <!-- Pilih Kostum + Jumlah -->
     <div style="display:flex; gap:10px; align-items:center; margin-top:10px;">
       <select id="kostumPinjam" style="flex:2; padding:10px;" required>
         <option value="">Pilih Kostum</option>
       </select>
       <input id="jmlPinjam" type="number" placeholder="Jumlah" min="1" value="1" style="flex:1; padding:10px;" />
-      <button type="button" class="btn add" id="tambahKeranjangBtn" style="margin-bottom:0;">➕ Tambah ke Keranjang</button>
+      <button type="button" class="btn add" id="tambahKeranjangBtn" style="margin-bottom:0;">➕ Tambah</button>
     </div>
     
-    <!-- KERANJANG PEMINJAMAN -->
+    <!-- KERANJANG -->
     <div id="keranjangContainer" class="keranjang-table" style="margin-top:15px; display:none;">
       <h4 style="margin:0 0 10px 0; color:#1565c0;">🛒 Keranjang Peminjaman</h4>
       <table style="width:100%; background:white; border-radius:8px;">
@@ -135,12 +155,12 @@ tr:hover{background:#f9fbff;}
         </thead>
         <tbody id="keranjangBody"></tbody>
       </table>
-      <button type="button" class="btn add" id="simpanSemuaPinjamBtn" style="margin-top:15px;">✅ Simpan Semua Peminjaman</button>
+      <button type="button" class="btn add" id="simpanSemuaPinjamBtn" style="margin-top:15px;">✅ Simpan Semua</button>
       <button type="button" class="btn delete" id="batalKeranjangBtn" style="margin-top:15px;">❌ Batal</button>
     </div>
   </div>
 
-  <!-- FILTER + EXPORT PDF -->
+  <!-- FILTER + EXPORT -->
   <div style="margin:15px 0; display:flex; gap:10px; align-items:center;">
     <select id="filterStatus" class="btn">
       <option value="semua">Semua Peminjaman</option>
@@ -155,11 +175,11 @@ tr:hover{background:#f9fbff;}
     <thead>
       <tr>
         <th>Nama Peminjam</th>
-        <th>Kode Kostum</th>
+        <th>Kode</th>
         <th>Nama Kostum</th>
         <th>Jumlah</th>
         <th>Tanggal</th>
-        <th>Status / Aksi</th>
+        <th>Status</th>
       </tr>
     </thead>
     <tbody id="tablePinjam"></tbody>
@@ -191,7 +211,7 @@ let kostum = [];
 let dataPinjam = [];
 let editIndex = -1;
 let myChart = null;
-let keranjang = []; // 🆕 KERANJANG UNTUK 1 ORANG BANYAK KOSTUM
+let keranjang = [];
 
 // =========== LOGIN ===========
 const USERNAME = "admin";
@@ -231,6 +251,21 @@ function setTanggalHariIni() {
 }
 setTanggalHariIni();
 
+// =========== 🆕 PREVIEW GAMBAR ===========
+document.getElementById("uploadGambar")?.addEventListener("change", function(e) {
+  const file = e.target.files[0];
+  if (file) {
+    const reader = new FileReader();
+    reader.onload = function(event) {
+      const preview = document.getElementById("previewGambar");
+      preview.src = event.target.result;
+      preview.style.display = "block";
+      document.getElementById("gambarBase64").value = event.target.result;
+    };
+    reader.readAsDataURL(file);
+  }
+});
+
 // =========== GENERATE KODE ===========
 async function generateKode() {
   if(kostum.length === 0) return "KST-001";
@@ -248,16 +283,19 @@ window.showForm = async function() {
   editIndex = -1;
   document.getElementById("formBox").reset();
   document.getElementById("kode").value = await generateKode();
+  document.getElementById("previewGambar").style.display = "none";
+  document.getElementById("gambarBase64").value = "";
 };
 
-// =========== SAVE KOSTUM ===========
+// =========== SAVE KOSTUM + GAMBAR ===========
 async function saveKostum(e) {
   e.preventDefault();
   const data = {
     nama: document.getElementById("nama").value.trim(),
     kode: document.getElementById("kode").value.trim(),
     ukuran: document.getElementById("ukuran").value.trim() || "-",
-    jumlah: document.getElementById("jumlah").value.trim() || "0"
+    jumlah: document.getElementById("jumlah").value.trim() || "0",
+    gambar: document.getElementById("gambarBase64").value || null // 🆕 SIMPAN BASE64
   };
   if(!data.nama) return alert("Nama wajib diisi");
   if(!data.kode) return alert("Kode error");
@@ -266,6 +304,7 @@ async function saveKostum(e) {
     await setDoc(doc(kostumCol, data.kode), data);
     document.getElementById("formBox").style.display = "none";
     document.getElementById("formBox").reset();
+    document.getElementById("previewGambar").style.display = "none";
   } catch(err) {
     console.error(err);
     alert("Gagal menyimpan data");
@@ -292,6 +331,17 @@ window.editKostum = function(i) {
   document.getElementById("kode").value = k.kode;
   document.getElementById("ukuran").value = k.ukuran === "-" ? "" : k.ukuran;
   document.getElementById("jumlah").value = k.jumlah;
+  
+  // 🆕 TAMPILKAN GAMBAR LAMA
+  if(k.gambar) {
+    document.getElementById("previewGambar").src = k.gambar;
+    document.getElementById("previewGambar").style.display = "block";
+    document.getElementById("gambarBase64").value = k.gambar;
+  } else {
+    document.getElementById("previewGambar").style.display = "none";
+    document.getElementById("gambarBase64").value = "";
+  }
+  
   document.getElementById("formBox").style.display = "block";
   editIndex = i;
 };
@@ -313,16 +363,26 @@ function updateDropdown() {
   });
 }
 
-// =========== RENDER KOSTUM ===========
+// =========== RENDER KOSTUM + THUMBNAIL ===========
 function renderKostum() {
   const tbody = document.getElementById("tableBody");
   tbody.innerHTML = "";
   if(kostum.length === 0) {
-    tbody.innerHTML = '<tr><td colspan="5">Belum ada data kostum</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="6">Belum ada data kostum</td></tr>';
   } else {
     kostum.forEach((k, i) => {
       const row = document.createElement("tr");
+      
+      // Kolom gambar dengan thumbnail
+      let gambarCell = '<td>-</td>';
+      if(k.gambar) {
+        gambarCell = `<td>
+          <img src="${k.gambar}" class="thumbnail" onclick="lihatGambar('${k.gambar}')" />
+        </td>`;
+      }
+      
       row.innerHTML = `
+        ${gambarCell}
         <td>${k.nama || "-"}</td>
         <td>${k.kode || "-"}</td>
         <td>${k.ukuran || "-"}</td>
@@ -338,7 +398,15 @@ function renderKostum() {
   updateDropdown();
 }
 
-// =========== 🆕 FUNGSI KERANJANG ===========
+// =========== FUNGSI LIHAT GAMBAR ===========
+window.lihatGambar = function(src) {
+  const modal = document.getElementById("modalGambar");
+  const img = document.getElementById("gambarBesar");
+  img.src = src;
+  modal.style.display = "block";
+};
+
+// =========== KERANJANG ===========
 window.tambahKeKeranjang = function() {
   const kode = document.getElementById("kostumPinjam").value;
   const jumlah = parseInt(document.getElementById("jmlPinjam").value);
@@ -350,8 +418,6 @@ window.tambahKeKeranjang = function() {
   if(!kostumItem) return alert("Kostum tidak ditemukan");
   
   const stokTersedia = Number(kostumItem.jumlah);
-  
-  // Cek apakah sudah ada di keranjang
   const existing = keranjang.find(item => item.kode === kode);
   const totalDiminta = existing ? existing.jumlah + jumlah : jumlah;
   
@@ -370,8 +436,6 @@ window.tambahKeKeranjang = function() {
   }
   
   renderKeranjang();
-  
-  // Reset jumlah
   document.getElementById("jmlPinjam").value = 1;
 };
 
@@ -413,7 +477,7 @@ window.batalKeranjang = function() {
   setTanggalHariIni();
 };
 
-// =========== 🆕 SIMPAN SEMUA PEMINJAMAN ===========
+// =========== SIMPAN SEMUA PEMINJAMAN ===========
 window.simpanSemuaPinjam = async function() {
   const peminjam = document.getElementById("peminjam").value.trim();
   const tanggal = document.getElementById("tanggal").value;
@@ -421,7 +485,6 @@ window.simpanSemuaPinjam = async function() {
   if(!peminjam) return alert("Nama peminjam wajib diisi!");
   if(keranjang.length === 0) return alert("Keranjang masih kosong!");
   
-  // Validasi stok sebelum simpan
   for(const item of keranjang) {
     const kostumItem = kostum.find(k => k.kode === item.kode);
     if(!kostumItem) {
@@ -435,16 +498,13 @@ window.simpanSemuaPinjam = async function() {
   }
   
   try {
-    // Simpan setiap item peminjaman
     for(const item of keranjang) {
       const kostumItem = kostum.find(k => k.kode === item.kode);
       
-      // Kurangi stok
       await updateDoc(doc(kostumCol, item.kode), {
         jumlah: String(Number(kostumItem.jumlah) - item.jumlah)
       });
       
-      // Simpan data peminjaman
       const pinjamId = `${item.kode}-${Date.now()}-${Math.random()}`;
       await setDoc(doc(pinjamCol, pinjamId), {
         peminjam: peminjam,
@@ -457,7 +517,6 @@ window.simpanSemuaPinjam = async function() {
       });
     }
     
-    // Reset
     keranjang = [];
     renderKeranjang();
     document.getElementById("peminjam").value = "";
@@ -470,7 +529,7 @@ window.simpanSemuaPinjam = async function() {
   }
 };
 
-// =========== KEMBALIKAN KOSTUM ===========
+// =========== KEMBALIKAN ===========
 window.kembalikan = async function(pinjamId) {
   const p = dataPinjam.find(d => d.id === pinjamId);
   if(!p || p.kembali) return;
@@ -479,13 +538,11 @@ window.kembalikan = async function(pinjamId) {
   if(!k) return alert("Kostum tidak ditemukan");
 
   try {
-    // Update status peminjaman
     await updateDoc(doc(pinjamCol, p.id), { 
       kembali: true,
       tanggalKembali: new Date().toISOString().split('T')[0]
     });
     
-    // Kembalikan stok
     await updateDoc(doc(kostumCol, k.kode), { 
       jumlah: String(Number(k.jumlah) + Number(p.jumlah)) 
     });
@@ -518,7 +575,7 @@ window.renderPinjam = function() {
         <td>${p.jumlah || "1"}</td>
         <td>${p.tanggal || "-"}</td>
         <td>${p.kembali ? 
-          '<span style="color:green;font-weight:600">Sudah kembali</span>' : 
+          '<span style="color:green;font-weight:600">Sudah</span>' : 
           `<button class="btn edit" onclick="kembalikan('${p.id}')">Kembalikan</button>`
         }</td>`;
       tbody.appendChild(row);
@@ -541,7 +598,6 @@ function updateDashboard() {
   gambarGrafik(belum, sudah);
 }
 
-// 🎨 DIAGRAM
 function gambarGrafik(belum, sudah) {
   const ctx = document.getElementById("grafikPinjam").getContext("2d");
   if (myChart) myChart.destroy();
@@ -664,6 +720,7 @@ window.simpanSemuaPinjam = simpanSemuaPinjam;
 window.batalKeranjang = batalKeranjang;
 window.showForm = showForm;
 window.renderPinjam = renderPinjam;
+window.lihatGambar = lihatGambar;
 
 </script>
 </body>
