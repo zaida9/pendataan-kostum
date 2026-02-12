@@ -528,37 +528,122 @@
 
   <!-- FIREBASE -->
 <script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-  import { getFirestore, collection, doc, setDoc, onSnapshot, updateDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getFirestore, collection, doc, setDoc, onSnapshot, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-  const firebaseConfig = {
+const firebaseConfig = {
   apiKey: "AIzaSyAZUybNqjxxb-KXMZ4ICL03GcO-StBzU-Y",
   authDomain: "pendataan-kostum.firebaseapp.com",
   projectId: "pendataan-kostum",
-  storageBucket: "pendataan-kostum.firebasestorage.app",
+  storageBucket: "pendataan-kostum.appspot.com",
   messagingSenderId: "226459234974",
   appId: "1:226459234974:web:2b0512247ff01c738a418f",
   measurementId: "G-4QQT28BDV0"
 };
 
-  const app = initializeApp(firebaseConfig);
-  const db = getFirestore(app);
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
 
-  const kostumCol = collection(db, "kostum");
-  const pinjamCol = collection(db, "peminjaman");
+const kostumCol = collection(db, "kostum");
+const pinjamCol = collection(db, "peminjaman");
 
-  // baru panggil onSnapshot di sini
-  onSnapshot(kostumCol, snapshot => {
-    kostum = snapshot.docs.map(d => d.data());
-    simpanKeStorage();
-    render();
-  });
+let kostum = [];
+let dataPinjam = [];
 
-  onSnapshot(pinjamCol, snapshot => {
-    dataPinjam = snapshot.docs.map(d => d.data());
-    simpanPinjam();
-    renderPinjam();
-  });
+// live sync dari Firestore
+onSnapshot(kostumCol, snapshot => {
+  kostum = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
+  render();
+  updateDropdown();
+});
+
+onSnapshot(pinjamCol, snapshot => {
+  dataPinjam = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
+  renderPinjam();
+});
+
+// SIMPAN KOSTUM
+async function saveKostum(e){
+  e.preventDefault();
+  const data = {
+    nama: nama.value.trim(),
+    kode: kode.value.trim(),
+    ukuran: ukuran.value.trim() || "-",
+    jumlah: jumlah.value.trim() || "0"
+  };
+  if(!data.nama) return alert("Nama wajib diisi");
+
+  try {
+    // id dokumen = kode kostum
+    await setDoc(doc(kostumCol, data.kode), data);
+    formBox.style.display="none";
+  } catch(err){
+    console.error(err);
+    alert("Gagal menyimpan data");
+  }
+}
+
+// HAPUS KOSTUM
+async function hapusKostum(i){
+  const k = kostum[i];
+  if(!k) return;
+  if(!confirm("Hapus kostum ini?")) return;
+
+  try {
+    await deleteDoc(doc(kostumCol, k.kode));
+  } catch(err){
+    console.error(err);
+    alert("Gagal hapus kostum");
+  }
+}
+
+// PINJAM KOSTUM
+async function savePinjam(e){
+  e.preventDefault();
+  const kodeDipilih = document.getElementById("kostumPinjam").value.trim();
+  const k = kostum.find(x=>x.kode===kodeDipilih);
+  if(!k || Number(k.jumlah)<=0){
+    return alert("Stok kostum habis!");
+  }
+
+  const item = {
+    peminjam: document.getElementById("peminjam").value.trim(),
+    kode: kodeDipilih,
+    tanggal: document.getElementById("tanggal").value,
+    kembali: false
+  };
+
+  try {
+    // kurangi stok kostum
+    await updateDoc(doc(kostumCol, k.kode), { jumlah: String(Number(k.jumlah)-1) });
+    // tambah data peminjaman
+    await setDoc(doc(pinjamCol, `${kodeDipilih}-${Date.now()}`), item);
+    e.target.reset();
+    setTanggalHariIni();
+  } catch(err){
+    console.error(err);
+    alert("Gagal menyimpan peminjaman");
+  }
+}
+
+// Kembalikan kostum
+async function kembalikan(i){
+  const p = dataPinjam[i];
+  if(p.kembali) return;
+
+  const k = kostum.find(x=>x.kode===p.kode);
+  if(!k) return;
+
+  try {
+    // update peminjaman
+    await updateDoc(doc(pinjamCol, p.id), { kembali: true });
+    // tambah stok kostum
+    await updateDoc(doc(kostumCol, k.kode), { jumlah: String(Number(k.jumlah)+1) });
+  } catch(err){
+    console.error(err);
+    alert("Gagal update pengembalian");
+  }
+}
 </script>
 </body>
 </html>
