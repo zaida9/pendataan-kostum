@@ -122,7 +122,20 @@
       </div>
     </div>
     
-    <canvas id="grafikPinjam" style="width:100%;max-height:180px;background:white;border-radius:16px;padding:10px;margin-bottom:20px;box-shadow:0 6px 18px rgba(0,0,0,.08);"></canvas>
+    <div style="display:grid;grid-template-columns:2fr 1fr;gap:15px;margin-bottom:20px;">
+  
+      <canvas id="grafikPinjam"
+        style="width:100%;height:200px;background:white;border-radius:16px;padding:10px;box-shadow:0 6px 18px rgba(0,0,0,.08);">
+      </canvas>
+    
+      <div style="background:white;border-radius:16px;padding:18px;box-shadow:0 6px 18px rgba(0,0,0,.08);display:flex;flex-direction:column;justify-content:center;">
+        <h4 style="margin:0;color:#666;font-size:14px;">Ringkasan</h4>
+        <p style="margin:6px 0;font-weight:600;">Total Kostum: <span id="ringkasTotal">0</span></p>
+        <p style="margin:6px 0;font-weight:600;">Dipinjam: <span id="ringkasBelum">0</span></p>
+        <p style="margin:6px 0;font-weight:600;">Kembali: <span id="ringkasSudah">0</span></p>
+      </div>
+    
+    </div>
 
     <button class="btn add" onclick="showForm()">+ Tambah Kostum</button>
 
@@ -498,6 +511,10 @@
         document.getElementById("totalKembali").innerText = sudah;
       
         gambarGrafik(belum, sudah);
+
+        document.getElementById("ringkasTotal").innerText = kostum.length;
+        document.getElementById("ringkasBelum").innerText = belum;
+        document.getElementById("ringkasSudah").innerText = sudah;
       }
       
       function gambarGrafik(belum, sudah){
