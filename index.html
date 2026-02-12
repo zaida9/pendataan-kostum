@@ -528,6 +528,28 @@
         ctx.fillText("Kembali",160,105);
       }
 
+    <!-- FIREBASE -->
+    <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import { getFirestore, collection, addDoc, getDocs } 
+    from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+    
+    const firebaseConfig = {
+      apiKey: "AIzaSyC54G9imUT689-jA4xrPXvFE2cVVb4bjK4",
+      authDomain: "sistemkostum.firebaseapp.com",
+      projectId: "sistemkostum",
+      storageBucket: "sistemkostum.firebasestorage.app",
+      messagingSenderId: "338983256503",
+      appId: "1:338983256503:web:ead19763882751d763e832",
+      measurementId: "G-EH668SHFDS"
+    };
+    
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    
+    console.log("🔥 Firebase tersambung");
+    </script>
+
 </script>
 
 </body>
