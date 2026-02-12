@@ -3,139 +3,117 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Sistem Pendataan Kostum Realtime</title>
+<title>Sistem Pendataan Kostum - Realtime</title>
 <style>
-body { margin:0; font-family: 'Poppins', Arial, sans-serif; background: linear-gradient(135deg,#e3f2fd,#fce4ec); }
-#loginPage { display:flex; height:100vh; align-items:center; justify-content:center; }
-.login-box { background:white; padding:40px; border-radius:18px; box-shadow:0 10px 30px rgba(0,0,0,.12); width:320px; text-align:center; }
-.login-box h2 { margin-bottom:20px; color:#42a5f5; }
-.login-box input { width:100%; padding:12px; margin-bottom:12px; border:1px solid #e0e0e0; border-radius:10px; transition:.2s; }
-.login-box input:focus { outline:none; border-color:#64b5f6; box-shadow:0 0 0 2px rgba(100,181,246,.15); }
-.login-box button { width:100%; padding:12px; background:linear-gradient(135deg,#64b5f6,#42a5f5); color:white; border:none; border-radius:10px; cursor:pointer; font-weight:600; transition:.2s; }
-.login-box button:hover { transform:translateY(-1px); box-shadow:0 6px 14px rgba(66,165,245,.3); }
-.error { color:#ef5350; font-size:12px; margin-bottom:10px; }
-
-#mainApp { display:none; padding:25px; }
-.topbar { background:white; padding:18px 22px; border-radius:16px; display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; box-shadow:0 6px 18px rgba(0,0,0,.08); }
-.btn-logout { background:#ef5350; color:white; border:none; padding:10px 16px; border-radius:10px; cursor:pointer; font-weight:600; }
-.btn-logout:hover { opacity:.9; }
-
-table { width:100%; border-collapse:collapse; background:white; border-radius:16px; overflow:hidden; box-shadow:0 6px 18px rgba(0,0,0,.08); table-layout:fixed; }
-th,td { padding:14px; border-bottom:1px solid #f1f1f1; text-align:center; vertical-align:middle; }
-th { background:#e3f2fd; color:#1565c0; font-weight:600; }
-tr:hover { background:#f9fbff; }
-
-.btn { padding:8px 14px; border:none; border-radius:10px; cursor:pointer; margin-right:6px; font-weight:600; transition:.2s; }
+body { margin:0; font-family:'Poppins',Arial,sans-serif; background: linear-gradient(135deg,#e3f2fd,#fce4ec);}
+#loginPage{display:flex; height:100vh; align-items:center; justify-content:center;}
+.login-box{background:white; padding:40px; border-radius:18px; box-shadow:0 10px 30px rgba(0,0,0,.12); width:320px; text-align:center;}
+.login-box h2{margin-bottom:20px;color:#42a5f5;}
+.login-box input{width:100%; padding:12px; margin-bottom:12px; border:1px solid #e0e0e0; border-radius:10px; transition:.2s;}
+.login-box input:focus{outline:none; border-color:#64b5f6; box-shadow:0 0 0 2px rgba(100,181,246,.15);}
+.login-box button{width:100%; padding:12px; background:linear-gradient(135deg,#64b5f6,#42a5f5); color:white; border:none; border-radius:10px; cursor:pointer; font-weight:600; transition:.2s;}
+.login-box button:hover{transform:translateY(-1px); box-shadow:0 6px 14px rgba(66,165,245,.3);}
+.error{color:#ef5350; font-size:12px; margin-bottom:10px;}
+#mainApp{display:none; padding:25px;}
+.topbar{background:white; padding:18px 22px; border-radius:16px; display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; box-shadow:0 6px 18px rgba(0,0,0,.08);}
+.btn-logout{background:#ef5350;color:white;border:none;padding:10px 16px;border-radius:10px;cursor:pointer;font-weight:600;}
+.btn-logout:hover{opacity:.9;}
+table{width:100%; border-collapse:collapse; background:white; border-radius:16px; overflow:hidden; box-shadow:0 6px 18px rgba(0,0,0,.08);}
+th,td{padding:14px; text-align:center; border-bottom:1px solid #f1f1f1;}
+th{background:#e3f2fd; color:#1565c0; font-weight:600;}
+tr:hover{background:#f9fbff;}
+.btn{padding:8px 14px; border:none; border-radius:10px; cursor:pointer; margin-right:6px; font-weight:600; transition:.2s;}
 .edit{background:#64b5f6;color:white;} 
 .delete{background:#ef5350;color:white;} 
 .add{background:#66bb6a;color:white;margin-bottom:12px;}
 .btn:hover{transform:translateY(-1px);box-shadow:0 4px 10px rgba(0,0,0,.15);} 
-
-.form-box{ background:white; padding:18px; border-radius:16px; margin-bottom:15px; display:none; box-shadow:0 6px 18px rgba(0,0,0,.08); }
+.form-box{ background:white; padding:18px; border-radius:16px; margin-bottom:15px; display:none; box-shadow:0 6px 18px rgba(0,0,0,.08);}
 .form-box input{ padding:10px; margin:6px; border-radius:10px; border:1px solid #e0e0e0; }
 .form-box input:focus{ outline:none; border-color:#64b5f6; box-shadow:0 0 0 2px rgba(100,181,246,.15); }
-
-thead th:nth-child(1) { width: 25%; }
-thead th:nth-child(2) { width: 20%; }
-thead th:nth-child(3) { width: 15%; }
-thead th:nth-child(4) { width: 15%; }
-thead th:nth-child(5) { width: 25%; }
-
-#mainApp { padding: 25px 40px; }
-.topbar h2 { font-weight: 700; letter-spacing: .5px; }
-.cardDash{ background:white; border-radius:16px; padding:18px; box-shadow:0 6px 18px rgba(0,0,0,.08); text-align:center; }
-.cardDash h4{ margin:0; font-size:14px; color:#666; }
-.cardDash p{ margin:6px 0 0; font-size:26px; font-weight:700; color:#1565c0; }
+#mainApp{padding: 25px 40px;}
+.topbar h2{font-weight:700; letter-spacing:.5px;}
+.cardDash{background:white; border-radius:16px; padding:18px; box-shadow:0 6px 18px rgba(0,0,0,.08); text-align:center;}
+.cardDash h4{margin:0; font-size:14px; color:#666;}
+.cardDash p{margin:6px 0 0; font-size:26px; font-weight:700; color:#1565c0;}
 </style>
 </head>
 <body>
 
 <div id="loginPage">
-<form class="login-box" onsubmit="login(event)">
-<h2>Login Admin 👗</h2>
-<input id="loginUser" type="text" placeholder="Username" required />
-<input id="loginPass" type="password" placeholder="Password" required />
-<div id="loginError" class="error"></div>
-<button type="submit">Login</button>
-</form>
+  <form class="login-box" onsubmit="login(event)">
+    <h2>Login Admin 👗</h2>
+    <input id="loginUser" type="text" placeholder="Username" required />
+    <input id="loginPass" type="password" placeholder="Password" required />
+    <div id="loginError" class="error"></div>
+    <button type="submit">Login</button>
+  </form>
 </div>
 
 <div id="mainApp">
-<div class="topbar">
-<h2>Dashboard Kostum</h2>
-<button class="btn-logout" onclick="logout()">Logout</button>
-</div>
+  <div class="topbar">
+    <h2>Dashboard Kostum</h2>
+    <button class="btn-logout" onclick="logout()">Logout</button>
+  </div>
 
-<div id="dashboardCards" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:15px;margin-bottom:20px;">
-<div class="cardDash">
-<h4>Total Kostum</h4>
-<p id="totalKostum">0</p>
-</div>
-<div class="cardDash">
-<h4>Sedang Dipinjam</h4>
-<p id="totalPinjam">0</p>
-</div>
-<div class="cardDash">
-<h4>Sudah Kembali</h4>
-<p id="totalKembali">0</p>
-</div>
-</div>
+  <div id="dashboardCards" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:15px;margin-bottom:20px;">
+    <div class="cardDash"><h4>Total Kostum</h4><p id="totalKostum">0</p></div>
+    <div class="cardDash"><h4>Sedang Dipinjam</h4><p id="totalPinjam">0</p></div>
+    <div class="cardDash"><h4>Sudah Kembali</h4><p id="totalKembali">0</p></div>
+  </div>
 
-<canvas id="grafikPinjam" style="width:100%;max-height:180px;background:white;border-radius:16px;padding:10px;margin-bottom:20px;box-shadow:0 6px 18px rgba(0,0,0,.08);"></canvas>
+  <canvas id="grafikPinjam" style="width:100%;max-height:180px;background:white;border-radius:16px;padding:10px;margin-bottom:20px;box-shadow:0 6px 18px rgba(0,0,0,.08);"></canvas>
 
-<button class="btn add" onclick="showForm()">+ Tambah Kostum</button>
+  <button class="btn add" onclick="showForm()">+ Tambah Kostum</button>
 
-<form class="form-box" id="formBox" onsubmit="saveKostum(event)">
-<input id="nama" placeholder="Nama kostum" required />
-<input id="kode" placeholder="Kode otomatis" readonly />
-<input id="ukuran" placeholder="Ukuran (opsional)" />
-<input id="jumlah" type="number" placeholder="Jumlah" />
-<button type="submit" class="btn add">Simpan</button>
-</form>
+  <form class="form-box" id="formBox" onsubmit="saveKostum(event)">
+    <input id="nama" placeholder="Nama kostum" required />
+    <input id="kode" placeholder="Kode otomatis" readonly />
+    <input id="ukuran" placeholder="Ukuran (opsional)" />
+    <input id="jumlah" type="number" placeholder="Jumlah" />
+    <button type="submit" class="btn add">Simpan</button>
+  </form>
 
-<table>
-<thead>
-<tr>
-<th>Nama</th>
-<th>Kode</th>
-<th>Ukuran</th>
-<th>Jumlah</th>
-<th>Aksi</th>
-</tr>
-</thead>
-<tbody id="tableBody"></tbody>
-</table>
+  <table>
+    <thead>
+      <tr>
+        <th>Nama</th>
+        <th>Kode</th>
+        <th>Ukuran</th>
+        <th>Jumlah</th>
+        <th>Aksi</th>
+      </tr>
+    </thead>
+    <tbody id="tableBody"></tbody>
+  </table>
 
-<h3 style="margin-top:25px">Form Peminjaman Kostum</h3>
+  <h3 style="margin-top:25px">Form Peminjaman Kostum</h3>
+  <form class="form-box" style="display:block" onsubmit="savePinjam(event)">
+    <input id="peminjam" placeholder="Nama peminjam" required />
+    <select id="kostumPinjam" required></select>
+    <input id="tanggal" type="date" required readonly />
+    <button type="submit" class="btn add">Simpan Peminjaman</button>
+  </form>
 
-<form class="form-box" style="display:block" onsubmit="savePinjam(event)">
-<input id="peminjam" placeholder="Nama peminjam" required />
-<select id="kostumPinjam" required></select>
-<input id="tanggal" type="date" required readonly />
-<button type="submit" class="btn add">Simpan Peminjaman</button>
-</form>
+  <div style="margin:15px 0; display:flex; gap:10px; align-items:center;">
+    <select id="filterStatus" onchange="renderPinjam()" class="btn">
+      <option value="semua">Semua Peminjaman</option>
+      <option value="belum">Belum Kembali</option>
+      <option value="sudah">Sudah Kembali</option>
+    </select>
+    <button class="btn add" onclick="exportPDF()">Export PDF</button>
+  </div>
 
-<div style="margin:15px 0; display:flex; gap:10px; align-items:center;">
-<select id="filterStatus" onchange="renderPinjam()" class="btn">
-<option value="semua">Semua Peminjaman</option>
-<option value="belum">Belum Kembali</option>
-<option value="sudah">Sudah Kembali</option>
-</select>
-<button class="btn add" onclick="exportPDF()">Export PDF</button>
-</div>
-
-<table>
-<thead>
-<tr>
-<th>Nama Peminjam</th>
-<th>Kode Kostum</th>
-<th>Tanggal</th>
-<th>Status / Aksi</th>
-</tr>
-</thead>
-<tbody id="tablePinjam"></tbody>
-</table>
-
+  <table>
+    <thead>
+      <tr>
+        <th>Nama Peminjam</th>
+        <th>Kode Kostum</th>
+        <th>Tanggal</th>
+        <th>Status / Aksi</th>
+      </tr>
+    </thead>
+    <tbody id="tablePinjam"></tbody>
+  </table>
 </div>
 
 <script>
@@ -152,33 +130,64 @@ const kode=document.getElementById("kode");
 const ukuran=document.getElementById("ukuran");
 const jumlah=document.getElementById("jumlah");
 const tableBody=document.getElementById("tableBody");
-let kostum=[];
-let dataPinjam=[];
-let editIndex=-1;
+const tablePinjam=document.getElementById("tablePinjam");
 
+let kostum = [];
+let dataPinjam = [];
+let editIndex = -1;
+
+window.addEventListener("DOMContentLoaded", ()=>{
+  setTanggalHariIni();
+  if(localStorage.getItem("login")==="yes"){
+    loginPage.style.display="none";
+    mainApp.style.display="block";
+  }
+});
+
+// LOGIN
 function login(e){
   e.preventDefault();
   if(loginUser.value===USERNAME && loginPass.value===PASSWORD){
     localStorage.setItem("login","yes");
     loginPage.style.display="none";
     mainApp.style.display="block";
-    render();
-    renderPinjam();
-  } else loginError.innerText="Username atau password salah";
+  }else{
+    loginError.innerText="Username atau password salah";
+  }
 }
 function logout(){ localStorage.removeItem("login"); location.reload(); }
-function showForm(){ formBox.style.display="block"; editIndex=-1; formBox.reset(); kode.value="KST"+Date.now(); }
-function setTanggalHariIni(){ const tgl=document.getElementById("tanggal"); const today=new Date(); tgl.value= today.toISOString().split("T")[0]; }
 
-window.addEventListener("DOMContentLoaded",()=>{
-  setTanggalHariIni();
-  if(localStorage.getItem("login")==="yes"){
-    loginPage.style.display="none"; mainApp.style.display="block";
-  }
-});
+// SET TANGGAL HARI INI
+function setTanggalHariIni(){
+  const tgl=document.getElementById("tanggal");
+  const today=new Date();
+  const yyyy=today.getFullYear();
+  const mm=String(today.getMonth()+1).padStart(2,"0");
+  const dd=String(today.getDate()).padStart(2,"0");
+  tgl.value=`${yyyy}-${mm}-${dd}`;
+}
+
+// GENERATE KODE OTOMATIS
+async function generateKode() {
+  if(kostum.length === 0) return "KST-001";
+  const kodeTerakhir = kostum
+    .map(k => k.kode)
+    .filter(k => k.startsWith("KST-"))
+    .sort()
+    .pop();
+  const nomor = parseInt(kodeTerakhir.split("-")[1]) || 0;
+  return "KST-" + String(nomor + 1).padStart(3, "0");
+}
+
+async function showForm() {
+  formBox.style.display = "block";
+  editIndex = -1;
+  formBox.reset();
+  kode.value = await generateKode();
+}
 </script>
 
-<!-- FIREBASE REALTIME SCRIPT -->
+<!-- FIREBASE -->
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import { getFirestore, collection, doc, setDoc, onSnapshot, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
@@ -189,123 +198,173 @@ const firebaseConfig = {
   projectId: "pendataan-kostum",
   storageBucket: "pendataan-kostum.appspot.com",
   messagingSenderId: "226459234974",
-  appId: "1:226459234974:web:2b0512247ff01c738a418f"
+  appId: "1:226459234974:web:2b0512247ff01c738a418f",
+  measurementId: "G-4QQT28BDV0"
 };
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
-const kostumCol = collection(db,"kostum");
-const pinjamCol = collection(db,"peminjaman");
 
-const tablePinjam=document.getElementById("tablePinjam");
-const selectKostum=document.getElementById("kostumPinjam");
-const totalKostumEl=document.getElementById("totalKostum");
-const totalPinjamEl=document.getElementById("totalPinjam");
-const totalKembaliEl=document.getElementById("totalKembali");
-const canvas=document.getElementById("grafikPinjam");
-const ctx=canvas.getContext("2d");
+const kostumCol = collection(db, "kostum");
+const pinjamCol = collection(db, "peminjaman");
 
 // LIVE SYNC
-onSnapshot(kostumCol,snapshot=>{ kostum=snapshot.docs.map(d=>({id:d.id,...d.data()})); render(); updateDropdown(); });
-onSnapshot(pinjamCol,snapshot=>{ dataPinjam=snapshot.docs.map(d=>({id:d.id,...d.data()})); renderPinjam(); });
+onSnapshot(kostumCol, snapshot => {
+  kostum = snapshot.docs.map(d => ({ id:d.id, ...d.data() }));
+  renderKostum();
+  updateDropdown();
+});
 
-// FUNGSI RENDER & UPDATE
-function render(){
-  tableBody.innerHTML="";
-  if(kostum.length===0) tableBody.innerHTML='<tr><td colspan="5">Belum ada data kostum</td></tr>';
-  else kostum.forEach((k,i)=>{
-    const row=document.createElement("tr");
-    row.innerHTML=`<td>${k.nama}</td><td>${k.kode}</td><td>${k.ukuran}</td><td>${k.jumlah}</td>
-    <td><button class="btn edit" onclick="editKostum('${k.id}')">Edit</button>
-    <button class="btn delete" onclick="hapusKostum('${k.id}')">Hapus</button></td>`;
-    tableBody.appendChild(row);
+onSnapshot(pinjamCol, snapshot => {
+  dataPinjam = snapshot.docs.map(d => ({ id:d.id, ...d.data() }));
+  renderPinjam();
+});
+
+// SAVE KOSTUM
+async function saveKostum(e){
+  e.preventDefault();
+  const data = {
+    nama: nama.value.trim(),
+    kode: kode.value.trim(),
+    ukuran: ukuran.value.trim()||"-",
+    jumlah: jumlah.value.trim()||"0"
+  };
+  if(!data.nama) return alert("Nama wajib diisi");
+
+  try{
+    await setDoc(doc(kostumCol, data.kode), data);
+    formBox.style.display="none";
+  }catch(err){
+    console.error(err); alert("Gagal menyimpan data");
+  }
+}
+
+// DELETE KOSTUM
+async function hapusKostum(i){
+  const k=kostum[i];
+  if(!k) return; if(!confirm("Hapus kostum ini?")) return;
+  try{ await deleteDoc(doc(kostumCol, k.kode)); }catch(err){ console.error(err); alert("Gagal hapus kostum"); }
+}
+
+// UPDATE DROPDOWN PINJAM
+function updateDropdown(){
+  const select=document.getElementById("kostumPinjam");
+  select.innerHTML="";
+  if(kostum.length===0){ select.innerHTML='<option value="">Belum ada kostum</option>'; return; }
+  kostum.forEach(k=>{
+    const opt=document.createElement("option");
+    opt.value=k.kode; opt.textContent=`${k.nama} (${k.kode})`; select.appendChild(opt);
   });
+}
+
+// RENDER KOSTUM TABLE
+function renderKostum(){
+  tableBody.innerHTML="";
+  if(kostum.length===0){ tableBody.innerHTML='<tr><td colspan="5">Belum ada data kostum</td></tr>'; }
+  else{
+    kostum.forEach((k,i)=>{
+      const row=document.createElement("tr");
+      row.innerHTML=`
+        <td>${k.nama}</td>
+        <td>${k.kode}</td>
+        <td>${k.ukuran}</td>
+        <td>${k.jumlah}</td>
+        <td>
+          <button class="btn edit" onclick="editKostum(${i})">Edit</button>
+          <button class="btn delete" onclick="hapusKostum(${i})">Hapus</button>
+        </td>`;
+      tableBody.appendChild(row);
+    });
+  }
   updateDashboard();
 }
 
-function updateDropdown(){
-  selectKostum.innerHTML="";
-  if(kostum.length===0){ const opt=document.createElement("option"); opt.textContent="Belum ada kostum"; opt.value=""; selectKostum.appendChild(opt); return; }
-  kostum.forEach(k=>{ const opt=document.createElement("option"); opt.value=k.kode; opt.textContent=`${k.nama} (${k.kode})`; selectKostum.appendChild(opt); });
+// EDIT KOSTUM
+function editKostum(i){
+  const k=kostum[i];
+  nama.value=k.nama;
+  kode.value=k.kode;
+  ukuran.value=k.ukuran==="-"?"":k.ukuran;
+  jumlah.value=k.jumlah;
+  formBox.style.display="block";
+  editIndex=i;
 }
 
-function updateDashboard(){
-  totalKostumEl.innerText=kostum.length;
-  const belum = dataPinjam.filter(p=>!p.kembali).length;
-  const sudah = dataPinjam.filter(p=>p.kembali).length;
-  totalPinjamEl.innerText=belum; totalKembaliEl.innerText=sudah;
-  gambarGrafik(belum,sudah);
+// PINJAM KOSTUM
+async function savePinjam(e){
+  e.preventDefault();
+  const kodeDipilih = document.getElementById("kostumPinjam").value.trim();
+  const k = kostum.find(x=>x.kode===kodeDipilih);
+  if(!k || Number(k.jumlah)<=0) return alert("Stok habis!");
+
+  const item = {
+    peminjam: document.getElementById("peminjam").value.trim(),
+    kode: kodeDipilih,
+    tanggal: document.getElementById("tanggal").value,
+    kembali: false
+  };
+  try{
+    await updateDoc(doc(kostumCol, k.kode), { jumlah:String(Number(k.jumlah)-1) });
+    await setDoc(doc(pinjamCol, `${kodeDipilih}-${Date.now()}`), item);
+    e.target.reset(); setTanggalHariIni();
+  }catch(err){ console.error(err); alert("Gagal menyimpan peminjaman"); }
 }
 
-function gambarGrafik(belum,sudah){
-  canvas.width = canvas.offsetWidth;
-  canvas.height = 180;
-  ctx.clearRect(0,0,canvas.width,canvas.height);
-  const total = belum + sudah || 1;
-  const hBelum = (belum/total)*80;
-  const hSudah = (sudah/total)*80;
-  ctx.fillStyle="#ef5350"; ctx.fillRect(60,90-hBelum,60,hBelum);
-  ctx.fillStyle="#66bb6a"; ctx.fillRect(160,90-hSudah,60,hSudah);
-  ctx.fillStyle="#000"; ctx.fillText("Dipinjam",60,105); ctx.fillText("Kembali",160,105);
+// KEMBALIKAN KOSTUM
+async function kembalikan(i){
+  const p = dataPinjam[i]; if(p.kembali) return;
+  const k = kostum.find(x=>x.kode===p.kode); if(!k) return;
+  try{
+    await updateDoc(doc(pinjamCol,p.id),{kembali:true});
+    await updateDoc(doc(kostumCol,k.kode),{jumlah:String(Number(k.jumlah)+1)});
+  }catch(err){console.error(err); alert("Gagal update pengembalian");}
 }
 
+// RENDER PEMINJAMAN
 function renderPinjam(){
   tablePinjam.innerHTML="";
   const filter=document.getElementById("filterStatus").value;
   let list=dataPinjam;
   if(filter==="belum") list=dataPinjam.filter(p=>!p.kembali);
   if(filter==="sudah") list=dataPinjam.filter(p=>p.kembali);
-  if(list.length===0){ tablePinjam.innerHTML='<tr><td colspan="4">Tidak ada data</td></tr>'; return; }
-  list.forEach((p,i)=>{
-    const row=document.createElement("tr");
-    row.innerHTML=`<td>${p.peminjam}</td><td>${p.kode}</td><td>${p.tanggal}</td>
-    <td>${p.kembali?'<span style="color:green">Sudah kembali</span>':'<button class="btn edit" onclick="kembalikan(\''+p.id+'\')">Kembalikan</button>'}</td>`;
-    tablePinjam.appendChild(row);
-  });
+  if(list.length===0){ tablePinjam.innerHTML='<tr><td colspan="4">Tidak ada data</td></tr>'; }
+  else{
+    list.forEach((p,i)=>{
+      const row=document.createElement("tr");
+      row.innerHTML=`<td>${p.peminjam}</td><td>${p.kode}</td><td>${p.tanggal}</td>
+      <td>${p.kembali?'<span style="color:green;font-weight:600">Sudah kembali</span>':
+      `<button class="btn edit" onclick="kembalikan(${i})">Kembalikan</button>`}</td>`;
+      tablePinjam.appendChild(row);
+    });
+  }
+  updateDashboard();
 }
 
-// SIMPAN KOSTUM
-async function saveKostum(e){
-  e.preventDefault();
-  const data={ nama:nama.value.trim(), kode:kode.value.trim(), ukuran:ukuran.value.trim()||"-", jumlah:jumlah.value.trim()||"0" };
-  if(!data.nama) return alert("Nama wajib diisi");
-  try{ await setDoc(doc(kostumCol,data.kode),data); formBox.style.display="none"; } catch(err){ console.error(err); alert("Gagal simpan"); }
+// DASHBOARD & GRAFIK
+function updateDashboard(){
+  document.getElementById("totalKostum").innerText=kostum.length;
+  const belum = dataPinjam.filter(p=>!p.kembali).length;
+  const sudah = dataPinjam.filter(p=>p.kembali).length;
+  document.getElementById("totalPinjam").innerText=belum;
+  document.getElementById("totalKembali").innerText=sudah;
+  gambarGrafik(belum,sudah);
+}
+function gambarGrafik(belum,sudah){
+  const canvas = document.getElementById("grafikPinjam");
+  const ctx = canvas.getContext("2d");
+  canvas.width = canvas.offsetWidth; canvas.height = 180;
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  const total = belum+sudah||1;
+  const tinggiBelum=(belum/total)*80;
+  const tinggiSudah=(sudah/total)*80;
+  ctx.fillStyle="#ef5350"; ctx.fillRect(60,90-tinggiBelum,60,tinggiBelum);
+  ctx.fillStyle="#66bb6a"; ctx.fillRect(160,90-tinggiSudah,60,tinggiSudah);
+  ctx.fillStyle="#000"; ctx.font="14px Poppins"; ctx.fillText("Belum",70,105); ctx.fillText("Sudah",170,105);
 }
 
-// EDIT & HAPUS
-async function editKostum(id){
-  const k=kostum.find(x=>x.id===id);
-  if(!k) return; formBox.style.display="block";
-  nama.value=k.nama; kode.value=k.kode; ukuran.value=k.ukuran==="-"?"":k.ukuran; jumlah.value=k.jumlah;
-}
-
-async function hapusKostum(id){
-  if(!confirm("Hapus kostum ini?")) return;
-  try{ await deleteDoc(doc(kostumCol,id)); } catch(err){ console.error(err); alert("Gagal hapus"); }
-}
-
-// PINJAM KOSTUM
-async function savePinjam(e){
-  e.preventDefault();
-  const kodeDipilih=selectKostum.value.trim();
-  const k=kostum.find(x=>x.kode===kodeDipilih); if(!k || Number(k.jumlah)<=0){ alert("Stok habis!"); return; }
-  const item={ peminjam:document.getElementById("peminjam").value.trim(), kode:kodeDipilih, tanggal:document.getElementById("tanggal").value, kembali:false };
-  try{ await updateDoc(doc(kostumCol,k.kode),{ jumlah:String(Number(k.jumlah)-1) }); await setDoc(doc(pinjamCol,kodeDipilih+"-"+Date.now()),item); e.target.reset(); setTanggalHariIni(); } catch(err){ console.error(err); alert("Gagal simpan peminjaman"); }
-}
-
-// KEMBALIKAN
-async function kembalikan(id){
-  const p=dataPinjam.find(x=>x.id===id); if(!p || p.kembali) return;
-  const k=kostum.find(x=>x.kode===p.kode); if(!k) return;
-  try{ await updateDoc(doc(pinjamCol,p.id),{ kembali:true }); await updateDoc(doc(kostumCol,k.kode),{ jumlah:String(Number(k.jumlah)+1) }); } catch(err){ console.error(err); alert("Gagal update"); }
-}
-
-// EXPORT PDF
-function exportPDF(){
-  const rows=dataPinjam.map(p=>`<tr><td>${p.peminjam}</td><td>${p.kode}</td><td>${p.tanggal}</td><td>${p.kembali?"Sudah kembali":"Belum kembali"}</td></tr>`).join("");
-  const html=`<html><head><title>Laporan Peminjaman</title><style>body{font-family:Arial;padding:20px}h2{text-align:center}table{width:100%;border-collapse:collapse;margin-top:20px}th,td{border:1px solid #000;padding:8px;text-align:left}th{background:#eee}</style></head><body><h2>Laporan Peminjaman Kostum</h2><table><thead><tr><th>Nama Peminjam</th><th>Kode Kostum</th><th>Tanggal</th><th>Status</th></tr></thead><tbody>${rows || '<tr><td colspan="4" style="text-align:center">Tidak ada data</td></tr>'}</tbody></table></body></html>`;
-  const win=window.open("","","width=900,height=700"); win.document.write(html); win.document.close(); win.print();
-}
+// EXPORT PDF (opsional)
+function exportPDF(){ alert("Fitur export PDF belum diaktifkan"); }
 </script>
+
 </body>
 </html>
