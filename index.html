@@ -39,6 +39,36 @@
     .form-box{ background:white; padding:18px; border-radius:16px; margin-bottom:15px; display:none; box-shadow:0 6px 18px rgba(0,0,0,.08); }
     .form-box input{ padding:10px; margin:6px; border-radius:10px; border:1px solid #e0e0e0; }
     .form-box input:focus{ outline:none; border-color:#64b5f6; box-shadow:0 0 0 2px rgba(100,181,246,.15); }
+
+          /* bikin tabel benar-benar penuh & kolom rata */
+      table {
+        width: 100%;
+        table-layout: fixed;
+      }
+      
+      /* semua isi kolom rata tengah biar seimbang */
+      th, td {
+        text-align: center;
+        vertical-align: middle;
+      }
+      
+      /* rapihin lebar tiap kolom */
+      thead th:nth-child(1) { width: 25%; }
+      thead th:nth-child(2) { width: 20%; }
+      thead th:nth-child(3) { width: 15%; }
+      thead th:nth-child(4) { width: 15%; }
+      thead th:nth-child(5) { width: 25%; }
+      
+      /* kasih jarak kiri-kanan biar full tapi tetap rapi */
+      #mainApp {
+        padding: 25px 40px;
+      }
+      
+      /* biar bagian atas kelihatan lebih “dashboard” */
+      .topbar h2 {
+        font-weight: 700;
+        letter-spacing: .5px;
+      }
   </style>
 </head>
 <body>
