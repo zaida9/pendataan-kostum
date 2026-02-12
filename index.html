@@ -528,83 +528,37 @@
 
   <!-- FIREBASE -->
 <script type="module">
-  import { collection, doc, setDoc, getDocs, onSnapshot, updateDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+  import { getFirestore, collection, doc, setDoc, onSnapshot, updateDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-// Koleksi Firestore
-const kostumCol = collection(db, "kostum");
-const pinjamCol = collection(db, "peminjaman");
-
-// 1️⃣ Sync dari Firebase ke localStorage + array kostum/dataPinjam
-onSnapshot(kostumCol, snapshot => {
-  kostum = snapshot.docs.map(d => d.data());
-  simpanKeStorage(); // biar array lama tetap jalan
-  render();
-});
-
-onSnapshot(pinjamCol, snapshot => {
-  dataPinjam = snapshot.docs.map(d => d.data());
-  simpanPinjam();
-  renderPinjam();
-});
-
-// 2️⃣ Setiap save kostum baru/update → sync ke Firebase
-const originalSaveKostum = saveKostum;
-saveKostum = async function(e){
-  originalSaveKostum(e); // jalankan fungsi lama
-  if(editIndex===-1){ // baru tambah
-    const last = kostum[kostum.length-1];
-    await setDoc(doc(db, "kostum", last.kode), last);
-  } else { // edit
-    const updated = kostum[editIndex];
-    await setDoc(doc(db, "kostum", updated.kode), updated);
-  }
+  const firebaseConfig = {
+  apiKey: "AIzaSyAZUybNqjxxb-KXMZ4ICL03GcO-StBzU-Y",
+  authDomain: "pendataan-kostum.firebaseapp.com",
+  projectId: "pendataan-kostum",
+  storageBucket: "pendataan-kostum.firebasestorage.app",
+  messagingSenderId: "226459234974",
+  appId: "1:226459234974:web:2b0512247ff01c738a418f",
+  measurementId: "G-4QQT28BDV0"
 };
 
-// 3️⃣ Hapus kostum → update Firebase juga
-const originalHapusKostum = hapusKostum;
-hapusKostum = async function(i){
-  const kodeHapus = kostum[i].kode;
-  originalHapusKostum(i);
-  await updateDoc(doc(db, "kostum", kodeHapus), { hapus: true }).catch(()=>{}); 
-};
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
 
-// 4️⃣ Save peminjaman → sync ke Firebase
-const originalSavePinjam = savePinjam;
-savePinjam = async function(e){
-  originalSavePinjam(e);
-  const last = dataPinjam[dataPinjam.length-1];
-  const id = last.kode + "-" + last.tanggal + "-" + Date.now();
-  await setDoc(doc(db, "peminjaman", id), last);
-};
+  const kostumCol = collection(db, "kostum");
+  const pinjamCol = collection(db, "peminjaman");
 
-// 5️⃣ Kembalikan → update Firebase
-const originalKembalikan = kembalikan;
-kembalikan = async function(i){
-  const item = dataPinjam[i];
-  originalKembalikan(i);
-  const id = item.kode + "-" + item.tanggal + "-" + i; // ID unik sama cara generate
-  await setDoc(doc(db, "peminjaman", id), item);
-};
+  // baru panggil onSnapshot di sini
+  onSnapshot(kostumCol, snapshot => {
+    kostum = snapshot.docs.map(d => d.data());
+    simpanKeStorage();
+    render();
+  });
 
-console.log("✅ Firestore sudah tersinkron dengan sistem lama, tanpa ubah codingan lama");
-
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getFirestore } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-
-const firebaseConfig = {
-  apiKey: "AIzaSyC54G9imUT689-jA4xrPXvFE2cVVb4bjK4",
-  authDomain: "sistemkostum.firebaseapp.com",
-  projectId: "sistemkostum",
-  storageBucket: "sistemkostum.firebasestorage.app",
-  messagingSenderId: "338983256503",
-  appId: "1:338983256503:web:ead19763882751d763e832",
-  measurementId: "G-EH668SHFDS"
-};
-
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
-
-console.log("🔥 Firebase tersambung");
+  onSnapshot(pinjamCol, snapshot => {
+    dataPinjam = snapshot.docs.map(d => d.data());
+    simpanPinjam();
+    renderPinjam();
+  });
 </script>
 </body>
 </html>
