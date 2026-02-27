@@ -15,6 +15,9 @@
 <!-- PDF.JS untuk Preview -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
 
+<!-- QRCode Library -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+
 <!-- FONT AWESOME FOR ICONS -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
@@ -341,6 +344,11 @@ tr:hover {
   color: white;
 }
 
+.qrcode-btn {
+  background: #9c27b0;
+  color: white;
+}
+
 .btn:hover {
   transform: translateY(-1px);
   box-shadow: 0 4px 10px rgba(0,0,0,.15);
@@ -393,6 +401,55 @@ tr:hover {
   transition: 0.2s;
 }
 
+/* QR CODE STYLES */
+.qrcode-container {
+  text-align: center;
+  padding: 20px;
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+  margin: 20px 0;
+}
+
+.qrcode-large {
+  width: 250px;
+  height: 250px;
+  margin: 15px auto;
+}
+
+.qrcode-small {
+  width: 50px;
+  height: 50px;
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+.qrcode-small:hover {
+  transform: scale(1.1);
+}
+
+/* QR INFO */
+.qr-info {
+  background: #e3f2fd;
+  padding: 15px;
+  border-radius: 12px;
+  margin: 15px 0;
+  text-align: center;
+}
+
+.qr-info p {
+  color: #1565c0;
+  font-size: 14px;
+  margin: 5px 0;
+}
+
+.qr-actions {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  margin-top: 15px;
+}
+
 /* MODAL */
 .modal {
   display: none;
@@ -415,12 +472,23 @@ tr:hover {
 }
 
 .modal-sm {
-  max-width: 60%;
+  max-width: 400px;
   max-height: 80%;
   background: white;
-  padding: 20px;
+  padding: 25px;
   border-radius: 16px;
   overflow-y: auto;
+  margin: 5% auto;
+}
+
+.modal-md {
+  max-width: 600px;
+  max-height: 80%;
+  background: white;
+  padding: 25px;
+  border-radius: 16px;
+  overflow-y: auto;
+  margin: 5% auto;
 }
 
 .close {
@@ -531,6 +599,151 @@ tr:hover {
   box-shadow: none;
 }
 
+/* PUBLIC VIEW (HALAMAN FORM PEMINJAMAN UNTUK UMUM) */
+#publicView {
+  display: none;
+  min-height: 100vh;
+  padding: 30px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.public-container {
+  max-width: 600px;
+  margin: 0 auto;
+  background: white;
+  border-radius: 20px;
+  padding: 30px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+}
+
+.public-header {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.public-header h1 {
+  color: #1565c0;
+  font-size: 28px;
+  margin-bottom: 10px;
+}
+
+.public-header h2 {
+  color: #42a5f5;
+  font-size: 20px;
+  margin-bottom: 20px;
+}
+
+.public-header i {
+  font-size: 48px;
+  color: #42a5f5;
+  margin-bottom: 15px;
+}
+
+.public-form {
+  background: #f8f9fa;
+  border-radius: 16px;
+  padding: 25px;
+}
+
+.public-form-group {
+  margin-bottom: 20px;
+}
+
+.public-form-group label {
+  display: block;
+  margin-bottom: 8px;
+  color: #1565c0;
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.public-form-group input,
+.public-form-group select {
+  width: 100%;
+  padding: 12px;
+  border: 2px solid #e0e0e0;
+  border-radius: 12px;
+  font-size: 16px;
+  transition: all 0.3s;
+}
+
+.public-form-group input:focus,
+.public-form-group select:focus {
+  outline: none;
+  border-color: #42a5f5;
+  box-shadow: 0 0 0 3px rgba(66,165,245,0.1);
+}
+
+.public-form-group input[readonly] {
+  background: #e9ecef;
+  cursor: not-allowed;
+}
+
+.public-submit-btn {
+  width: 100%;
+  padding: 15px;
+  background: linear-gradient(135deg, #64b5f6, #42a5f5);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s;
+  margin-top: 20px;
+}
+
+.public-submit-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 20px rgba(66,165,245,0.3);
+}
+
+.public-footer {
+  text-align: center;
+  margin-top: 30px;
+  color: #999;
+  font-size: 14px;
+}
+
+.public-footer i {
+  color: #ef5350;
+}
+
+.public-alert {
+  padding: 15px;
+  border-radius: 12px;
+  margin-bottom: 20px;
+  display: none;
+}
+
+.public-alert.success {
+  background: #d4edda;
+  color: #155724;
+  border: 1px solid #c3e6cb;
+  display: block;
+}
+
+.public-alert.error {
+  background: #f8d7da;
+  color: #721c24;
+  border: 1px solid #f5c6cb;
+  display: block;
+}
+
+.public-info-text {
+  text-align: center;
+  color: #666;
+  margin: 20px 0;
+  padding: 15px;
+  background: #e3f2fd;
+  border-radius: 12px;
+}
+
+.public-info-text i {
+  color: #42a5f5;
+  margin-right: 8px;
+}
+
 /* RESPONSIVE */
 @media (max-width: 768px) {
   .sidebar {
@@ -565,19 +778,107 @@ tr:hover {
     grid-template-columns: 1fr;
   }
   
-  .modal-sm {
+  .modal-sm, .modal-md {
     max-width: 95%;
     margin: 10% auto;
+  }
+  
+  .public-container {
+    padding: 20px;
   }
 }
 </style>
 </head>
 <body>
 
+<!-- PUBLIC VIEW UNTUK FORM PEMINJAMAN (HASIL SCAN QR) -->
+<div id="publicView">
+  <div class="public-container">
+    <div class="public-header">
+      <i class="fas fa-tshirt"></i>
+      <h1>SD Lazuardi</h1>
+      <h2>Form Peminjaman Kostum</h2>
+    </div>
+    
+    <div id="publicAlert" class="public-alert"></div>
+    
+    <form id="publicPinjamForm" class="public-form">
+      <div class="public-form-group">
+        <label><i class="fas fa-user"></i> Nama Peminjam</label>
+        <input type="text" id="publicNama" placeholder="Masukkan nama lengkap" required>
+      </div>
+      
+      <div class="public-form-group">
+        <label><i class="fas fa-tag"></i> Pilih Kostum</label>
+        <select id="publicKostum" required>
+          <option value="">-- Pilih Barang --</option>
+        </select>
+      </div>
+      
+      <div class="public-form-group">
+        <label><i class="fas fa-sort-numeric-up"></i> Jumlah Dipinjam</label>
+        <input type="number" id="publicJumlah" min="1" value="1" required>
+      </div>
+      
+      <div class="public-form-group">
+        <label><i class="fas fa-calendar"></i> Tanggal Pinjam</label>
+        <input type="date" id="publicTanggal" readonly>
+      </div>
+      
+      <button type="submit" class="public-submit-btn">
+        <i class="fas fa-hand-holding"></i> Pinjam
+      </button>
+    </form>
+    
+    <div class="public-info-text">
+      <i class="fas fa-info-circle"></i> 
+      Scan QR dengan HP untuk akses form peminjaman
+    </div>
+    
+    <div class="public-footer">
+      <i class="fas fa-qrcode"></i> Sistem Peminjaman Kostum<br>
+      <small>SD Lazuardi</small>
+    </div>
+  </div>
+</div>
+
 <!-- MODAL LIHAT GAMBAR -->
 <div id="modalGambar" class="modal">
   <span class="close" onclick="document.getElementById('modalGambar').style.display='none'">&times;</span>
   <img class="modal-content" id="gambarBesar">
+</div>
+
+<!-- MODAL QR CODE FORM -->
+<div id="modalQRForm" class="modal">
+  <span class="close-black" onclick="document.getElementById('modalQRForm').style.display='none'">&times;</span>
+  <div class="modal-content modal-sm">
+    <h3 style="color:#1565c0; margin-bottom:15px; text-align:center;">
+      <i class="fas fa-qrcode" style="color:#9c27b0;"></i> 
+      QR Code Form Peminjaman
+    </h3>
+    
+    <div style="text-align:center;">
+      <div id="qrCodeFormContainer" style="margin:20px auto;"></div>
+    </div>
+    
+    <div class="qr-info">
+      <p><i class="fas fa-info-circle"></i> Scan QR code ini untuk mengakses form peminjaman dari HP</p>
+      <p style="font-size:12px;">Atau bagikan link ini:</p>
+      <div style="background:#f0f0f0; padding:10px; border-radius:8px; font-size:12px; word-break:break-all;" id="qrLinkText"></div>
+    </div>
+    
+    <div class="qr-actions">
+      <button class="btn preview" onclick="downloadQRForm()">
+        <i class="fas fa-download"></i> Download QR
+      </button>
+      <button class="btn add" onclick="printQRForm()">
+        <i class="fas fa-print"></i> Print
+      </button>
+      <button class="btn delete" onclick="document.getElementById('modalQRForm').style.display='none'">
+        <i class="fas fa-times"></i> Tutup
+      </button>
+    </div>
+  </div>
 </div>
 
 <!-- MODAL PREVIEW PDF -->
@@ -600,7 +901,6 @@ tr:hover {
     </div>
     
     <div id="pdfPreview" class="pdf-preview-container">
-      <!-- PDF akan dirender di sini -->
       <div style="text-align:center; padding:50px; color:#666;">
         <i class="fas fa-spinner fa-spin" style="font-size:32px;"></i>
         <p>Memuat preview...</p>
@@ -635,7 +935,7 @@ tr:hover {
       <div class="sidebar-header">
         <h2>
           <i class="fas fa-tshirt"></i>
-          <span>Kostum Admin</span>
+          <span>SD Lazuardi</span>
         </h2>
       </div>
       
@@ -649,7 +949,7 @@ tr:hover {
         <li data-section="kostum">
           <a href="#">
             <i class="fas fa-tshirt"></i>
-            <span>Data Kostum</span>
+            <span>Data Barang</span>
           </a>
         </li>
         <li data-section="peminjaman">
@@ -699,11 +999,11 @@ tr:hover {
       <div id="kostumSection" class="content-section">
         <div class="topbar">
           <div class="page-title">
-            <i class="fas fa-tshirt"></i> Data Kostum
+            <i class="fas fa-tshirt"></i> Data Barang
           </div>
         </div>
         
-        <button class="btn add" id="showFormBtn"><i class="fas fa-plus"></i> Tambah Kostum</button>
+        <button class="btn add" id="showFormBtn"><i class="fas fa-plus"></i> Tambah Barang</button>
         
         <form class="form-box" id="formBox">
           <input id="nama" placeholder="Nama kostum" required />
@@ -742,11 +1042,42 @@ tr:hover {
       <div id="peminjamanSection" class="content-section">
         <div class="topbar">
           <div class="page-title">
-            <i class="fas fa-hand-holding"></i> Peminjaman Kostum
+            <i class="fas fa-hand-holding"></i> Peminjaman
           </div>
         </div>
         
-        <div class="form-box" style="display:block">
+        <!-- QR CODE FORM -->
+        <div class="qrcode-container">
+          <h4 style="color:#1565c0; margin-bottom:15px;">
+            <i class="fas fa-qrcode"></i> QR Peminjaman
+          </h4>
+          
+          <div style="display:flex; flex-wrap:wrap; gap:20px; align-items:center; justify-content:center;">
+            <div style="flex:1; min-width:200px;">
+              <div id="qrCodeSidebar" style="width:150px; height:150px; margin:0 auto;"></div>
+            </div>
+            <div style="flex:2; min-width:250px; text-align:left;">
+              <p><i class="fas fa-info-circle" style="color:#42a5f5;"></i> Scan QR code ini dengan HP untuk mengakses form peminjaman</p>
+              <p><small style="color:#666;">Pengguna bisa langsung mengisi form peminjaman dari HP mereka</small></p>
+              <div style="margin-top:10px;">
+                <button class="btn qrcode-btn" onclick="showQRFormModal()">
+                  <i class="fas fa-qrcode"></i> Lihat QR Besar
+                </button>
+                <button class="btn preview" onclick="downloadQRForm()">
+                  <i class="fas fa-download"></i> Download
+                </button>
+                <button class="btn add" onclick="printQRForm()">
+                  <i class="fas fa-print"></i> Print
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- FORM PEMINJAMAN ADMIN -->
+        <div class="form-box" style="display:block; margin-top:20px;">
+          <h4 style="color:#1565c0; margin-bottom:15px;">Form Peminjaman (Admin)</h4>
+          
           <input id="peminjam" placeholder="Nama peminjam" required style="width:95%;" />
           <input id="tanggal" type="date" required readonly style="width:95%;" />
           
@@ -756,7 +1087,7 @@ tr:hover {
             </select>
             <input id="jmlPinjam" type="number" placeholder="Jumlah" min="1" value="1" style="flex:1; padding:10px;" />
             <button type="button" class="btn add" id="tambahKeranjangBtn" style="margin-bottom:0;">
-              <i class="fas fa-cart-plus"></i> Tambah
+              <i class="fas fa-cart-plus"></i> Pinjam
             </button>
           </div>
           
@@ -811,7 +1142,7 @@ tr:hover {
       <div id="laporanSection" class="content-section">
         <div class="topbar">
           <div class="page-title">
-            <i class="fas fa-file-pdf"></i> Laporan Peminjaman
+            <i class="fas fa-file-pdf"></i> Laporan
           </div>
         </div>
         
@@ -844,7 +1175,6 @@ tr:hover {
             </div>
           </div>
           
-          <!-- Preview Tabel -->
           <div class="laporan-preview-table">
             <h4 style="padding:15px; margin:0; background:#f8f9fa; border-bottom:1px solid #e0e0e0;">
               <i class="fas fa-table"></i> Preview Data
@@ -876,7 +1206,7 @@ tr:hover {
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getFirestore, collection, doc, setDoc, onSnapshot, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { getFirestore, collection, doc, setDoc, onSnapshot, updateDoc, deleteDoc, addDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyAZUybNqjxxb-KXMZ4ICL03GcO-StBzU-Y",
@@ -905,6 +1235,280 @@ let keranjang = [];
 let pdfDoc = null;
 let currentPage = 1;
 let totalPages = 1;
+
+// =========== CEK URL PARAMETER UNTUK PUBLIC VIEW ===========
+function checkPublicView() {
+  const urlParams = new URLSearchParams(window.location.search);
+  const publicView = urlParams.get('public');
+  
+  if (publicView === 'form') {
+    // Sembunyikan login dan main app
+    document.getElementById('loginPage').style.display = 'none';
+    document.getElementById('mainApp').style.display = 'none';
+    
+    // Tampilkan public view
+    document.getElementById('publicView').style.display = 'block';
+    
+    // Set tanggal hari ini
+    setPublicTanggal();
+  }
+}
+
+// =========== SET TANGGAL UNTUK PUBLIC VIEW ===========
+function setPublicTanggal() {
+  const tgl = document.getElementById("publicTanggal");
+  const today = new Date();
+  const yyyy = today.getFullYear();
+  const mm = String(today.getMonth()+1).padStart(2,"0");
+  const dd = String(today.getDate()).padStart(2,"0");
+  tgl.value = `${yyyy}-${mm}-${dd}`;
+}
+
+// =========== UPDATE DROPDOWN PUBLIC ===========
+function updatePublicDropdown() {
+  const select = document.getElementById("publicKostum");
+  if (!select) return;
+  
+  select.innerHTML = '<option value="">-- Pilih Barang --</option>';
+  if (kostum.length === 0) return;
+  
+  kostum.forEach(k => {
+    const stok = Number(k.jumlah) || 0;
+    if (stok > 0) {
+      const opt = document.createElement("option");
+      opt.value = k.kode;
+      opt.textContent = `${k.nama} (Stok: ${stok})`;
+      select.appendChild(opt);
+    }
+  });
+}
+
+// =========== HANDLE PUBLIC FORM SUBMIT ===========
+document.getElementById('publicPinjamForm')?.addEventListener('submit', async function(e) {
+  e.preventDefault();
+  
+  const peminjam = document.getElementById('publicNama').value.trim();
+  const kode = document.getElementById('publicKostum').value;
+  const jumlah = parseInt(document.getElementById('publicJumlah').value);
+  const tanggal = document.getElementById('publicTanggal').value;
+  
+  if (!peminjam) {
+    showPublicAlert('Nama peminjam harus diisi!', 'error');
+    return;
+  }
+  
+  if (!kode) {
+    showPublicAlert('Pilih kostum yang akan dipinjam!', 'error');
+    return;
+  }
+  
+  if (jumlah < 1) {
+    showPublicAlert('Jumlah minimal 1!', 'error');
+    return;
+  }
+  
+  const kostumItem = kostum.find(k => k.kode === kode);
+  if (!kostumItem) {
+    showPublicAlert('Kostum tidak ditemukan!', 'error');
+    return;
+  }
+  
+  if (Number(kostumItem.jumlah) < jumlah) {
+    showPublicAlert(`Stok tidak cukup! Tersedia ${kostumItem.jumlah}`, 'error');
+    return;
+  }
+  
+  try {
+    // Kurangi stok
+    await updateDoc(doc(kostumCol, kode), {
+      jumlah: String(Number(kostumItem.jumlah) - jumlah)
+    });
+    
+    // Simpan peminjaman
+    const pinjamData = {
+      peminjam: peminjam,
+      kode: kode,
+      namaKostum: kostumItem.nama,
+      jumlah: jumlah,
+      tanggal: tanggal,
+      kembali: false,
+      tanggalKembali: null,
+      sumber: 'public' // Tandai dari form publik
+    };
+    
+    await addDoc(pinjamCol, pinjamData);
+    
+    // Reset form
+    document.getElementById('publicNama').value = '';
+    document.getElementById('publicKostum').value = '';
+    document.getElementById('publicJumlah').value = '1';
+    
+    showPublicAlert('Peminjaman berhasil disimpan!', 'success');
+    
+  } catch (error) {
+    console.error('Error:', error);
+    showPublicAlert('Gagal menyimpan peminjaman!', 'error');
+  }
+});
+
+function showPublicAlert(message, type) {
+  const alert = document.getElementById('publicAlert');
+  alert.className = `public-alert ${type}`;
+  alert.innerHTML = `<i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'}"></i> ${message}`;
+  
+  setTimeout(() => {
+    alert.style.display = 'none';
+  }, 3000);
+}
+
+// =========== QR CODE UNTUK FORM PEMINJAMAN ===========
+function generateQRForm() {
+  const baseUrl = window.location.origin + window.location.pathname;
+  const qrUrl = `${baseUrl}?public=form`;
+  
+  // Generate QR di sidebar
+  const sidebarContainer = document.getElementById('qrCodeSidebar');
+  if (sidebarContainer) {
+    sidebarContainer.innerHTML = '';
+    new QRCode(sidebarContainer, {
+      text: qrUrl,
+      width: 150,
+      height: 150,
+      colorDark: "#1565c0",
+      colorLight: "#ffffff",
+      correctLevel: QRCode.CorrectLevel.H
+    });
+  }
+  
+  // Generate QR di modal
+  const modalContainer = document.getElementById('qrCodeFormContainer');
+  if (modalContainer) {
+    modalContainer.innerHTML = '';
+    new QRCode(modalContainer, {
+      text: qrUrl,
+      width: 250,
+      height: 250,
+      colorDark: "#1565c0",
+      colorLight: "#ffffff",
+      correctLevel: QRCode.CorrectLevel.H
+    });
+  }
+  
+  // Tampilkan link
+  const linkText = document.getElementById('qrLinkText');
+  if (linkText) {
+    linkText.textContent = qrUrl;
+  }
+}
+
+window.showQRFormModal = function() {
+  generateQRForm(); // Regenerate to ensure it's there
+  document.getElementById('modalQRForm').style.display = 'block';
+};
+
+window.downloadQRForm = function() {
+  const baseUrl = window.location.origin + window.location.pathname;
+  const qrUrl = `${baseUrl}?public=form`;
+  
+  // Buat QR Code sementara
+  const tempDiv = document.createElement('div');
+  new QRCode(tempDiv, {
+    text: qrUrl,
+    width: 300,
+    height: 300,
+    colorDark: "#1565c0",
+    colorLight: "#ffffff"
+  });
+  
+  setTimeout(() => {
+    const qrImg = tempDiv.querySelector('img');
+    if (!qrImg) return;
+    
+    // Buat canvas dengan desain
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+    canvas.width = 400;
+    canvas.height = 500;
+    
+    // Background putih
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    
+    // Header
+    ctx.fillStyle = '#1565c0';
+    ctx.font = 'bold 24px Poppins';
+    ctx.textAlign = 'center';
+    ctx.fillText('SD Lazuardi', canvas.width/2, 50);
+    
+    ctx.font = 'bold 18px Poppins';
+    ctx.fillStyle = '#42a5f5';
+    ctx.fillText('Form Peminjaman Kostum', canvas.width/2, 85);
+    
+    // QR Code
+    ctx.drawImage(qrImg, 50, 100, 300, 300);
+    
+    // Info
+    ctx.fillStyle = '#333';
+    ctx.font = '14px Poppins';
+    ctx.fillText('Scan untuk meminjam kostum', canvas.width/2, 430);
+    
+    ctx.fillStyle = '#666';
+    ctx.font = '12px Poppins';
+    ctx.fillText('via HP', canvas.width/2, 455);
+    
+    // Footer
+    ctx.fillStyle = '#999';
+    ctx.font = '10px Poppins';
+    ctx.fillText('Sistem Peminjaman Kostum', canvas.width/2, 485);
+    
+    // Download
+    const link = document.createElement('a');
+    link.download = 'QR-Form-Peminjaman.png';
+    link.href = canvas.toDataURL();
+    link.click();
+  }, 500);
+};
+
+window.printQRForm = function() {
+  const baseUrl = window.location.origin + window.location.pathname;
+  const qrUrl = `${baseUrl}?public=form`;
+  
+  const printWindow = window.open('', '_blank');
+  printWindow.document.write(`
+    <html>
+      <head>
+        <title>Print QR Code Form Peminjaman</title>
+        <style>
+          body { text-align: center; font-family: Poppins, sans-serif; padding: 50px; }
+          h1 { color: #1565c0; }
+          h2 { color: #42a5f5; }
+          .qr-container { margin: 30px auto; width: 300px; height: 300px; }
+          .info { color: #666; margin-top: 30px; }
+          .footer { color: #999; margin-top: 50px; font-size: 12px; }
+        </style>
+      </head>
+      <body>
+        <h1>SD Lazuardi</h1>
+        <h2>Form Peminjaman Kostum</h2>
+        <div class="qr-container" id="qrPrint"></div>
+        <div class="info">Scan QR code ini untuk mengakses form peminjaman</div>
+        <div class="info">Atau buka link: ${qrUrl}</div>
+        <div class="footer">Sistem Peminjaman Kostum</div>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"><\/script>
+        <script>
+          new QRCode(document.getElementById('qrPrint'), {
+            text: '${qrUrl}',
+            width: 300,
+            height: 300
+          });
+        <\/script>
+      </body>
+    </html>
+  `);
+  printWindow.document.close();
+  printWindow.focus();
+  printWindow.print();
+};
 
 // =========== LOGIN ===========
 const USERNAME = "admin";
@@ -957,7 +1561,7 @@ document.querySelectorAll('.sidebar-menu li').forEach(item => {
       document.getElementById('peminjamanSection').classList.add('active');
     } else if(section === 'laporan') {
       document.getElementById('laporanSection').classList.add('active');
-      updatePreviewTable(); // Update preview table when opening laporan section
+      updatePreviewTable();
     }
   });
 });
@@ -1082,6 +1686,9 @@ function updateDropdown() {
       select.appendChild(opt);
     }
   });
+  
+  // Update public dropdown juga
+  updatePublicDropdown();
 }
 
 // =========== RENDER KOSTUM + THUMBNAIL ===========
@@ -1225,16 +1832,18 @@ window.simpanSemuaPinjam = async function() {
         jumlah: String(Number(kostumItem.jumlah) - item.jumlah)
       });
       
-      const pinjamId = `${item.kode}-${Date.now()}-${Math.random()}`;
-      await setDoc(doc(pinjamCol, pinjamId), {
+      const pinjamData = {
         peminjam: peminjam,
         kode: item.kode,
         namaKostum: kostumItem.nama,
         jumlah: item.jumlah,
         tanggal: tanggal,
         kembali: false,
-        tanggalKembali: null
-      });
+        tanggalKembali: null,
+        sumber: 'admin'
+      };
+      
+      await addDoc(pinjamCol, pinjamData);
     }
     
     keranjang = [];
@@ -1302,7 +1911,7 @@ window.renderPinjam = function() {
     });
   }
   updateDashboard();
-  updatePreviewTable(); // Update preview table when data changes
+  updatePreviewTable();
 };
 
 // =========== UPDATE PREVIEW TABLE ===========
@@ -1318,7 +1927,7 @@ function updatePreviewTable() {
     tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;">Tidak ada data</td></tr>';
   } else {
     tbody.innerHTML = "";
-    list.slice(0, 10).forEach((p, index) => { // Show only first 10 items in preview
+    list.slice(0, 10).forEach((p, index) => {
       const row = document.createElement("tr");
       row.innerHTML = `
         <td>${index + 1}</td>
@@ -1388,7 +1997,7 @@ async function generatePDFBlob(filterValue) {
 
   doc.setFontSize(18);
   doc.setTextColor(21, 101, 192);
-  doc.text('Sistem Pendataan Kostum', 14, 15);
+  doc.text('SD Lazuardi - Sistem Pendataan Kostum', 14, 15);
   doc.setFontSize(11);
   doc.setTextColor(80, 80, 80);
   doc.text(`Tanggal Cetak: ${new Date().toLocaleDateString('id-ID', {
@@ -1409,7 +2018,7 @@ async function generatePDFBlob(filterValue) {
     return doc.output('blob');
   }
 
-  const tableColumn = ['No', 'Peminjam', 'Kode', 'Nama Kostum', 'Jml', 'Tgl', 'Status'];
+  const tableColumn = ['No', 'Peminjam', 'Kode', 'Nama Kostum', 'Jml', 'Tgl', 'Status', 'Sumber'];
   const tableRows = [];
 
   listPinjam.forEach((p, index) => {
@@ -1420,7 +2029,8 @@ async function generatePDFBlob(filterValue) {
       p.namaKostum || '-',
       p.jumlah || '1',
       p.tanggal || '-',
-      p.kembali ? 'Sudah' : 'Belum'
+      p.kembali ? 'Sudah' : 'Belum',
+      p.sumber || 'admin'
     ]);
   });
 
@@ -1432,12 +2042,13 @@ async function generatePDFBlob(filterValue) {
     headStyles: { fillColor: [33, 150, 243], textColor: [255, 255, 255] },
     columnStyles: {
       0: { cellWidth: 10 },
-      1: { cellWidth: 30 },
-      2: { cellWidth: 20 },
-      3: { cellWidth: 35 },
-      4: { cellWidth: 12 },
-      5: { cellWidth: 20 },
-      6: { cellWidth: 18 }
+      1: { cellWidth: 25 },
+      2: { cellWidth: 18 },
+      3: { cellWidth: 30 },
+      4: { cellWidth: 10 },
+      5: { cellWidth: 18 },
+      6: { cellWidth: 15 },
+      7: { cellWidth: 15 }
     }
   });
 
@@ -1448,7 +2059,6 @@ async function generatePDFBlob(filterValue) {
 window.previewPDF = async function() {
   const filterValue = document.getElementById('laporanFilterStatus').value;
   
-  // Show loading
   document.getElementById('modalPreviewPDF').style.display = 'block';
   document.getElementById('pdfPreview').innerHTML = `
     <div style="text-align:center; padding:50px; color:#666;">
@@ -1458,25 +2068,20 @@ window.previewPDF = async function() {
   `;
   
   try {
-    // Generate PDF blob
     const pdfBlob = await generatePDFBlob(filterValue);
     const pdfUrl = URL.createObjectURL(pdfBlob);
     
-    // Load PDF with PDF.js
     const loadingTask = pdfjsLib.getDocument(pdfUrl);
     pdfDoc = await loadingTask.promise;
     totalPages = pdfDoc.numPages;
     currentPage = 1;
     
-    // Render first page
     await renderPDFPage(currentPage);
     
-    // Setup page controls
     document.getElementById('pageInfo').textContent = `Halaman ${currentPage} dari ${totalPages}`;
     document.getElementById('prevPageBtn').style.display = totalPages > 1 ? 'inline-block' : 'none';
     document.getElementById('nextPageBtn').style.display = totalPages > 1 ? 'inline-block' : 'none';
     
-    // Store PDF URL for download
     window.currentPDFUrl = pdfUrl;
     
   } catch (error) {
@@ -1543,17 +2148,15 @@ document.getElementById('downloadFromPreviewBtn')?.addEventListener('click', () 
     a.click();
     document.body.removeChild(a);
   } else {
-    // If no preview URL, generate new PDF
     window.exportPDF();
   }
 });
 
-// =========== EXPORT PDF (Original) ===========
+// =========== EXPORT PDF ===========
 window.exportPDF = async function() {
   const filterValue = document.getElementById('laporanFilterStatus').value;
   const pdfBlob = await generatePDFBlob(filterValue);
   
-  // Download
   const url = URL.createObjectURL(pdfBlob);
   const a = document.createElement('a');
   a.href = url;
@@ -1568,6 +2171,7 @@ window.exportPDF = async function() {
 onSnapshot(kostumCol, snapshot => {
   kostum = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
   renderKostum();
+  generateQRForm(); // Generate QR setiap kali data berubah
 });
 
 onSnapshot(pinjamCol, snapshot => {
@@ -1591,17 +2195,6 @@ document.getElementById("exportBtn").addEventListener("click", window.exportPDF)
 document.getElementById("previewPDFBtn").addEventListener("click", window.previewPDF);
 document.getElementById("laporanFilterStatus").addEventListener("change", updatePreviewTable);
 
-// Close modal when clicking outside
-window.onclick = function(event) {
-  const modal = document.getElementById('modalPreviewPDF');
-  if (event.target === modal) {
-    modal.style.display = 'none';
-    if (window.currentPDFUrl) {
-      URL.revokeObjectURL(window.currentPDFUrl);
-    }
-  }
-};
-
 // Export ke global
 window.hapusKostum = hapusKostum;
 window.editKostum = editKostum;
@@ -1615,6 +2208,9 @@ window.renderPinjam = renderPinjam;
 window.lihatGambar = lihatGambar;
 window.previewPDF = previewPDF;
 window.exportPDF = exportPDF;
+
+// Panggil checkPublicView saat halaman dimuat
+checkPublicView();
 
 </script>
 </body>
