@@ -1,137 +1,115 @@
 <!DOCTYPE html>
-<html lang="id">
+<html>
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Sistem Pendataan Kostum</title>
+<title>Kostum App</title>
 
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.3/jspdf.plugin.autotable.min.js"></script>
 
 <style>
 body{
   margin:0;
-  font-family:'Poppins',Arial,sans-serif;
-  background:#f4f6fb;
+  font-family:Arial;
+  background:#f4f6fa;
 }
 
-/* LOGIN */
 #loginPage{
   display:flex;
   height:100vh;
-  align-items:center;
   justify-content:center;
-  background:linear-gradient(135deg,#e3f2fd,#fce4ec);
-}
-.login-box{
-  background:white;
-  padding:40px;
-  border-radius:18px;
-  width:320px;
-  box-shadow:0 10px 30px rgba(0,0,0,.15);
-}
-.login-box h2{color:#1565c0;}
-.login-box input{
-  width:100%;
-  padding:12px;
-  margin-bottom:12px;
-  border-radius:10px;
-  border:1px solid #ddd;
-}
-.login-box button{
-  width:100%;
-  padding:12px;
-  border:none;
-  border-radius:10px;
-  background:#1565c0;
-  color:white;
-  cursor:pointer;
+  align-items:center;
 }
 
-/* LAYOUT */
-#mainApp{display:none;}
-.layout{
+#loginBox{
+  background:white;
+  padding:30px;
+  border-radius:12px;
+  width:300px;
+  box-shadow:0 5px 20px rgba(0,0,0,0.1);
+}
+
+input,select{
+  width:100%;
+  padding:10px;
+  margin:6px 0;
+  border-radius:8px;
+  border:1px solid #ccc;
+}
+
+button{
+  padding:10px;
+  border:none;
+  border-radius:8px;
+  cursor:pointer;
+  background:#1565c0;
+  color:white;
+  margin-top:5px;
+}
+
+#appLayout{
   display:flex;
   min-height:100vh;
 }
 
-/* SIDEBAR */
-.sidebar{
-  width:240px;
-  background:#1565c0;
+#sidebar{
+  width:230px;
+  background:linear-gradient(180deg,#1565c0,#0d47a1);
   color:white;
   padding:20px;
-}
-.sidebar h2{
-  margin-bottom:30px;
-}
-.menuBtn{
-  display:block;
-  width:100%;
-  background:none;
-  border:none;
-  color:white;
-  text-align:left;
-  padding:10px;
-  margin-bottom:10px;
-  border-radius:8px;
-  cursor:pointer;
-}
-.menuBtn:hover{
-  background:rgba(255,255,255,.2);
+  display:flex;
+  flex-direction:column;
 }
 
-/* CONTENT */
-.content{
-  flex:1;
-  padding:25px;
-}
-.section{display:none;}
-.section.active{display:block;}
-
-/* CARD */
-.card{
-  background:white;
-  padding:20px;
-  border-radius:15px;
-  box-shadow:0 6px 15px rgba(0,0,0,.08);
+#sidebar h2{
   margin-bottom:20px;
 }
 
-/* TABLE */
+.menu{
+  background:transparent;
+  border:none;
+  color:white;
+  padding:12px;
+  text-align:left;
+  border-radius:8px;
+  margin-bottom:8px;
+}
+
+.menu:hover{background:rgba(255,255,255,0.2)}
+.menu.active{background:white;color:#1565c0;font-weight:bold}
+
+#content{
+  flex:1;
+  padding:25px;
+}
+
+.page{display:none}
+.page.active{display:block}
+
 table{
   width:100%;
   border-collapse:collapse;
   background:white;
-  border-radius:15px;
-  overflow:hidden;
+  margin-top:15px;
 }
+
 th,td{
-  padding:12px;
-  border-bottom:1px solid #eee;
+  border:1px solid #ddd;
+  padding:8px;
   text-align:center;
 }
-th{background:#e3f2fd;}
-tr:hover{background:#f9fbff;}
 
-.btn{
-  padding:6px 12px;
-  border:none;
-  border-radius:8px;
-  cursor:pointer;
-}
-.add{background:#4caf50;color:white;}
-.edit{background:#2196f3;color:white;}
-.delete{background:#f44336;color:white;}
-.logout{background:#ff5252;color:white;}
-
-.thumbnail{
-  width:50px;
-  height:50px;
-  object-fit:cover;
-  border-radius:8px;
-  cursor:pointer;
+.card{
+  background:white;
+  padding:15px;
+  border-radius:10px;
+  display:inline-block;
+  margin:10px;
+  box-shadow:0 3px 10px rgba(0,0,0,0.1);
 }
 </style>
 </head>
@@ -139,139 +117,197 @@ tr:hover{background:#f9fbff;}
 
 <!-- LOGIN -->
 <div id="loginPage">
-  <form class="login-box" id="loginForm">
-    <h2>Login Admin 👗</h2>
-    <input id="loginUser" placeholder="Username" required>
-    <input id="loginPass" type="password" placeholder="Password" required>
-    <button type="submit">Login</button>
-    <div id="loginError" style="color:red;margin-top:10px;"></div>
-  </form>
-</div>
-
-<!-- MAIN -->
-<div id="mainApp">
-  <div class="layout">
-
-    <!-- SIDEBAR -->
-    <div class="sidebar">
-      <h2>👗 KostumApp</h2>
-      <button class="menuBtn" onclick="showSection('dashboard')">📊 Dashboard</button>
-      <button class="menuBtn" onclick="showSection('kostum')">👗 Data Kostum</button>
-      <button class="menuBtn" onclick="showSection('pinjam')">🛒 Peminjaman</button>
-      <button class="menuBtn" onclick="showSection('laporan')">📄 Laporan</button>
-      <hr>
-      <button class="menuBtn logout" onclick="logout()">🚪 Logout</button>
-    </div>
-
-    <!-- CONTENT -->
-    <div class="content">
-
-      <!-- DASHBOARD -->
-      <div id="dashboard" class="section active">
-        <div class="card">
-          <h3>Total Stok: <span id="totalStok">0</span></h3>
-          <h3>Total Jenis: <span id="totalJenis">0</span></h3>
-          <h3>Belum Kembali: <span id="belumKembali">0</span></h3>
-          <h3>Sudah Kembali: <span id="sudahKembali">0</span></h3>
-        </div>
-        <div class="card">
-          <canvas id="chart"></canvas>
-        </div>
-      </div>
-
-      <!-- DATA KOSTUM -->
-      <div id="kostum" class="section">
-        <button class="btn add" onclick="alert('Form tambah tetap pakai function lama kamu')">+ Tambah Kostum</button>
-        <table>
-          <thead>
-            <tr>
-              <th>Gambar</th>
-              <th>Nama</th>
-              <th>Kode</th>
-              <th>Stok</th>
-            </tr>
-          </thead>
-          <tbody id="tableKostum"></tbody>
-        </table>
-      </div>
-
-      <!-- PEMINJAMAN -->
-      <div id="pinjam" class="section">
-        <div class="card">
-          <h3>Form Peminjaman</h3>
-          <input placeholder="Nama Peminjam"><br><br>
-          <button class="btn add">Simpan</button>
-        </div>
-      </div>
-
-      <!-- LAPORAN -->
-      <div id="laporan" class="section">
-        <button class="btn add" onclick="alert('Export PDF tetap pakai function lama kamu')">Export PDF</button>
-        <table>
-          <thead>
-            <tr>
-              <th>Peminjam</th>
-              <th>Kode</th>
-              <th>Status</th>
-            </tr>
-          </thead>
-          <tbody id="tableLaporan"></tbody>
-        </table>
-      </div>
-
-    </div>
+  <div id="loginBox">
+    <h3>Login Admin</h3>
+    <input type="email" id="email" placeholder="Email">
+    <input type="password" id="password" placeholder="Password">
+    <button onclick="login()">Login</button>
   </div>
 </div>
 
-<script>
-/* LOGIN */
-const USERNAME="admin";
-const PASSWORD="123456";
+<!-- APP -->
+<div id="mainApp" style="display:none">
+<div id="appLayout">
 
-document.getElementById("loginForm").addEventListener("submit",function(e){
-  e.preventDefault();
-  if(loginUser.value===USERNAME && loginPass.value===PASSWORD){
-    loginPage.style.display="none";
-    mainApp.style.display="block";
-  }else{
-    loginError.innerText="Login salah!";
-  }
-});
+  <div id="sidebar">
+    <h2>👗 KostumApp</h2>
+    <button class="menu active" onclick="showPage('dashboard')">Dashboard</button>
+    <button class="menu" onclick="showPage('kostum')">Data Kostum</button>
+    <button class="menu" onclick="showPage('pinjam')">Peminjaman</button>
+    <button class="menu" onclick="showPage('laporan')">Laporan</button>
+    <button onclick="logout()" style="margin-top:auto;background:#ef5350">Logout</button>
+  </div>
 
-function logout(){
+  <div id="content">
+
+    <!-- DASHBOARD -->
+    <div id="dashboard" class="page active">
+      <h2>Dashboard</h2>
+      <div class="card">Total Kostum: <span id="totalKostum">0</span></div>
+      <div class="card">Total Peminjaman: <span id="totalPinjam">0</span></div>
+      <canvas id="chart"></canvas>
+    </div>
+
+    <!-- DATA KOSTUM -->
+    <div id="kostum" class="page">
+      <h2>Data Kostum</h2>
+      <input type="text" id="namaKostum" placeholder="Nama Kostum">
+      <input type="number" id="stokKostum" placeholder="Stok">
+      <input type="file" id="gambarKostum">
+      <button onclick="tambahKostum()">Tambah</button>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Nama</th>
+            <th>Stok</th>
+            <th>Gambar</th>
+            <th>Aksi</th>
+          </tr>
+        </thead>
+        <tbody id="kostumTable"></tbody>
+      </table>
+    </div>
+
+    <!-- PEMINJAMAN -->
+    <div id="pinjam" class="page">
+      <h2>Peminjaman</h2>
+      <input type="text" id="namaPeminjam" placeholder="Nama Peminjam">
+      <select id="pilihKostum"></select>
+      <button onclick="tambahKeranjang()">Tambah ke Keranjang</button>
+
+      <ul id="keranjang"></ul>
+      <button onclick="simpanPinjam()">Simpan</button>
+    </div>
+
+    <!-- LAPORAN -->
+    <div id="laporan" class="page">
+      <h2>Laporan</h2>
+      <button onclick="exportPDF()">Export PDF</button>
+      <table>
+        <thead>
+          <tr>
+            <th>Nama</th>
+            <th>Kostum</th>
+          </tr>
+        </thead>
+        <tbody id="laporanTable"></tbody>
+      </table>
+    </div>
+
+  </div>
+</div>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { getAuth, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyAZUybNqjxxb-KXMZ4ICL03GcO-StBzU-Y",
+  authDomain: "pendataan-kostum.firebaseapp.com",
+  projectId: "pendataan-kostum",
+  storageBucket: "pendataan-kostum.appspot.com",
+  messagingSenderId: "226459234974",
+  appId: "1:226459234974:web:2b0512247ff01c738a418f"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+const storage = getStorage(app);
+
+window.login = async function(){
+  const email=document.getElementById("email").value;
+  const password=document.getElementById("password").value;
+  await signInWithEmailAndPassword(auth,email,password);
+  document.getElementById("loginPage").style.display="none";
+  document.getElementById("mainApp").style.display="block";
+  loadData();
+}
+
+window.logout = async function(){
+  await signOut(auth);
   location.reload();
 }
 
-/* SIDEBAR NAV */
-function showSection(id){
-  document.querySelectorAll(".section").forEach(sec=>{
-    sec.classList.remove("active");
-  });
+window.showPage=function(id){
+  document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
   document.getElementById(id).classList.add("active");
 }
 
-/* DUMMY DATA DASHBOARD */
-let stok=20;
-let jenis=5;
-let belum=3;
-let sudah=7;
+async function loadData(){
+  const kostumSnap=await getDocs(collection(db,"kostum"));
+  const pinjamSnap=await getDocs(collection(db,"pinjam"));
 
-document.getElementById("totalStok").innerText=stok;
-document.getElementById("totalJenis").innerText=jenis;
-document.getElementById("belumKembali").innerText=belum;
-document.getElementById("sudahKembali").innerText=sudah;
+  document.getElementById("totalKostum").innerText=kostumSnap.size;
+  document.getElementById("totalPinjam").innerText=pinjamSnap.size;
 
-new Chart(document.getElementById("chart"),{
-  type:'bar',
-  data:{
-    labels:["Belum","Sudah"],
-    datasets:[{
-      data:[belum,sudah],
-      backgroundColor:["#f44336","#4caf50"]
-    }]
-  },
-  options:{plugins:{legend:{display:false}}}
-});
+  let kostumTable="";
+  let pilih="";
+  kostumSnap.forEach(docu=>{
+    const data=docu.data();
+    kostumTable+=`
+      <tr>
+        <td>${data.nama}</td>
+        <td>${data.stok}</td>
+        <td><img src="${data.gambar}" width="50"></td>
+        <td><button onclick="hapusKostum('${docu.id}')">Hapus</button></td>
+      </tr>`;
+    pilih+=`<option value="${data.nama}">${data.nama}</option>`;
+  });
+
+  document.getElementById("kostumTable").innerHTML=kostumTable;
+  document.getElementById("pilihKostum").innerHTML=pilih;
+
+  let laporan="";
+  pinjamSnap.forEach(docu=>{
+    const data=docu.data();
+    laporan+=`<tr><td>${data.nama}</td><td>${data.kostum.join(", ")}</td></tr>`;
+  });
+  document.getElementById("laporanTable").innerHTML=laporan;
+}
+
+window.tambahKostum=async function(){
+  const nama=document.getElementById("namaKostum").value;
+  const stok=document.getElementById("stokKostum").value;
+  const file=document.getElementById("gambarKostum").files[0];
+
+  const storageRef=ref(storage,"kostum/"+file.name);
+  await uploadBytes(storageRef,file);
+  const url=await getDownloadURL(storageRef);
+
+  await addDoc(collection(db,"kostum"),{nama,stok,gambar:url});
+  loadData();
+}
+
+window.hapusKostum=async function(id){
+  await deleteDoc(doc(db,"kostum",id));
+  loadData();
+}
+
+let keranjang=[];
+window.tambahKeranjang=function(){
+  const kostum=document.getElementById("pilihKostum").value;
+  keranjang.push(kostum);
+  document.getElementById("keranjang").innerHTML=keranjang.map(k=>`<li>${k}</li>`).join("");
+}
+
+window.simpanPinjam=async function(){
+  const nama=document.getElementById("namaPeminjam").value;
+  await addDoc(collection(db,"pinjam"),{nama,kostum:keranjang});
+  keranjang=[];
+  loadData();
+}
+
+window.exportPDF=function(){
+  const { jsPDF } = window.jspdf;
+  const docPDF = new jsPDF();
+  docPDF.text("Laporan Peminjaman",10,10);
+  docPDF.save("laporan.pdf");
+}
 </script>
 
 </body>
