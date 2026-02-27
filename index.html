@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Sistem Pendataan Kostum</title>
+<title>Sistem Pendataan Kostum - SD Lazuardi</title>
 
 <!-- CHART.JS -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -403,29 +403,64 @@ tr:hover {
 
 /* QR CODE STYLES */
 .qrcode-container {
-  text-align: center;
-  padding: 20px;
   background: white;
   border-radius: 16px;
-  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-  margin: 20px 0;
+  padding: 25px;
+  box-shadow: 0 6px 18px rgba(0,0,0,.08);
+  margin-bottom: 20px;
+  text-align: center;
 }
 
-.qrcode-large {
-  width: 250px;
-  height: 250px;
-  margin: 15px auto;
+.qrcode-container h4 {
+  color: #1565c0;
+  margin-bottom: 20px;
+  font-size: 18px;
 }
 
-.qrcode-small {
-  width: 50px;
-  height: 50px;
-  cursor: pointer;
-  transition: transform 0.2s;
+.qrcode-container h4 i {
+  margin-right: 8px;
+  color: #9c27b0;
 }
 
-.qrcode-small:hover {
-  transform: scale(1.1);
+.qrcode-wrapper {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+#qrCodeSidebar {
+  width: 200px;
+  height: 200px;
+}
+
+.qr-info-box {
+  background: #e3f2fd;
+  padding: 15px;
+  border-radius: 12px;
+  margin: 15px 0;
+}
+
+.qr-info-box p {
+  color: #1565c0;
+  margin-bottom: 5px;
+}
+
+.qr-info-box small {
+  color: #666;
+  font-size: 13px;
+}
+
+.qr-actions {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-top: 15px;
+}
+
+.qr-actions .btn {
+  padding: 10px 20px;
+  min-width: 120px;
 }
 
 /* QR INFO */
@@ -441,13 +476,6 @@ tr:hover {
   color: #1565c0;
   font-size: 14px;
   margin: 5px 0;
-}
-
-.qr-actions {
-  display: flex;
-  gap: 10px;
-  justify-content: center;
-  margin-top: 15px;
 }
 
 /* MODAL */
@@ -786,6 +814,11 @@ tr:hover {
   .public-container {
     padding: 20px;
   }
+  
+  .qr-actions .btn {
+    min-width: 100px;
+    padding: 8px 15px;
+  }
 }
 </style>
 </head>
@@ -849,44 +882,43 @@ tr:hover {
 </div>
 
 <!-- MODAL QR CODE FORM -->
-<!-- MODAL QR CODE FORM - DIPERBAIKI POSISINYA -->
 <div id="modalQRForm" class="modal">
   <span class="close-black" onclick="document.getElementById('modalQRForm').style.display='none'">&times;</span>
-  <div class="modal-content modal-sm" style="background:white; text-align: center;">
-    <h3 style="color:#1565c0; margin-bottom:15px;">
+  <div class="modal-content modal-sm">
+    <h3 style="color:#1565c0; margin-bottom:15px; text-align:center;">
       <i class="fas fa-qrcode" style="color:#9c27b0;"></i> 
       QR Code Form Peminjaman
     </h3>
     
-    <!-- QR CODE DI TENGAH MODAL -->
     <div style="display: flex; justify-content: center; margin: 20px 0;">
       <div id="qrCodeFormContainer" style="width: 250px; height: 250px;"></div>
     </div>
     
-    <div class="qr-info" style="text-align: center; background: #e3f2fd; padding: 15px; border-radius: 12px; margin: 15px 0;">
+    <div class="qr-info">
       <p><i class="fas fa-info-circle"></i> Scan QR code ini untuk mengakses form peminjaman dari HP</p>
       <p style="font-size:12px; margin-top: 10px;">Atau bagikan link ini:</p>
-      <div style="background:#f0f0f0; padding:10px; border-radius:8px; font-size:12px; word-break:break-all; text-align: left;" id="qrLinkText"></div>
+      <div style="background:#f0f0f0; padding:10px; border-radius:8px; font-size:12px; word-break:break-all; text-align:left;" id="qrLinkText"></div>
     </div>
     
-    <!-- TOMBOL ACTION DI TENGAH DENGAN UKURAN SAMA -->
-    <div style="display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;">
-      <button class="btn qrcode-btn" onclick="showQRFormModal()" style="padding: 10px 20px; min-width: 140px;">
-        <i class="fas fa-qrcode"></i> Lihat QR Besar
+    <div class="qr-actions">
+      <button class="btn preview" onclick="downloadQRForm()">
+        <i class="fas fa-download"></i> Download QR
       </button>
-      <button class="btn preview" onclick="downloadQRForm()" style="padding: 10px 20px; min-width: 120px;">
-        <i class="fas fa-download"></i> Download
-      </button>
-      <button class="btn add" onclick="printQRForm()" style="padding: 10px 20px; min-width: 120px;">
+      <button class="btn add" onclick="printQRForm()">
         <i class="fas fa-print"></i> Print
       </button>
+      <button class="btn delete" onclick="document.getElementById('modalQRForm').style.display='none'">
+        <i class="fas fa-times"></i> Tutup
+      </button>
     </div>
+  </div>
+</div>
 
 <!-- MODAL PREVIEW PDF -->
-<div id="modalPreviewPDF" class="modal" style="display:none;">
+<div id="modalPreviewPDF" class="modal">
   <span class="close-black" onclick="document.getElementById('modalPreviewPDF').style.display='none'">&times;</span>
-  <div class="modal-content modal-sm" style="background:white;">
-    <h3 style="color:#1565c0; margin-bottom:15px;">
+  <div class="modal-content modal-sm">
+    <h3 style="color:#1565c0; margin-bottom:15px; text-align:center;">
       <i class="fas fa-file-pdf" style="color:#ef5350;"></i> 
       Preview Laporan PDF
     </h3>
@@ -1000,11 +1032,11 @@ tr:hover {
       <div id="kostumSection" class="content-section">
         <div class="topbar">
           <div class="page-title">
-            <i class="fas fa-tshirt"></i> Data kostum
+            <i class="fas fa-tshirt"></i> Data Kostum
           </div>
         </div>
         
-        <button class="btn add" id="showFormBtn"><i class="fas fa-plus"></i> Tambah kostum</button>
+        <button class="btn add" id="showFormBtn"><i class="fas fa-plus"></i> Tambah Kostum</button>
         
         <form class="form-box" id="formBox">
           <input id="nama" placeholder="Nama kostum" required />
@@ -1048,40 +1080,32 @@ tr:hover {
         </div>
         
         <!-- QR CODE FORM -->
-        <!-- QR CODE FORM - DIPERBAIKI POSISINYA -->
-        <div class="qrcode-container" style="text-align: center; background: white; border-radius: 16px; padding: 25px; box-shadow: 0 6px 18px rgba(0,0,0,.08); margin-bottom: 20px;">
-          <h4 style="color:#1565c0; margin-bottom: 20px; font-size: 18px;">
-            <i class="fas fa-qrcode" style="margin-right: 8px; color: #9c27b0;"></i> 
+        <div class="qrcode-container">
+          <h4>
+            <i class="fas fa-qrcode"></i> 
             QR Peminjaman
           </h4>
           
-          <!-- QR CODE DI TENGAH -->
-          <div style="display: flex; justify-content: center; margin-bottom: 20px;">
-            <div id="qrCodeSidebar" style="width: 200px; height: 200px;"></div>
+          <div class="qrcode-wrapper">
+            <div id="qrCodeSidebar"></div>
           </div>
           
-          <!-- INFORMASI QR -->
-          <div style="background: #e3f2fd; padding: 15px; border-radius: 12px; margin: 15px 0;">
-            <p style="color: #1565c0; margin-bottom: 5px;">
-              <i class="fas fa-info-circle"></i> 
-              Scan QR code ini dengan HP untuk mengakses form peminjaman
-            </p>
-            <p style="color: #666; font-size: 13px;">
-              Pengguna bisa langsung mengisi form peminjaman dari HP mereka
-            </p>
+          <div class="qr-info-box">
+            <p><i class="fas fa-info-circle"></i> Scan QR code ini dengan HP untuk mengakses form peminjaman</p>
+            <small>Pengguna bisa langsung mengisi form peminjaman dari HP mereka</small>
           </div>
           
-         <!-- TOMBOL ACTION DI MODAL DENGAN UKURAN SAMA -->
-        <div style="display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-top: 20px;">
-          <button class="btn preview" onclick="downloadQRForm()" style="padding: 10px 20px; min-width: 140px;">
-            <i class="fas fa-download"></i> Download QR
-          </button>
-          <button class="btn add" onclick="printQRForm()" style="padding: 10px 20px; min-width: 140px;">
-            <i class="fas fa-print"></i> Print
-          </button>
-          <button class="btn delete" onclick="document.getElementById('modalQRForm').style.display='none'" style="padding: 10px 20px; min-width: 140px;">
-            <i class="fas fa-times"></i> Tutup
-          </button>
+          <div class="qr-actions">
+            <button class="btn qrcode-btn" onclick="showQRFormModal()">
+              <i class="fas fa-qrcode"></i> Lihat QR Besar
+            </button>
+            <button class="btn preview" onclick="downloadQRForm()">
+              <i class="fas fa-download"></i> Download
+            </button>
+            <button class="btn add" onclick="printQRForm()">
+              <i class="fas fa-print"></i> Print
+            </button>
+          </div>
         </div>
         
         <!-- FORM PEMINJAMAN ADMIN -->
@@ -1252,14 +1276,9 @@ function checkPublicView() {
   const publicView = urlParams.get('public');
   
   if (publicView === 'form') {
-    // Sembunyikan login dan main app
     document.getElementById('loginPage').style.display = 'none';
     document.getElementById('mainApp').style.display = 'none';
-    
-    // Tampilkan public view
     document.getElementById('publicView').style.display = 'block';
-    
-    // Set tanggal hari ini
     setPublicTanggal();
   }
 }
@@ -1269,8 +1288,8 @@ function setPublicTanggal() {
   const tgl = document.getElementById("publicTanggal");
   const today = new Date();
   const yyyy = today.getFullYear();
-  const mm = String(today.getMonth()+1).padStart(2,"0");
-  const dd = String(today.getDate()).padStart(2,"0");
+  const mm = String(today.getMonth() + 1).padStart(2, "0");
+  const dd = String(today.getDate()).padStart(2, "0");
   tgl.value = `${yyyy}-${mm}-${dd}`;
 }
 
@@ -1329,12 +1348,10 @@ document.getElementById('publicPinjamForm')?.addEventListener('submit', async fu
   }
   
   try {
-    // Kurangi stok
     await updateDoc(doc(kostumCol, kode), {
       jumlah: String(Number(kostumItem.jumlah) - jumlah)
     });
     
-    // Simpan peminjaman
     const pinjamData = {
       peminjam: peminjam,
       kode: kode,
@@ -1343,12 +1360,11 @@ document.getElementById('publicPinjamForm')?.addEventListener('submit', async fu
       tanggal: tanggal,
       kembali: false,
       tanggalKembali: null,
-      sumber: 'public' // Tandai dari form publik
+      sumber: 'public'
     };
     
     await addDoc(pinjamCol, pinjamData);
     
-    // Reset form
     document.getElementById('publicNama').value = '';
     document.getElementById('publicKostum').value = '';
     document.getElementById('publicJumlah').value = '1';
@@ -1376,7 +1392,6 @@ function generateQRForm() {
   const baseUrl = window.location.origin + window.location.pathname;
   const qrUrl = `${baseUrl}?public=form`;
   
-  // Generate QR di sidebar (posisi tengah sudah diatur oleh CSS flex)
   const sidebarContainer = document.getElementById('qrCodeSidebar');
   if (sidebarContainer) {
     sidebarContainer.innerHTML = '';
@@ -1390,7 +1405,6 @@ function generateQRForm() {
     });
   }
   
-  // Generate QR di modal (posisi tengah sudah diatur oleh CSS flex)
   const modalContainer = document.getElementById('qrCodeFormContainer');
   if (modalContainer) {
     modalContainer.innerHTML = '';
@@ -1404,7 +1418,6 @@ function generateQRForm() {
     });
   }
   
-  // Tampilkan link
   const linkText = document.getElementById('qrLinkText');
   if (linkText) {
     linkText.textContent = qrUrl;
@@ -1412,7 +1425,7 @@ function generateQRForm() {
 }
 
 window.showQRFormModal = function() {
-  generateQRForm(); // Regenerate to ensure it's there
+  generateQRForm();
   document.getElementById('modalQRForm').style.display = 'block';
 };
 
@@ -1420,7 +1433,6 @@ window.downloadQRForm = function() {
   const baseUrl = window.location.origin + window.location.pathname;
   const qrUrl = `${baseUrl}?public=form`;
   
-  // Buat QR Code sementara
   const tempDiv = document.createElement('div');
   new QRCode(tempDiv, {
     text: qrUrl,
@@ -1434,17 +1446,14 @@ window.downloadQRForm = function() {
     const qrImg = tempDiv.querySelector('img');
     if (!qrImg) return;
     
-    // Buat canvas dengan desain
     const canvas = document.createElement('canvas');
     const ctx = canvas.getContext('2d');
     canvas.width = 400;
     canvas.height = 500;
     
-    // Background putih
     ctx.fillStyle = '#ffffff';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
     
-    // Header
     ctx.fillStyle = '#1565c0';
     ctx.font = 'bold 24px Poppins';
     ctx.textAlign = 'center';
@@ -1454,10 +1463,8 @@ window.downloadQRForm = function() {
     ctx.fillStyle = '#42a5f5';
     ctx.fillText('Form Peminjaman Kostum', canvas.width/2, 85);
     
-    // QR Code
     ctx.drawImage(qrImg, 50, 100, 300, 300);
     
-    // Info
     ctx.fillStyle = '#333';
     ctx.font = '14px Poppins';
     ctx.fillText('Scan untuk meminjam kostum', canvas.width/2, 430);
@@ -1466,12 +1473,10 @@ window.downloadQRForm = function() {
     ctx.font = '12px Poppins';
     ctx.fillText('via HP', canvas.width/2, 455);
     
-    // Footer
     ctx.fillStyle = '#999';
     ctx.font = '10px Poppins';
     ctx.fillText('Sistem Peminjaman Kostum', canvas.width/2, 485);
     
-    // Download
     const link = document.createElement('a');
     link.download = 'QR-Form-Peminjaman.png';
     link.href = canvas.toDataURL();
@@ -1566,14 +1571,10 @@ window.printQRForm = function() {
           </div>
         </div>
         
-        <!-- Font Awesome untuk icon -->
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-        
-        <!-- QRCode Library -->
         <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"><\/script>
         
         <script>
-          // Generate QR Code
           new QRCode(document.getElementById('qrPrint'), {
             text: '${qrUrl}',
             width: 250,
@@ -1583,7 +1584,6 @@ window.printQRForm = function() {
             correctLevel: QRCode.CorrectLevel.H
           });
           
-          // Print setelah QR selesai digenerate
           setTimeout(() => {
             window.print();
           }, 500);
@@ -1602,7 +1602,7 @@ window.login = function(e) {
   e.preventDefault();
   const user = document.getElementById("loginUser").value;
   const pass = document.getElementById("loginPass").value;
-  if(user === USERNAME && pass === PASSWORD) {
+  if (user === USERNAME && pass === PASSWORD) {
     localStorage.setItem("login", "yes");
     document.getElementById("loginPage").style.display = "none";
     document.getElementById("mainApp").style.display = "block";
@@ -1616,7 +1616,7 @@ window.logout = function() {
   location.reload();
 };
 
-if(localStorage.getItem("login") === "yes") {
+if (localStorage.getItem("login") === "yes") {
   document.getElementById("loginPage").style.display = "none";
   document.getElementById("mainApp").style.display = "block";
 }
@@ -1637,13 +1637,13 @@ document.querySelectorAll('.sidebar-menu li').forEach(item => {
     });
     
     const section = this.dataset.section;
-    if(section === 'dashboard') {
+    if (section === 'dashboard') {
       document.getElementById('dashboardSection').classList.add('active');
-    } else if(section === 'kostum') {
+    } else if (section === 'kostum') {
       document.getElementById('kostumSection').classList.add('active');
-    } else if(section === 'peminjaman') {
+    } else if (section === 'peminjaman') {
       document.getElementById('peminjamanSection').classList.add('active');
-    } else if(section === 'laporan') {
+    } else if (section === 'laporan') {
       document.getElementById('laporanSection').classList.add('active');
       updatePreviewTable();
     }
@@ -1655,8 +1655,8 @@ function setTanggalHariIni() {
   const tgl = document.getElementById("tanggal");
   const today = new Date();
   const yyyy = today.getFullYear();
-  const mm = String(today.getMonth()+1).padStart(2,"0");
-  const dd = String(today.getDate()).padStart(2,"0");
+  const mm = String(today.getMonth() + 1).padStart(2, "0");
+  const dd = String(today.getDate()).padStart(2, "0");
   tgl.value = `${yyyy}-${mm}-${dd}`;
 }
 setTanggalHariIni();
@@ -1678,7 +1678,7 @@ document.getElementById("uploadGambar")?.addEventListener("change", function(e) 
 
 // =========== GENERATE KODE ===========
 async function generateKode() {
-  if(kostum.length === 0) return "KST-001";
+  if (kostum.length === 0) return "KST-001";
   const kodeTerakhir = kostum
     .map(k => k.kode)
     .filter(k => k && k.startsWith("KST-"))
@@ -1707,15 +1707,15 @@ async function saveKostum(e) {
     jumlah: document.getElementById("jumlah").value.trim() || "0",
     gambar: document.getElementById("gambarBase64").value || null
   };
-  if(!data.nama) return alert("Nama wajib diisi");
-  if(!data.kode) return alert("Kode error");
+  if (!data.nama) return alert("Nama wajib diisi");
+  if (!data.kode) return alert("Kode error");
 
   try {
     await setDoc(doc(kostumCol, data.kode), data);
     document.getElementById("formBox").style.display = "none";
     document.getElementById("formBox").reset();
     document.getElementById("previewGambar").style.display = "none";
-  } catch(err) {
+  } catch (err) {
     console.error(err);
     alert("Gagal menyimpan data");
   }
@@ -1724,11 +1724,11 @@ async function saveKostum(e) {
 // =========== HAPUS KOSTUM ===========
 window.hapusKostum = async function(i) {
   const k = kostum[i];
-  if(!k) return;
-  if(!confirm("Hapus kostum ini?")) return;
+  if (!k) return;
+  if (!confirm("Hapus kostum ini?")) return;
   try {
     await deleteDoc(doc(kostumCol, k.kode));
-  } catch(err) {
+  } catch (err) {
     console.error(err);
     alert("Gagal hapus kostum");
   }
@@ -1742,7 +1742,7 @@ window.editKostum = function(i) {
   document.getElementById("ukuran").value = k.ukuran === "-" ? "" : k.ukuran;
   document.getElementById("jumlah").value = k.jumlah;
   
-  if(k.gambar) {
+  if (k.gambar) {
     document.getElementById("previewGambar").src = k.gambar;
     document.getElementById("previewGambar").style.display = "block";
     document.getElementById("gambarBase64").value = k.gambar;
@@ -1759,11 +1759,11 @@ window.editKostum = function(i) {
 function updateDropdown() {
   const select = document.getElementById("kostumPinjam");
   select.innerHTML = '<option value="">Pilih Kostum</option>';
-  if(kostum.length === 0) return;
+  if (kostum.length === 0) return;
   
   kostum.forEach(k => {
     const stok = Number(k.jumlah) || 0;
-    if(stok > 0) {
+    if (stok > 0) {
       const opt = document.createElement("option");
       opt.value = k.kode;
       opt.textContent = `${k.nama} (${k.kode}) - Stok: ${stok}`;
@@ -1771,7 +1771,6 @@ function updateDropdown() {
     }
   });
   
-  // Update public dropdown juga
   updatePublicDropdown();
 }
 
@@ -1779,14 +1778,14 @@ function updateDropdown() {
 function renderKostum() {
   const tbody = document.getElementById("tableBody");
   tbody.innerHTML = "";
-  if(kostum.length === 0) {
+  if (kostum.length === 0) {
     tbody.innerHTML = '<tr><td colspan="6">Belum ada data kostum</td></tr>';
   } else {
     kostum.forEach((k, i) => {
       const row = document.createElement("tr");
       
       let gambarCell = '<td>-</td>';
-      if(k.gambar) {
+      if (k.gambar) {
         gambarCell = `<td>
           <img src="${k.gambar}" class="thumbnail" onclick="lihatGambar('${k.gambar}')" />
         </td>`;
@@ -1822,21 +1821,21 @@ window.tambahKeKeranjang = function() {
   const kode = document.getElementById("kostumPinjam").value;
   const jumlah = parseInt(document.getElementById("jmlPinjam").value);
   
-  if(!kode) return alert("Pilih kostum dulu!");
-  if(jumlah < 1) return alert("Jumlah minimal 1");
+  if (!kode) return alert("Pilih kostum dulu!");
+  if (jumlah < 1) return alert("Jumlah minimal 1");
   
   const kostumItem = kostum.find(k => k.kode === kode);
-  if(!kostumItem) return alert("Kostum tidak ditemukan");
+  if (!kostumItem) return alert("Kostum tidak ditemukan");
   
   const stokTersedia = Number(kostumItem.jumlah);
   const existing = keranjang.find(item => item.kode === kode);
   const totalDiminta = existing ? existing.jumlah + jumlah : jumlah;
   
-  if(totalDiminta > stokTersedia) {
+  if (totalDiminta > stokTersedia) {
     return alert(`Stok tidak cukup! Tersedia ${stokTersedia}`);
   }
   
-  if(existing) {
+  if (existing) {
     existing.jumlah += jumlah;
   } else {
     keranjang.push({
@@ -1859,7 +1858,7 @@ function renderKeranjang() {
   const container = document.getElementById("keranjangContainer");
   const tbody = document.getElementById("keranjangBody");
   
-  if(keranjang.length === 0) {
+  if (keranjang.length === 0) {
     container.style.display = "none";
     return;
   }
@@ -1893,23 +1892,23 @@ window.simpanSemuaPinjam = async function() {
   const peminjam = document.getElementById("peminjam").value.trim();
   const tanggal = document.getElementById("tanggal").value;
   
-  if(!peminjam) return alert("Nama peminjam wajib diisi!");
-  if(keranjang.length === 0) return alert("Keranjang masih kosong!");
+  if (!peminjam) return alert("Nama peminjam wajib diisi!");
+  if (keranjang.length === 0) return alert("Keranjang masih kosong!");
   
-  for(const item of keranjang) {
+  for (const item of keranjang) {
     const kostumItem = kostum.find(k => k.kode === item.kode);
-    if(!kostumItem) {
+    if (!kostumItem) {
       alert(`Kostum ${item.kode} tidak ditemukan!`);
       return;
     }
-    if(Number(kostumItem.jumlah) < item.jumlah) {
+    if (Number(kostumItem.jumlah) < item.jumlah) {
       alert(`Stok ${kostumItem.nama} tidak cukup! Tersedia ${kostumItem.jumlah}`);
       return;
     }
   }
   
   try {
-    for(const item of keranjang) {
+    for (const item of keranjang) {
       const kostumItem = kostum.find(k => k.kode === item.kode);
       
       await updateDoc(doc(kostumCol, item.kode), {
@@ -1936,7 +1935,7 @@ window.simpanSemuaPinjam = async function() {
     setTanggalHariIni();
     alert("Semua peminjaman berhasil disimpan!");
     
-  } catch(err) {
+  } catch (err) {
     console.error(err);
     alert("Gagal menyimpan peminjaman");
   }
@@ -1945,10 +1944,10 @@ window.simpanSemuaPinjam = async function() {
 // =========== KEMBALIKAN ===========
 window.kembalikan = async function(pinjamId) {
   const p = dataPinjam.find(d => d.id === pinjamId);
-  if(!p || p.kembali) return;
+  if (!p || p.kembali) return;
   
   const k = kostum.find(x => x.kode === p.kode);
-  if(!k) return alert("Kostum tidak ditemukan");
+  if (!k) return alert("Kostum tidak ditemukan");
 
   try {
     await updateDoc(doc(pinjamCol, p.id), { 
@@ -1960,7 +1959,7 @@ window.kembalikan = async function(pinjamId) {
       jumlah: String(Number(k.jumlah) + Number(p.jumlah)) 
     });
     
-  } catch(err) {
+  } catch (err) {
     console.error(err);
     alert("Gagal update pengembalian");
   }
@@ -1973,10 +1972,10 @@ window.renderPinjam = function() {
   const filter = document.getElementById("filterStatus").value;
   let list = dataPinjam;
   
-  if(filter === "belum") list = dataPinjam.filter(p => !p.kembali);
-  if(filter === "sudah") list = dataPinjam.filter(p => p.kembali);
+  if (filter === "belum") list = dataPinjam.filter(p => !p.kembali);
+  if (filter === "sudah") list = dataPinjam.filter(p => p.kembali);
   
-  if(list.length === 0) {
+  if (list.length === 0) {
     tbody.innerHTML = '<tr><td colspan="6">Tidak ada data</td></tr>';
   } else {
     list.forEach(p => {
@@ -2004,10 +2003,10 @@ function updatePreviewTable() {
   const filter = document.getElementById("laporanFilterStatus").value;
   
   let list = dataPinjam;
-  if(filter === "belum") list = dataPinjam.filter(p => !p.kembali);
-  if(filter === "sudah") list = dataPinjam.filter(p => p.kembali);
+  if (filter === "belum") list = dataPinjam.filter(p => !p.kembali);
+  if (filter === "sudah") list = dataPinjam.filter(p => p.kembali);
   
-  if(list.length === 0) {
+  if (list.length === 0) {
     tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;">Tidak ada data</td></tr>';
   } else {
     tbody.innerHTML = "";
@@ -2025,7 +2024,7 @@ function updatePreviewTable() {
       tbody.appendChild(row);
     });
     
-    if(list.length > 10) {
+    if (list.length > 10) {
       const row = document.createElement("tr");
       row.innerHTML = `<td colspan="7" style="text-align:center; color:#666;">
         <i class="fas fa-ellipsis-h"></i> dan ${list.length - 10} data lainnya
@@ -2255,7 +2254,7 @@ window.exportPDF = async function() {
 onSnapshot(kostumCol, snapshot => {
   kostum = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
   renderKostum();
-  generateQRForm(); // Generate QR setiap kali data berubah
+  generateQRForm();
 });
 
 onSnapshot(pinjamCol, snapshot => {
@@ -2292,6 +2291,9 @@ window.renderPinjam = renderPinjam;
 window.lihatGambar = lihatGambar;
 window.previewPDF = previewPDF;
 window.exportPDF = exportPDF;
+window.showQRFormModal = showQRFormModal;
+window.downloadQRForm = downloadQRForm;
+window.printQRForm = printQRForm;
 
 // Panggil checkPublicView saat halaman dimuat
 checkPublicView();
