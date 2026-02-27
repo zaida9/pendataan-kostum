@@ -869,20 +869,18 @@ tr:hover {
       <div style="background:#f0f0f0; padding:10px; border-radius:8px; font-size:12px; word-break:break-all; text-align: left;" id="qrLinkText"></div>
     </div>
     
-    <!-- TOMBOL ACTION DI TENGAH -->
-    <div style="display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-top: 20px;">
-      <button class="btn preview" onclick="downloadQRForm()">
-        <i class="fas fa-download"></i> Download QR
+    <!-- TOMBOL ACTION DI TENGAH DENGAN UKURAN SAMA -->
+    <div style="display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;">
+      <button class="btn qrcode-btn" onclick="showQRFormModal()" style="padding: 10px 20px; min-width: 140px;">
+        <i class="fas fa-qrcode"></i> Lihat QR Besar
       </button>
-      <button class="btn add" onclick="printQRForm()">
+      <button class="btn preview" onclick="downloadQRForm()" style="padding: 10px 20px; min-width: 120px;">
+        <i class="fas fa-download"></i> Download
+      </button>
+      <button class="btn add" onclick="printQRForm()" style="padding: 10px 20px; min-width: 120px;">
         <i class="fas fa-print"></i> Print
       </button>
-      <button class="btn delete" onclick="document.getElementById('modalQRForm').style.display='none'">
-        <i class="fas fa-times"></i> Tutup
-      </button>
     </div>
-  </div>
-</div>
 
 <!-- MODAL PREVIEW PDF -->
 <div id="modalPreviewPDF" class="modal" style="display:none;">
@@ -1073,18 +1071,17 @@ tr:hover {
             </p>
           </div>
           
-          <!-- TOMBOL ACTION DI TENGAH -->
-          <div style="display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;">
-            <button class="btn qrcode-btn" onclick="showQRFormModal()">
-              <i class="fas fa-qrcode"></i> Lihat QR Besar
-            </button>
-            <button class="btn preview" onclick="downloadQRForm()">
-              <i class="fas fa-download"></i> Download
-            </button>
-            <button class="btn add" onclick="printQRForm()">
-              <i class="fas fa-print"></i> Print
-            </button>
-          </div>
+         <!-- TOMBOL ACTION DI MODAL DENGAN UKURAN SAMA -->
+        <div style="display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-top: 20px;">
+          <button class="btn preview" onclick="downloadQRForm()" style="padding: 10px 20px; min-width: 140px;">
+            <i class="fas fa-download"></i> Download QR
+          </button>
+          <button class="btn add" onclick="printQRForm()" style="padding: 10px 20px; min-width: 140px;">
+            <i class="fas fa-print"></i> Print
+          </button>
+          <button class="btn delete" onclick="document.getElementById('modalQRForm').style.display='none'" style="padding: 10px 20px; min-width: 140px;">
+            <i class="fas fa-times"></i> Tutup
+          </button>
         </div>
         
         <!-- FORM PEMINJAMAN ADMIN -->
@@ -1492,35 +1489,109 @@ window.printQRForm = function() {
       <head>
         <title>Print QR Code Form Peminjaman</title>
         <style>
-          body { text-align: center; font-family: Poppins, sans-serif; padding: 50px; }
-          h1 { color: #1565c0; }
-          h2 { color: #42a5f5; }
-          .qr-container { margin: 30px auto; width: 300px; height: 300px; }
-          .info { color: #666; margin-top: 30px; }
-          .footer { color: #999; margin-top: 50px; font-size: 12px; }
+          body { 
+            text-align: center; 
+            font-family: 'Poppins', Arial, sans-serif; 
+            padding: 40px;
+            margin: 0;
+            background: white;
+          }
+          .container {
+            max-width: 500px;
+            margin: 0 auto;
+            border: 2px dashed #1565c0;
+            padding: 30px;
+            border-radius: 20px;
+          }
+          h1 { 
+            color: #1565c0; 
+            font-size: 28px;
+            margin-bottom: 5px;
+          }
+          h2 { 
+            color: #42a5f5; 
+            font-size: 20px;
+            margin-bottom: 30px;
+            font-weight: normal;
+          }
+          .qr-container { 
+            margin: 30px auto; 
+            width: 250px; 
+            height: 250px;
+            padding: 20px;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+          }
+          .info { 
+            color: #1565c0; 
+            margin: 20px 0;
+            font-size: 16px;
+            background: #e3f2fd;
+            padding: 15px;
+            border-radius: 12px;
+          }
+          .footer { 
+            color: #999; 
+            margin-top: 30px; 
+            font-size: 12px;
+            border-top: 1px solid #eee;
+            padding-top: 20px;
+          }
+          .note {
+            color: #666;
+            font-size: 14px;
+            margin: 10px 0;
+          }
         </style>
       </head>
       <body>
-        <h1>SD Lazuardi</h1>
-        <h2>Form Peminjaman Kostum</h2>
-        <div class="qr-container" id="qrPrint"></div>
-        <div class="info">Scan QR code ini untuk mengakses form peminjaman</div>
-        <div class="info">Atau buka link: ${qrUrl}</div>
-        <div class="footer">Sistem Peminjaman Kostum</div>
+        <div class="container">
+          <h1>SD Lazuardi</h1>
+          <h2>Form Peminjaman Kostum</h2>
+          
+          <div class="qr-container" id="qrPrint"></div>
+          
+          <div class="info">
+            <i class="fas fa-info-circle"></i> Scan QR code ini untuk mengakses form peminjaman
+          </div>
+          
+          <div class="note">
+            Atau buka link:<br>
+            <small style="word-break: break-all; color: #42a5f5;">${qrUrl}</small>
+          </div>
+          
+          <div class="footer">
+            <i class="fas fa-qrcode"></i> Sistem Peminjaman Kostum SD Lazuardi
+          </div>
+        </div>
+        
+        <!-- Font Awesome untuk icon -->
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+        
+        <!-- QRCode Library -->
         <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"><\/script>
+        
         <script>
+          // Generate QR Code
           new QRCode(document.getElementById('qrPrint'), {
             text: '${qrUrl}',
-            width: 300,
-            height: 300
+            width: 250,
+            height: 250,
+            colorDark: "#1565c0",
+            colorLight: "#ffffff",
+            correctLevel: QRCode.CorrectLevel.H
           });
+          
+          // Print setelah QR selesai digenerate
+          setTimeout(() => {
+            window.print();
+          }, 500);
         <\/script>
       </body>
     </html>
   `);
   printWindow.document.close();
-  printWindow.focus();
-  printWindow.print();
 };
 
 // =========== LOGIN ===========
