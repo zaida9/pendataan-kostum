@@ -12,45 +12,564 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.3/jspdf.plugin.autotable.min.js"></script>
 
+<!-- PDF.JS untuk Preview -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
+
+<!-- FONT AWESOME FOR ICONS -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
 <style>
-body { margin:0; font-family:'Poppins',Arial,sans-serif; background: linear-gradient(135deg,#e3f2fd,#fce4ec);}
-#loginPage{display:flex; height:100vh; align-items:center; justify-content:center;}
-.login-box{background:white; padding:40px; border-radius:18px; box-shadow:0 10px 30px rgba(0,0,0,.12); width:320px; text-align:center;}
-.login-box h2{margin-bottom:20px;color:#42a5f5;}
-.login-box input{width:100%; padding:12px; margin-bottom:12px; border:1px solid #e0e0e0; border-radius:10px; transition:.2s;}
-.login-box input:focus{outline:none; border-color:#64b5f6; box-shadow:0 0 0 2px rgba(100,181,246,.15);}
-.login-box button{width:100%; padding:12px; background:linear-gradient(135deg,#64b5f6,#42a5f5); color:white; border:none; border-radius:10px; cursor:pointer; font-weight:600; transition:.2s;}
-.login-box button:hover{transform:translateY(-1px); box-shadow:0 6px 14px rgba(66,165,245,.3);}
-.error{color:#ef5350; font-size:12px; margin-bottom:10px;}
-#mainApp{display:none; padding:25px;}
-.topbar{background:white; padding:18px 22px; border-radius:16px; display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; box-shadow:0 6px 18px rgba(0,0,0,.08);}
-.btn-logout{background:#ef5350;color:white;border:none;padding:10px 16px;border-radius:10px;cursor:pointer;font-weight:600;}
-.btn-logout:hover{opacity:.9;}
-table{width:100%; border-collapse:collapse; background:white; border-radius:16px; overflow:hidden; box-shadow:0 6px 18px rgba(0,0,0,.08);}
-th,td{padding:14px; text-align:center; border-bottom:1px solid #f1f1f1;}
-th{background:#e3f2fd; color:#1565c0; font-weight:600;}
-tr:hover{background:#f9fbff;}
-.btn{padding:8px 14px; border:none; border-radius:10px; cursor:pointer; margin-right:6px; font-weight:600; transition:.2s;}
-.edit{background:#64b5f6;color:white;} 
-.delete{background:#ef5350;color:white;} 
-.add{background:#66bb6a;color:white;margin-bottom:12px;}
-.btn:hover{transform:translateY(-1px);box-shadow:0 4px 10px rgba(0,0,0,.15);} 
-.form-box{ background:white; padding:18px; border-radius:16px; margin-bottom:15px; display:none; box-shadow:0 6px 18px rgba(0,0,0,.08);}
-.form-box input, .form-box select, .form-box textarea{ padding:10px; margin:6px; border-radius:10px; border:1px solid #e0e0e0; width:95%;}
-.form-box input:focus, .form-box select:focus{ outline:none; border-color:#64b5f6; box-shadow:0 0 0 2px rgba(100,181,246,.15); }
-#mainApp{padding: 25px 40px;}
-.topbar h2{font-weight:700; letter-spacing:.5px;}
-.cardDash{background:white; border-radius:16px; padding:18px; box-shadow:0 6px 18px rgba(0,0,0,.08); text-align:center;}
-.cardDash h4{margin:0; font-size:14px; color:#666;}
-.cardDash p{margin:6px 0 0; font-size:26px; font-weight:700; color:#1565c0;}
-.keranjang-table{ margin-top:10px; background:#f8f9fa; border-radius:12px; padding:10px; }
-.btn-remove{ background:#ff9800; color:white; padding:4px 10px; border-radius:8px; border:none; cursor:pointer; }
-.thumbnail{ width:50px; height:50px; object-fit:cover; border-radius:8px; cursor:pointer; border:2px solid #e3f2fd; }
-.thumbnail:hover{ border-color:#42a5f5; transform:scale(1.05); transition:0.2s; }
-.modal{ display:none; position:fixed; z-index:1000; left:0; top:0; width:100%; height:100%; background-color:rgba(0,0,0,0.8); }
-.modal-content{ margin:auto; display:block; max-width:80%; max-height:80%; margin-top:5%; border-radius:12px; }
-.close{ position:absolute; top:20px; right:35px; color:white; font-size:40px; font-weight:bold; cursor:pointer; }
-#previewGambar{ max-width:200px; max-height:150px; margin-top:10px; border-radius:8px; display:none; border:2px dashed #64b5f6; padding:5px; }
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Poppins', Arial, sans-serif;
+  background: linear-gradient(135deg, #e3f2fd, #fce4ec);
+}
+
+/* LOGIN PAGE */
+#loginPage {
+  display: flex;
+  height: 100vh;
+  align-items: center;
+  justify-content: center;
+}
+
+.login-box {
+  background: white;
+  padding: 40px;
+  border-radius: 18px;
+  box-shadow: 0 10px 30px rgba(0,0,0,.12);
+  width: 320px;
+  text-align: center;
+}
+
+.login-box h2 {
+  margin-bottom: 20px;
+  color: #42a5f5;
+}
+
+.login-box input {
+  width: 100%;
+  padding: 12px;
+  margin-bottom: 12px;
+  border: 1px solid #e0e0e0;
+  border-radius: 10px;
+  transition: .2s;
+}
+
+.login-box input:focus {
+  outline: none;
+  border-color: #64b5f6;
+  box-shadow: 0 0 0 2px rgba(100,181,246,.15);
+}
+
+.login-box button {
+  width: 100%;
+  padding: 12px;
+  background: linear-gradient(135deg, #64b5f6, #42a5f5);
+  color: white;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: .2s;
+}
+
+.login-box button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 14px rgba(66,165,245,.3);
+}
+
+.error {
+  color: #ef5350;
+  font-size: 12px;
+  margin-bottom: 10px;
+}
+
+/* MAIN APP WITH SIDEBAR */
+#mainApp {
+  display: none;
+  min-height: 100vh;
+}
+
+.app-container {
+  display: flex;
+  min-height: 100vh;
+}
+
+/* SIDEBAR STYLES */
+.sidebar {
+  width: 260px;
+  background: white;
+  box-shadow: 4px 0 15px rgba(0,0,0,.08);
+  padding: 25px 0;
+  position: fixed;
+  height: 100vh;
+  overflow-y: auto;
+  z-index: 100;
+}
+
+.sidebar-header {
+  padding: 0 20px 20px;
+  border-bottom: 1px solid #f0f0f0;
+  margin-bottom: 20px;
+}
+
+.sidebar-header h2 {
+  color: #1565c0;
+  font-size: 20px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.sidebar-header h2 i {
+  color: #42a5f5;
+}
+
+.sidebar-menu {
+  list-style: none;
+  padding: 0 15px;
+}
+
+.sidebar-menu li {
+  margin-bottom: 8px;
+}
+
+.sidebar-menu li a {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 15px;
+  color: #546e7a;
+  text-decoration: none;
+  border-radius: 12px;
+  transition: all 0.3s;
+  font-weight: 500;
+}
+
+.sidebar-menu li a i {
+  width: 22px;
+  color: #78909c;
+  font-size: 18px;
+}
+
+.sidebar-menu li a:hover {
+  background: #e3f2fd;
+  color: #1565c0;
+}
+
+.sidebar-menu li a:hover i {
+  color: #42a5f5;
+}
+
+.sidebar-menu li.active a {
+  background: linear-gradient(135deg, #64b5f6, #42a5f5);
+  color: white;
+  box-shadow: 0 4px 12px rgba(66,165,245,.3);
+}
+
+.sidebar-menu li.active a i {
+  color: white;
+}
+
+.logout-item {
+  margin-top: 30px;
+  border-top: 1px solid #f0f0f0;
+  padding-top: 15px;
+}
+
+.logout-item a {
+  color: #ef5350 !important;
+}
+
+.logout-item a i {
+  color: #ef5350 !important;
+}
+
+/* MAIN CONTENT */
+.main-content {
+  flex: 1;
+  margin-left: 260px;
+  padding: 25px 30px;
+}
+
+/* TOPBAR */
+.topbar {
+  background: white;
+  padding: 18px 22px;
+  border-radius: 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  box-shadow: 0 6px 18px rgba(0,0,0,.08);
+}
+
+.page-title {
+  font-size: 22px;
+  font-weight: 600;
+  color: #1565c0;
+}
+
+.page-title i {
+  margin-right: 10px;
+  color: #42a5f5;
+}
+
+/* CONTENT SECTIONS */
+.content-section {
+  display: none;
+}
+
+.content-section.active {
+  display: block;
+}
+
+/* CARD DASHBOARD */
+.dashboard-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 15px;
+  margin-bottom: 20px;
+}
+
+.cardDash {
+  background: white;
+  border-radius: 16px;
+  padding: 18px;
+  box-shadow: 0 6px 18px rgba(0,0,0,.08);
+  text-align: center;
+}
+
+.cardDash h4 {
+  margin: 0;
+  font-size: 14px;
+  color: #666;
+}
+
+.cardDash p {
+  margin: 6px 0 0;
+  font-size: 26px;
+  font-weight: 700;
+  color: #1565c0;
+}
+
+/* FORM BOX */
+.form-box {
+  background: white;
+  padding: 18px;
+  border-radius: 16px;
+  margin-bottom: 15px;
+  display: none;
+  box-shadow: 0 6px 18px rgba(0,0,0,.08);
+}
+
+.form-box input, .form-box select, .form-box textarea {
+  padding: 10px;
+  margin: 6px;
+  border-radius: 10px;
+  border: 1px solid #e0e0e0;
+  width: 95%;
+}
+
+.form-box input:focus, .form-box select:focus {
+  outline: none;
+  border-color: #64b5f6;
+  box-shadow: 0 0 0 2px rgba(100,181,246,.15);
+}
+
+/* TABLES */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  background: white;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 6px 18px rgba(0,0,0,.08);
+}
+
+th, td {
+  padding: 14px;
+  text-align: center;
+  border-bottom: 1px solid #f1f1f1;
+}
+
+th {
+  background: #e3f2fd;
+  color: #1565c0;
+  font-weight: 600;
+}
+
+tr:hover {
+  background: #f9fbff;
+}
+
+/* BUTTONS */
+.btn {
+  padding: 8px 14px;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  margin-right: 6px;
+  font-weight: 600;
+  transition: .2s;
+}
+
+.edit {
+  background: #64b5f6;
+  color: white;
+}
+
+.delete {
+  background: #ef5350;
+  color: white;
+}
+
+.add {
+  background: #66bb6a;
+  color: white;
+  margin-bottom: 12px;
+}
+
+.preview {
+  background: #ff9800;
+  color: white;
+}
+
+.btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 10px rgba(0,0,0,.15);
+}
+
+.btn-logout {
+  background: #ef5350;
+  color: white;
+  border: none;
+  padding: 10px 16px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.btn-logout:hover {
+  opacity: .9;
+}
+
+.btn-remove {
+  background: #ff9800;
+  color: white;
+  padding: 4px 10px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+}
+
+/* KERANJANG */
+.keranjang-table {
+  margin-top: 10px;
+  background: #f8f9fa;
+  border-radius: 12px;
+  padding: 10px;
+}
+
+/* THUMBNAIL */
+.thumbnail {
+  width: 50px;
+  height: 50px;
+  object-fit: cover;
+  border-radius: 8px;
+  cursor: pointer;
+  border: 2px solid #e3f2fd;
+}
+
+.thumbnail:hover {
+  border-color: #42a5f5;
+  transform: scale(1.05);
+  transition: 0.2s;
+}
+
+/* MODAL */
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 1000;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0,0,0,0.8);
+}
+
+.modal-content {
+  margin: auto;
+  display: block;
+  max-width: 80%;
+  max-height: 80%;
+  margin-top: 5%;
+  border-radius: 12px;
+}
+
+.modal-sm {
+  max-width: 60%;
+  max-height: 80%;
+  background: white;
+  padding: 20px;
+  border-radius: 16px;
+  overflow-y: auto;
+}
+
+.close {
+  position: absolute;
+  top: 20px;
+  right: 35px;
+  color: white;
+  font-size: 40px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.close-black {
+  position: absolute;
+  top: 20px;
+  right: 35px;
+  color: black;
+  font-size: 40px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+/* PREVIEW GAMBAR */
+#previewGambar {
+  max-width: 200px;
+  max-height: 150px;
+  margin-top: 10px;
+  border-radius: 8px;
+  display: none;
+  border: 2px dashed #64b5f6;
+  padding: 5px;
+}
+
+/* FILTER SECTION */
+.filter-section {
+  margin: 15px 0;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+/* PDF PREVIEW */
+.pdf-preview-container {
+  max-height: 500px;
+  overflow-y: auto;
+  margin: 20px 0;
+  border: 1px solid #e0e0e0;
+  border-radius: 12px;
+  padding: 15px;
+  background: #f8f9fa;
+}
+
+.pdf-page {
+  margin-bottom: 20px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.pdf-page canvas {
+  width: 100% !important;
+  height: auto !important;
+  display: block;
+}
+
+.pdf-controls {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  justify-content: center;
+  margin: 15px 0;
+}
+
+.pdf-info {
+  color: #666;
+  font-size: 14px;
+}
+
+/* LAPORAN CARD */
+.laporan-card {
+  background: white;
+  border-radius: 16px;
+  padding: 25px;
+  box-shadow: 0 6px 18px rgba(0,0,0,.08);
+  margin-bottom: 20px;
+}
+
+.laporan-options {
+  display: flex;
+  gap: 20px;
+  align-items: center;
+  flex-wrap: wrap;
+  margin: 20px 0;
+}
+
+.laporan-preview-table {
+  margin-top: 20px;
+  max-height: 300px;
+  overflow-y: auto;
+  border: 1px solid #e0e0e0;
+  border-radius: 12px;
+}
+
+.laporan-preview-table table {
+  margin: 0;
+  box-shadow: none;
+}
+
+/* RESPONSIVE */
+@media (max-width: 768px) {
+  .sidebar {
+    width: 70px;
+    padding: 15px 0;
+  }
+  
+  .sidebar-header h2 span,
+  .sidebar-menu li a span {
+    display: none;
+  }
+  
+  .sidebar-header h2 i {
+    margin: 0 auto;
+  }
+  
+  .sidebar-menu li a {
+    justify-content: center;
+    padding: 12px;
+  }
+  
+  .sidebar-menu li a i {
+    margin: 0;
+  }
+  
+  .main-content {
+    margin-left: 70px;
+    padding: 15px;
+  }
+  
+  .dashboard-cards {
+    grid-template-columns: 1fr;
+  }
+  
+  .modal-sm {
+    max-width: 95%;
+    margin: 10% auto;
+  }
+}
 </style>
 </head>
 <body>
@@ -59,6 +578,44 @@ tr:hover{background:#f9fbff;}
 <div id="modalGambar" class="modal">
   <span class="close" onclick="document.getElementById('modalGambar').style.display='none'">&times;</span>
   <img class="modal-content" id="gambarBesar">
+</div>
+
+<!-- MODAL PREVIEW PDF -->
+<div id="modalPreviewPDF" class="modal" style="display:none;">
+  <span class="close-black" onclick="document.getElementById('modalPreviewPDF').style.display='none'">&times;</span>
+  <div class="modal-content modal-sm" style="background:white;">
+    <h3 style="color:#1565c0; margin-bottom:15px;">
+      <i class="fas fa-file-pdf" style="color:#ef5350;"></i> 
+      Preview Laporan PDF
+    </h3>
+    
+    <div class="pdf-controls">
+      <button class="btn" id="prevPageBtn" style="background:#64b5f6; color:white;">
+        <i class="fas fa-chevron-left"></i> Sebelumnya
+      </button>
+      <span id="pageInfo" class="pdf-info">Halaman 1 dari 1</span>
+      <button class="btn" id="nextPageBtn" style="background:#64b5f6; color:white;">
+        Selanjutnya <i class="fas fa-chevron-right"></i>
+      </button>
+    </div>
+    
+    <div id="pdfPreview" class="pdf-preview-container">
+      <!-- PDF akan dirender di sini -->
+      <div style="text-align:center; padding:50px; color:#666;">
+        <i class="fas fa-spinner fa-spin" style="font-size:32px;"></i>
+        <p>Memuat preview...</p>
+      </div>
+    </div>
+    
+    <div style="display:flex; gap:10px; justify-content:flex-end; margin-top:15px;">
+      <button class="btn delete" onclick="document.getElementById('modalPreviewPDF').style.display='none'">
+        <i class="fas fa-times"></i> Tutup
+      </button>
+      <button class="btn add" id="downloadFromPreviewBtn">
+        <i class="fas fa-download"></i> Download PDF
+      </button>
+    </div>
+  </div>
 </div>
 
 <div id="loginPage">
@@ -72,118 +629,249 @@ tr:hover{background:#f9fbff;}
 </div>
 
 <div id="mainApp">
-  <div class="topbar">
-    <h2>Dashboard Kostum</h2>
-    <button class="btn-logout" id="logoutBtn">Logout</button>
-  </div>
-
-  <!-- CARD DASHBOARD -->
-  <div id="dashboardCards" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:15px;margin-bottom:20px;">
-    <div class="cardDash"><h4>📦 Total Stok Kostum</h4><p id="totalStokKostum">0</p></div>
-    <div class="cardDash"><h4>🏷️ Jenis Kostum</h4><p id="totalJenisKostum">0</p></div>
-    <div class="cardDash"><h4>📤 Sedang Dipinjam</h4><p id="totalPinjam">0</p></div>
-    <div class="cardDash"><h4>✅ Sudah Kembali</h4><p id="totalKembali">0</p></div>
-  </div>
-
-  <!-- DIAGRAM -->
-  <div style="background:white; border-radius:16px; padding:20px; box-shadow:0 6px 18px rgba(0,0,0,.08); margin-bottom:20px;">
-    <canvas id="grafikPinjam" style="width:100%; max-height:200px;"></canvas>
-  </div>
-
-  <!-- TAMBAH KOSTUM + GAMBAR -->
-  <button class="btn add" id="showFormBtn">+ Tambah Kostum</button>
-  <form class="form-box" id="formBox">
-    <input id="nama" placeholder="Nama kostum" required />
-    <input id="kode" placeholder="Kode otomatis" readonly />
-    <input id="ukuran" placeholder="Ukuran (opsional)" />
-    <input id="jumlah" type="number" placeholder="Jumlah stok" required />
-    
-    <!-- 🆕 UPLOAD GAMBAR - OPSIONAL -->
-    <div style="margin:10px 0;">
-      <label style="font-weight:600; color:#1565c0;">📷 Gambar Kostum (opsional)</label>
-      <input type="file" id="uploadGambar" accept="image/*" style="padding:10px; border:2px dashed #64b5f6; border-radius:10px; width:95%;" />
-      <div style="display:flex; justify-content:center;">
-        <img id="previewGambar" src="#" alt="Preview" />
+  <div class="app-container">
+    <!-- SIDEBAR -->
+    <div class="sidebar">
+      <div class="sidebar-header">
+        <h2>
+          <i class="fas fa-tshirt"></i>
+          <span>Kostum Admin</span>
+        </h2>
       </div>
-      <input type="hidden" id="gambarBase64" />
+      
+      <ul class="sidebar-menu">
+        <li class="active" data-section="dashboard">
+          <a href="#">
+            <i class="fas fa-chart-pie"></i>
+            <span>Dashboard</span>
+          </a>
+        </li>
+        <li data-section="kostum">
+          <a href="#">
+            <i class="fas fa-tshirt"></i>
+            <span>Data Kostum</span>
+          </a>
+        </li>
+        <li data-section="peminjaman">
+          <a href="#">
+            <i class="fas fa-hand-holding"></i>
+            <span>Peminjaman</span>
+          </a>
+        </li>
+        <li data-section="laporan">
+          <a href="#">
+            <i class="fas fa-file-pdf"></i>
+            <span>Laporan</span>
+          </a>
+        </li>
+        <li class="logout-item">
+          <a href="#" id="logoutBtn">
+            <i class="fas fa-sign-out-alt"></i>
+            <span>Logout</span>
+          </a>
+        </li>
+      </ul>
     </div>
     
-    <button type="submit" class="btn add">Simpan</button>
-  </form>
-
-  <!-- TABEL KOSTUM + THUMBNAIL -->
-  <table>
-    <thead>
-      <tr>
-        <th>Gambar</th>
-        <th>Nama</th>
-        <th>Kode</th>
-        <th>Ukuran</th>
-        <th>Stok</th>
-        <th>Aksi</th>
-      </tr>
-    </thead>
-    <tbody id="tableBody"></tbody>
-  </table>
-
-  <!-- FORM PEMINJAMAN BANYAK KOSTUM -->
-  <h3 style="margin-top:25px">Form Peminjaman Kostum</h3>
-  
-  <div class="form-box" style="display:block">
-    <input id="peminjam" placeholder="Nama peminjam" required style="width:95%;" />
-    <input id="tanggal" type="date" required readonly style="width:95%;" />
-    
-    <div style="display:flex; gap:10px; align-items:center; margin-top:10px;">
-      <select id="kostumPinjam" style="flex:2; padding:10px;" required>
-        <option value="">Pilih Kostum</option>
-      </select>
-      <input id="jmlPinjam" type="number" placeholder="Jumlah" min="1" value="1" style="flex:1; padding:10px;" />
-      <button type="button" class="btn add" id="tambahKeranjangBtn" style="margin-bottom:0;">➕ Tambah</button>
-    </div>
-    
-    <!-- KERANJANG -->
-    <div id="keranjangContainer" class="keranjang-table" style="margin-top:15px; display:none;">
-      <h4 style="margin:0 0 10px 0; color:#1565c0;">🛒 Keranjang Peminjaman</h4>
-      <table style="width:100%; background:white; border-radius:8px;">
-        <thead>
-          <tr>
-            <th>Kode</th>
-            <th>Nama Kostum</th>
-            <th>Jumlah</th>
-            <th>Aksi</th>
-          </tr>
-        </thead>
-        <tbody id="keranjangBody"></tbody>
-      </table>
-      <button type="button" class="btn add" id="simpanSemuaPinjamBtn" style="margin-top:15px;">✅ Simpan Semua</button>
-      <button type="button" class="btn delete" id="batalKeranjangBtn" style="margin-top:15px;">❌ Batal</button>
+    <!-- MAIN CONTENT -->
+    <div class="main-content">
+      <!-- DASHBOARD SECTION -->
+      <div id="dashboardSection" class="content-section active">
+        <div class="topbar">
+          <div class="page-title">
+            <i class="fas fa-chart-pie"></i> Dashboard Kostum
+          </div>
+        </div>
+        
+        <div class="dashboard-cards">
+          <div class="cardDash"><h4>📦 Total Stok Kostum</h4><p id="totalStokKostum">0</p></div>
+          <div class="cardDash"><h4>🏷️ Jenis Kostum</h4><p id="totalJenisKostum">0</p></div>
+          <div class="cardDash"><h4>📤 Sedang Dipinjam</h4><p id="totalPinjam">0</p></div>
+          <div class="cardDash"><h4>✅ Sudah Kembali</h4><p id="totalKembali">0</p></div>
+        </div>
+        
+        <div style="background:white; border-radius:16px; padding:20px; box-shadow:0 6px 18px rgba(0,0,0,.08);">
+          <canvas id="grafikPinjam" style="width:100%; max-height:200px;"></canvas>
+        </div>
+      </div>
+      
+      <!-- KOSTUM SECTION -->
+      <div id="kostumSection" class="content-section">
+        <div class="topbar">
+          <div class="page-title">
+            <i class="fas fa-tshirt"></i> Data Kostum
+          </div>
+        </div>
+        
+        <button class="btn add" id="showFormBtn"><i class="fas fa-plus"></i> Tambah Kostum</button>
+        
+        <form class="form-box" id="formBox">
+          <input id="nama" placeholder="Nama kostum" required />
+          <input id="kode" placeholder="Kode otomatis" readonly />
+          <input id="ukuran" placeholder="Ukuran (opsional)" />
+          <input id="jumlah" type="number" placeholder="Jumlah stok" required />
+          
+          <div style="margin:10px 0;">
+            <label style="font-weight:600; color:#1565c0;">📷 Gambar Kostum (opsional)</label>
+            <input type="file" id="uploadGambar" accept="image/*" style="padding:10px; border:2px dashed #64b5f6; border-radius:10px; width:95%;" />
+            <div style="display:flex; justify-content:center;">
+              <img id="previewGambar" src="#" alt="Preview" />
+            </div>
+            <input type="hidden" id="gambarBase64" />
+          </div>
+          
+          <button type="submit" class="btn add"><i class="fas fa-save"></i> Simpan</button>
+        </form>
+        
+        <table>
+          <thead>
+            <tr>
+              <th>Gambar</th>
+              <th>Nama</th>
+              <th>Kode</th>
+              <th>Ukuran</th>
+              <th>Stok</th>
+              <th>Aksi</th>
+            </tr>
+          </thead>
+          <tbody id="tableBody"></tbody>
+        </table>
+      </div>
+      
+      <!-- PEMINJAMAN SECTION -->
+      <div id="peminjamanSection" class="content-section">
+        <div class="topbar">
+          <div class="page-title">
+            <i class="fas fa-hand-holding"></i> Peminjaman Kostum
+          </div>
+        </div>
+        
+        <div class="form-box" style="display:block">
+          <input id="peminjam" placeholder="Nama peminjam" required style="width:95%;" />
+          <input id="tanggal" type="date" required readonly style="width:95%;" />
+          
+          <div style="display:flex; gap:10px; align-items:center; margin-top:10px;">
+            <select id="kostumPinjam" style="flex:2; padding:10px;" required>
+              <option value="">Pilih Kostum</option>
+            </select>
+            <input id="jmlPinjam" type="number" placeholder="Jumlah" min="1" value="1" style="flex:1; padding:10px;" />
+            <button type="button" class="btn add" id="tambahKeranjangBtn" style="margin-bottom:0;">
+              <i class="fas fa-cart-plus"></i> Tambah
+            </button>
+          </div>
+          
+          <div id="keranjangContainer" class="keranjang-table" style="margin-top:15px; display:none;">
+            <h4 style="margin:0 0 10px 0; color:#1565c0;">
+              <i class="fas fa-shopping-cart"></i> Keranjang Peminjaman
+            </h4>
+            <table style="width:100%; background:white; border-radius:8px;">
+              <thead>
+                <tr>
+                  <th>Kode</th>
+                  <th>Nama Kostum</th>
+                  <th>Jumlah</th>
+                  <th>Aksi</th>
+                </tr>
+              </thead>
+              <tbody id="keranjangBody"></tbody>
+            </table>
+            <button type="button" class="btn add" id="simpanSemuaPinjamBtn" style="margin-top:15px;">
+              <i class="fas fa-check"></i> Simpan Semua
+            </button>
+            <button type="button" class="btn delete" id="batalKeranjangBtn" style="margin-top:15px;">
+              <i class="fas fa-times"></i> Batal
+            </button>
+          </div>
+        </div>
+        
+        <div class="filter-section">
+          <select id="filterStatus" class="btn">
+            <option value="semua">Semua Peminjaman</option>
+            <option value="belum">Belum Kembali</option>
+            <option value="sudah">Sudah Kembali</option>
+          </select>
+        </div>
+        
+        <table>
+          <thead>
+            <tr>
+              <th>Nama Peminjam</th>
+              <th>Kode</th>
+              <th>Nama Kostum</th>
+              <th>Jumlah</th>
+              <th>Tanggal</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody id="tablePinjam"></tbody>
+        </table>
+      </div>
+      
+      <!-- LAPORAN SECTION -->
+      <div id="laporanSection" class="content-section">
+        <div class="topbar">
+          <div class="page-title">
+            <i class="fas fa-file-pdf"></i> Laporan Peminjaman
+          </div>
+        </div>
+        
+        <div class="laporan-card">
+          <div style="text-align:center; margin-bottom:20px;">
+            <i class="fas fa-file-pdf" style="font-size:48px; color:#ef5350;"></i>
+            <h3 style="color:#1565c0; margin:10px 0;">Export Laporan Peminjaman</h3>
+            <p style="color:#666;">Preview dan download laporan data peminjaman kostum</p>
+          </div>
+          
+          <div class="laporan-options">
+            <div style="flex:1;">
+              <label style="display:block; margin-bottom:5px; color:#1565c0; font-weight:600;">
+                <i class="fas fa-filter"></i> Filter Status:
+              </label>
+              <select id="laporanFilterStatus" style="width:100%; padding:12px; border-radius:10px; border:1px solid #e0e0e0;">
+                <option value="semua">Semua Data</option>
+                <option value="belum">Belum Kembali</option>
+                <option value="sudah">Sudah Kembali</option>
+              </select>
+            </div>
+            
+            <div style="display:flex; gap:10px;">
+              <button class="btn preview" id="previewPDFBtn" style="padding:12px 20px;">
+                <i class="fas fa-eye"></i> Preview PDF
+              </button>
+              <button class="btn add" id="exportBtn" style="padding:12px 20px;">
+                <i class="fas fa-download"></i> Download PDF
+              </button>
+            </div>
+          </div>
+          
+          <!-- Preview Tabel -->
+          <div class="laporan-preview-table">
+            <h4 style="padding:15px; margin:0; background:#f8f9fa; border-bottom:1px solid #e0e0e0;">
+              <i class="fas fa-table"></i> Preview Data
+            </h4>
+            <div style="padding:15px;">
+              <table>
+                <thead>
+                  <tr>
+                    <th>No</th>
+                    <th>Peminjam</th>
+                    <th>Kode</th>
+                    <th>Nama Kostum</th>
+                    <th>Jumlah</th>
+                    <th>Tanggal</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tbody id="previewTableBody">
+                  <tr><td colspan="7" style="text-align:center;">Pilih filter untuk melihat preview</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
-
-  <!-- FILTER + EXPORT -->
-  <div style="margin:15px 0; display:flex; gap:10px; align-items:center;">
-    <select id="filterStatus" class="btn">
-      <option value="semua">Semua Peminjaman</option>
-      <option value="belum">Belum Kembali</option>
-      <option value="sudah">Sudah Kembali</option>
-    </select>
-    <button class="btn add" id="exportBtn">📄 Export PDF</button>
-  </div>
-
-  <!-- TABEL PEMINJAMAN -->
-  <table>
-    <thead>
-      <tr>
-        <th>Nama Peminjam</th>
-        <th>Kode</th>
-        <th>Nama Kostum</th>
-        <th>Jumlah</th>
-        <th>Tanggal</th>
-        <th>Status</th>
-      </tr>
-    </thead>
-    <tbody id="tablePinjam"></tbody>
-  </table>
 </div>
 
 <script type="module">
@@ -213,6 +901,11 @@ let editIndex = -1;
 let myChart = null;
 let keranjang = [];
 
+// Untuk PDF Preview
+let pdfDoc = null;
+let currentPage = 1;
+let totalPages = 1;
+
 // =========== LOGIN ===========
 const USERNAME = "admin";
 const PASSWORD = "123456";
@@ -240,6 +933,35 @@ if(localStorage.getItem("login") === "yes") {
   document.getElementById("mainApp").style.display = "block";
 }
 
+// =========== SIDEBAR NAVIGATION ===========
+document.querySelectorAll('.sidebar-menu li').forEach(item => {
+  item.addEventListener('click', function(e) {
+    e.preventDefault();
+    
+    document.querySelectorAll('.sidebar-menu li').forEach(li => {
+      li.classList.remove('active');
+    });
+    
+    this.classList.add('active');
+    
+    document.querySelectorAll('.content-section').forEach(section => {
+      section.classList.remove('active');
+    });
+    
+    const section = this.dataset.section;
+    if(section === 'dashboard') {
+      document.getElementById('dashboardSection').classList.add('active');
+    } else if(section === 'kostum') {
+      document.getElementById('kostumSection').classList.add('active');
+    } else if(section === 'peminjaman') {
+      document.getElementById('peminjamanSection').classList.add('active');
+    } else if(section === 'laporan') {
+      document.getElementById('laporanSection').classList.add('active');
+      updatePreviewTable(); // Update preview table when opening laporan section
+    }
+  });
+});
+
 // =========== SET TANGGAL ===========
 function setTanggalHariIni() {
   const tgl = document.getElementById("tanggal");
@@ -251,7 +973,7 @@ function setTanggalHariIni() {
 }
 setTanggalHariIni();
 
-// =========== 🆕 PREVIEW GAMBAR ===========
+// =========== PREVIEW GAMBAR ===========
 document.getElementById("uploadGambar")?.addEventListener("change", function(e) {
   const file = e.target.files[0];
   if (file) {
@@ -295,7 +1017,7 @@ async function saveKostum(e) {
     kode: document.getElementById("kode").value.trim(),
     ukuran: document.getElementById("ukuran").value.trim() || "-",
     jumlah: document.getElementById("jumlah").value.trim() || "0",
-    gambar: document.getElementById("gambarBase64").value || null // 🆕 SIMPAN BASE64
+    gambar: document.getElementById("gambarBase64").value || null
   };
   if(!data.nama) return alert("Nama wajib diisi");
   if(!data.kode) return alert("Kode error");
@@ -332,7 +1054,6 @@ window.editKostum = function(i) {
   document.getElementById("ukuran").value = k.ukuran === "-" ? "" : k.ukuran;
   document.getElementById("jumlah").value = k.jumlah;
   
-  // 🆕 TAMPILKAN GAMBAR LAMA
   if(k.gambar) {
     document.getElementById("previewGambar").src = k.gambar;
     document.getElementById("previewGambar").style.display = "block";
@@ -373,7 +1094,6 @@ function renderKostum() {
     kostum.forEach((k, i) => {
       const row = document.createElement("tr");
       
-      // Kolom gambar dengan thumbnail
       let gambarCell = '<td>-</td>';
       if(k.gambar) {
         gambarCell = `<td>
@@ -388,8 +1108,8 @@ function renderKostum() {
         <td>${k.ukuran || "-"}</td>
         <td>${k.jumlah || "0"}</td>
         <td>
-          <button class="btn edit" onclick="editKostum(${i})">Edit</button>
-          <button class="btn delete" onclick="hapusKostum(${i})">Hapus</button>
+          <button class="btn edit" onclick="editKostum(${i})"><i class="fas fa-edit"></i> Edit</button>
+          <button class="btn delete" onclick="hapusKostum(${i})"><i class="fas fa-trash"></i> Hapus</button>
         </td>`;
       tbody.appendChild(row);
     });
@@ -463,7 +1183,7 @@ function renderKeranjang() {
       <td>${item.nama}</td>
       <td>${item.jumlah}</td>
       <td>
-        <button class="btn-remove" onclick="hapusDariKeranjang('${item.kode}')">Hapus</button>
+        <button class="btn-remove" onclick="hapusDariKeranjang('${item.kode}')"><i class="fas fa-times"></i> Hapus</button>
       </td>
     `;
     tbody.appendChild(row);
@@ -575,14 +1295,52 @@ window.renderPinjam = function() {
         <td>${p.jumlah || "1"}</td>
         <td>${p.tanggal || "-"}</td>
         <td>${p.kembali ? 
-          '<span style="color:green;font-weight:600">Sudah</span>' : 
-          `<button class="btn edit" onclick="kembalikan('${p.id}')">Kembalikan</button>`
+          '<span style="color:green;font-weight:600"><i class="fas fa-check-circle"></i> Sudah</span>' : 
+          `<button class="btn edit" onclick="kembalikan('${p.id}')"><i class="fas fa-undo"></i> Kembalikan</button>`
         }</td>`;
       tbody.appendChild(row);
     });
   }
   updateDashboard();
+  updatePreviewTable(); // Update preview table when data changes
 };
+
+// =========== UPDATE PREVIEW TABLE ===========
+function updatePreviewTable() {
+  const tbody = document.getElementById("previewTableBody");
+  const filter = document.getElementById("laporanFilterStatus").value;
+  
+  let list = dataPinjam;
+  if(filter === "belum") list = dataPinjam.filter(p => !p.kembali);
+  if(filter === "sudah") list = dataPinjam.filter(p => p.kembali);
+  
+  if(list.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;">Tidak ada data</td></tr>';
+  } else {
+    tbody.innerHTML = "";
+    list.slice(0, 10).forEach((p, index) => { // Show only first 10 items in preview
+      const row = document.createElement("tr");
+      row.innerHTML = `
+        <td>${index + 1}</td>
+        <td>${p.peminjam || "-"}</td>
+        <td>${p.kode || "-"}</td>
+        <td>${p.namaKostum || "-"}</td>
+        <td>${p.jumlah || "1"}</td>
+        <td>${p.tanggal || "-"}</td>
+        <td>${p.kembali ? 'Sudah' : 'Belum'}</td>
+      `;
+      tbody.appendChild(row);
+    });
+    
+    if(list.length > 10) {
+      const row = document.createElement("tr");
+      row.innerHTML = `<td colspan="7" style="text-align:center; color:#666;">
+        <i class="fas fa-ellipsis-h"></i> dan ${list.length - 10} data lainnya
+      </td>`;
+      tbody.appendChild(row);
+    }
+  }
+}
 
 // =========== DASHBOARD ===========
 function updateDashboard() {
@@ -623,8 +1381,8 @@ function gambarGrafik(belum, sudah) {
   });
 }
 
-// =========== EXPORT PDF ===========
-window.exportPDF = function() {
+// =========== GENERATE PDF BUFFER ===========
+async function generatePDFBlob(filterValue) {
   const { jsPDF } = window.jspdf;
   const doc = new jsPDF('portrait');
 
@@ -638,19 +1396,17 @@ window.exportPDF = function() {
   })}`, 14, 25);
   doc.text('Laporan Peminjaman Kostum', 14, 32);
 
-  const filterStatus = document.getElementById('filterStatus');
-  const selectedFilter = filterStatus.options[filterStatus.selectedIndex].text;
+  const filterSelect = document.getElementById('laporanFilterStatus');
+  const selectedFilter = filterSelect.options[filterSelect.selectedIndex].text;
   doc.text(`Filter: ${selectedFilter}`, 14, 40);
 
-  const filterValue = document.getElementById('filterStatus').value;
   let listPinjam = [...dataPinjam];
   if (filterValue === 'belum') listPinjam = listPinjam.filter(p => !p.kembali);
   if (filterValue === 'sudah') listPinjam = listPinjam.filter(p => p.kembali);
 
   if (listPinjam.length === 0) {
     doc.text('Tidak ada data peminjaman.', 14, 50);
-    doc.save('laporan-peminjaman.pdf');
-    return;
+    return doc.output('blob');
   }
 
   const tableColumn = ['No', 'Peminjam', 'Kode', 'Nama Kostum', 'Jml', 'Tgl', 'Status'];
@@ -685,7 +1441,127 @@ window.exportPDF = function() {
     }
   });
 
-  doc.save(`laporan-peminjaman-${Date.now()}.pdf`);
+  return doc.output('blob');
+}
+
+// =========== PREVIEW PDF ===========
+window.previewPDF = async function() {
+  const filterValue = document.getElementById('laporanFilterStatus').value;
+  
+  // Show loading
+  document.getElementById('modalPreviewPDF').style.display = 'block';
+  document.getElementById('pdfPreview').innerHTML = `
+    <div style="text-align:center; padding:50px; color:#666;">
+      <i class="fas fa-spinner fa-spin" style="font-size:32px;"></i>
+      <p>Menyiapkan preview...</p>
+    </div>
+  `;
+  
+  try {
+    // Generate PDF blob
+    const pdfBlob = await generatePDFBlob(filterValue);
+    const pdfUrl = URL.createObjectURL(pdfBlob);
+    
+    // Load PDF with PDF.js
+    const loadingTask = pdfjsLib.getDocument(pdfUrl);
+    pdfDoc = await loadingTask.promise;
+    totalPages = pdfDoc.numPages;
+    currentPage = 1;
+    
+    // Render first page
+    await renderPDFPage(currentPage);
+    
+    // Setup page controls
+    document.getElementById('pageInfo').textContent = `Halaman ${currentPage} dari ${totalPages}`;
+    document.getElementById('prevPageBtn').style.display = totalPages > 1 ? 'inline-block' : 'none';
+    document.getElementById('nextPageBtn').style.display = totalPages > 1 ? 'inline-block' : 'none';
+    
+    // Store PDF URL for download
+    window.currentPDFUrl = pdfUrl;
+    
+  } catch (error) {
+    console.error('Error previewing PDF:', error);
+    document.getElementById('pdfPreview').innerHTML = `
+      <div style="text-align:center; padding:50px; color:#ef5350;">
+        <i class="fas fa-exclamation-circle" style="font-size:32px;"></i>
+        <p>Gagal memuat preview PDF</p>
+      </div>
+    `;
+  }
+};
+
+// =========== RENDER PDF PAGE ===========
+async function renderPDFPage(pageNumber) {
+  if (!pdfDoc) return;
+  
+  const page = await pdfDoc.getPage(pageNumber);
+  const viewport = page.getViewport({ scale: 1.5 });
+  
+  const canvas = document.createElement('canvas');
+  const context = canvas.getContext('2d');
+  canvas.height = viewport.height;
+  canvas.width = viewport.width;
+  
+  const renderContext = {
+    canvasContext: context,
+    viewport: viewport
+  };
+  
+  await page.render(renderContext).promise;
+  
+  document.getElementById('pdfPreview').innerHTML = '';
+  const pageDiv = document.createElement('div');
+  pageDiv.className = 'pdf-page';
+  pageDiv.appendChild(canvas);
+  document.getElementById('pdfPreview').appendChild(pageDiv);
+  
+  document.getElementById('pageInfo').textContent = `Halaman ${pageNumber} dari ${totalPages}`;
+}
+
+// =========== PDF NAVIGATION ===========
+document.getElementById('prevPageBtn')?.addEventListener('click', async () => {
+  if (currentPage > 1) {
+    currentPage--;
+    await renderPDFPage(currentPage);
+  }
+});
+
+document.getElementById('nextPageBtn')?.addEventListener('click', async () => {
+  if (currentPage < totalPages) {
+    currentPage++;
+    await renderPDFPage(currentPage);
+  }
+});
+
+// =========== DOWNLOAD FROM PREVIEW ===========
+document.getElementById('downloadFromPreviewBtn')?.addEventListener('click', () => {
+  if (window.currentPDFUrl) {
+    const a = document.createElement('a');
+    a.href = window.currentPDFUrl;
+    a.download = `laporan-peminjaman-${Date.now()}.pdf`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+  } else {
+    // If no preview URL, generate new PDF
+    window.exportPDF();
+  }
+});
+
+// =========== EXPORT PDF (Original) ===========
+window.exportPDF = async function() {
+  const filterValue = document.getElementById('laporanFilterStatus').value;
+  const pdfBlob = await generatePDFBlob(filterValue);
+  
+  // Download
+  const url = URL.createObjectURL(pdfBlob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `laporan-peminjaman-${Date.now()}.pdf`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
 };
 
 // =========== FIRESTORE LISTENER ===========
@@ -701,7 +1577,10 @@ onSnapshot(pinjamCol, snapshot => {
 
 // =========== EVENT LISTENER ===========
 document.getElementById("loginForm").addEventListener("submit", window.login);
-document.getElementById("logoutBtn").addEventListener("click", window.logout);
+document.getElementById("logoutBtn").addEventListener("click", function(e) {
+  e.preventDefault();
+  window.logout();
+});
 document.getElementById("showFormBtn").addEventListener("click", window.showForm);
 document.getElementById("formBox").addEventListener("submit", saveKostum);
 document.getElementById("tambahKeranjangBtn").addEventListener("click", window.tambahKeKeranjang);
@@ -709,6 +1588,19 @@ document.getElementById("simpanSemuaPinjamBtn").addEventListener("click", window
 document.getElementById("batalKeranjangBtn").addEventListener("click", window.batalKeranjang);
 document.getElementById("filterStatus").addEventListener("change", window.renderPinjam);
 document.getElementById("exportBtn").addEventListener("click", window.exportPDF);
+document.getElementById("previewPDFBtn").addEventListener("click", window.previewPDF);
+document.getElementById("laporanFilterStatus").addEventListener("change", updatePreviewTable);
+
+// Close modal when clicking outside
+window.onclick = function(event) {
+  const modal = document.getElementById('modalPreviewPDF');
+  if (event.target === modal) {
+    modal.style.display = 'none';
+    if (window.currentPDFUrl) {
+      URL.revokeObjectURL(window.currentPDFUrl);
+    }
+  }
+};
 
 // Export ke global
 window.hapusKostum = hapusKostum;
@@ -721,6 +1613,8 @@ window.batalKeranjang = batalKeranjang;
 window.showForm = showForm;
 window.renderPinjam = renderPinjam;
 window.lihatGambar = lihatGambar;
+window.previewPDF = previewPDF;
+window.exportPDF = exportPDF;
 
 </script>
 </body>
