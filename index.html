@@ -849,25 +849,28 @@ tr:hover {
 </div>
 
 <!-- MODAL QR CODE FORM -->
+<!-- MODAL QR CODE FORM - DIPERBAIKI POSISINYA -->
 <div id="modalQRForm" class="modal">
   <span class="close-black" onclick="document.getElementById('modalQRForm').style.display='none'">&times;</span>
-  <div class="modal-content modal-sm">
-    <h3 style="color:#1565c0; margin-bottom:15px; text-align:center;">
+  <div class="modal-content modal-sm" style="background:white; text-align: center;">
+    <h3 style="color:#1565c0; margin-bottom:15px;">
       <i class="fas fa-qrcode" style="color:#9c27b0;"></i> 
       QR Code Form Peminjaman
     </h3>
     
-    <div style="text-align:center;">
-      <div id="qrCodeFormContainer" style="margin:20px auto;"></div>
+    <!-- QR CODE DI TENGAH MODAL -->
+    <div style="display: flex; justify-content: center; margin: 20px 0;">
+      <div id="qrCodeFormContainer" style="width: 250px; height: 250px;"></div>
     </div>
     
-    <div class="qr-info">
+    <div class="qr-info" style="text-align: center; background: #e3f2fd; padding: 15px; border-radius: 12px; margin: 15px 0;">
       <p><i class="fas fa-info-circle"></i> Scan QR code ini untuk mengakses form peminjaman dari HP</p>
-      <p style="font-size:12px;">Atau bagikan link ini:</p>
-      <div style="background:#f0f0f0; padding:10px; border-radius:8px; font-size:12px; word-break:break-all;" id="qrLinkText"></div>
+      <p style="font-size:12px; margin-top: 10px;">Atau bagikan link ini:</p>
+      <div style="background:#f0f0f0; padding:10px; border-radius:8px; font-size:12px; word-break:break-all; text-align: left;" id="qrLinkText"></div>
     </div>
     
-    <div class="qr-actions">
+    <!-- TOMBOL ACTION DI TENGAH -->
+    <div style="display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-top: 20px;">
       <button class="btn preview" onclick="downloadQRForm()">
         <i class="fas fa-download"></i> Download QR
       </button>
@@ -999,11 +1002,11 @@ tr:hover {
       <div id="kostumSection" class="content-section">
         <div class="topbar">
           <div class="page-title">
-            <i class="fas fa-tshirt"></i> Data Barang
+            <i class="fas fa-tshirt"></i> Data kostum
           </div>
         </div>
         
-        <button class="btn add" id="showFormBtn"><i class="fas fa-plus"></i> Tambah Barang</button>
+        <button class="btn add" id="showFormBtn"><i class="fas fa-plus"></i> Tambah kostum</button>
         
         <form class="form-box" id="formBox">
           <input id="nama" placeholder="Nama kostum" required />
@@ -1047,30 +1050,40 @@ tr:hover {
         </div>
         
         <!-- QR CODE FORM -->
-        <div class="qrcode-container">
-          <h4 style="color:#1565c0; margin-bottom:15px;">
-            <i class="fas fa-qrcode"></i> QR Peminjaman
+        <!-- QR CODE FORM - DIPERBAIKI POSISINYA -->
+        <div class="qrcode-container" style="text-align: center; background: white; border-radius: 16px; padding: 25px; box-shadow: 0 6px 18px rgba(0,0,0,.08); margin-bottom: 20px;">
+          <h4 style="color:#1565c0; margin-bottom: 20px; font-size: 18px;">
+            <i class="fas fa-qrcode" style="margin-right: 8px; color: #9c27b0;"></i> 
+            QR Peminjaman
           </h4>
           
-          <div style="display:flex; flex-wrap:wrap; gap:20px; align-items:center; justify-content:center;">
-            <div style="flex:1; min-width:200px;">
-              <div id="qrCodeSidebar" style="width:150px; height:150px; margin:0 auto;"></div>
-            </div>
-            <div style="flex:2; min-width:250px; text-align:left;">
-              <p><i class="fas fa-info-circle" style="color:#42a5f5;"></i> Scan QR code ini dengan HP untuk mengakses form peminjaman</p>
-              <p><small style="color:#666;">Pengguna bisa langsung mengisi form peminjaman dari HP mereka</small></p>
-              <div style="margin-top:10px;">
-                <button class="btn qrcode-btn" onclick="showQRFormModal()">
-                  <i class="fas fa-qrcode"></i> Lihat QR Besar
-                </button>
-                <button class="btn preview" onclick="downloadQRForm()">
-                  <i class="fas fa-download"></i> Download
-                </button>
-                <button class="btn add" onclick="printQRForm()">
-                  <i class="fas fa-print"></i> Print
-                </button>
-              </div>
-            </div>
+          <!-- QR CODE DI TENGAH -->
+          <div style="display: flex; justify-content: center; margin-bottom: 20px;">
+            <div id="qrCodeSidebar" style="width: 200px; height: 200px;"></div>
+          </div>
+          
+          <!-- INFORMASI QR -->
+          <div style="background: #e3f2fd; padding: 15px; border-radius: 12px; margin: 15px 0;">
+            <p style="color: #1565c0; margin-bottom: 5px;">
+              <i class="fas fa-info-circle"></i> 
+              Scan QR code ini dengan HP untuk mengakses form peminjaman
+            </p>
+            <p style="color: #666; font-size: 13px;">
+              Pengguna bisa langsung mengisi form peminjaman dari HP mereka
+            </p>
+          </div>
+          
+          <!-- TOMBOL ACTION DI TENGAH -->
+          <div style="display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;">
+            <button class="btn qrcode-btn" onclick="showQRFormModal()">
+              <i class="fas fa-qrcode"></i> Lihat QR Besar
+            </button>
+            <button class="btn preview" onclick="downloadQRForm()">
+              <i class="fas fa-download"></i> Download
+            </button>
+            <button class="btn add" onclick="printQRForm()">
+              <i class="fas fa-print"></i> Print
+            </button>
           </div>
         </div>
         
@@ -1366,21 +1379,21 @@ function generateQRForm() {
   const baseUrl = window.location.origin + window.location.pathname;
   const qrUrl = `${baseUrl}?public=form`;
   
-  // Generate QR di sidebar
+  // Generate QR di sidebar (posisi tengah sudah diatur oleh CSS flex)
   const sidebarContainer = document.getElementById('qrCodeSidebar');
   if (sidebarContainer) {
     sidebarContainer.innerHTML = '';
     new QRCode(sidebarContainer, {
       text: qrUrl,
-      width: 150,
-      height: 150,
+      width: 200,
+      height: 200,
       colorDark: "#1565c0",
       colorLight: "#ffffff",
       correctLevel: QRCode.CorrectLevel.H
     });
   }
   
-  // Generate QR di modal
+  // Generate QR di modal (posisi tengah sudah diatur oleh CSS flex)
   const modalContainer = document.getElementById('qrCodeFormContainer');
   if (modalContainer) {
     modalContainer.innerHTML = '';
